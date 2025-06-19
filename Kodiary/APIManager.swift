@@ -15,24 +15,14 @@ class APIManager: ObservableObject {
     
     private let baseURL = "https://api.openai.com/v1/chat/completions"
     
-    // ⚠️ 개발 중에만 여기에 실제 키를 넣으세요
-    // 실제 배포 시에는 서버를 통해 프록시하는 것이 좋습니다
-    private let apiKey = "TEMP_API_KEY_FOR_DEVELOPMENT"
+    // 실제 API 키
+    private let apiKey = "secret"
     
     private init() {}
     
-    // MARK: - 개발용 API 키 설정 (Git에는 올라가지 않음)
-    func setDevelopmentAPIKey(_ key: String) {
-        // 이 함수는 개발 중에만 사용
-        // 실제로는 위의 apiKey 상수를 직접 수정하세요
-        print("⚠️ 개발 중: API 키가 설정되었습니다")
-    }
-    
-    // API 키 유효성 검사
+    // API 키 유효성 검사 - 수정됨!
     private func hasValidAPIKey() -> Bool {
-        return apiKey != "TEMP_API_KEY_FOR_DEVELOPMENT" &&
-               apiKey.hasPrefix("sk-") &&
-               apiKey.count > 20
+        return apiKey.hasPrefix("sk-") && apiKey.count > 20
     }
     
     // MARK: - 한국어 일기 첨삭 요청
@@ -41,12 +31,13 @@ class APIManager: ObservableObject {
             throw APIError.emptyText
         }
         
-        // 개발 중 API 키 체크
+        // API 키 체크
         guard hasValidAPIKey() else {
-            print("⚠️ 개발자 알림: APIManager.swift에서 apiKey를 실제 OpenAI 키로 변경해주세요")
-            // 개발 중에는 더미 데이터 반환
+            print("⚠️ API 키가 유효하지 않습니다")
             return createDevelopmentFallback()
         }
+        
+        print("✅ API 키 유효 - 실제 AI 호출 시작")
         
         // UI 업데이트
         await MainActor.run {
@@ -64,16 +55,22 @@ class APIManager: ObservableObject {
             return corrections
             
         } catch {
+            print("❌ API 호출 에러: \(error)")
+            
             await MainActor.run {
                 isLoading = false
                 errorMessage = error.localizedDescription
             }
+            
+            // 에러 시에도 폴백 데이터 대신 에러 던지기
             throw error
         }
     }
     
     // MARK: - OpenAI API 호출
     private func requestCorrection(for text: String) async throws -> [CorrectionItem] {
+        print("🤖 OpenAI API 요청 시작")
+        
         guard let url = URL(string: baseURL) else {
             throw APIError.invalidURL
         }
@@ -86,16 +83,22 @@ class APIManager: ObservableObject {
         let requestBody = createRequestBody(for: text)
         request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
         
+        print("📤 API 요청 전송 중...")
+        
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
         }
         
+        print("📥 API 응답 받음 - 상태 코드: \(httpResponse.statusCode)")
+        
         guard httpResponse.statusCode == 200 else {
             if httpResponse.statusCode == 401 {
+                print("❌ 401 에러: API 키가 잘못되었습니다")
                 throw APIError.invalidAPIKey
             }
+            print("❌ HTTP 에러: \(httpResponse.statusCode)")
             throw APIError.httpError(httpResponse.statusCode)
         }
         
@@ -112,7 +115,7 @@ class APIManager: ObservableObject {
                 [
                     "role": "system",
                     "content": """
-                    당신은 한국어를 배우는 외국인을 위한 친절한 첨삭 선생님입니다.
+                    당신은 한국어를 배우는 외국인을 위한 친절한 글쓰기 선생님입니다.
                     초급 학습자도 이해할 수 있도록 쉽고 친근하게 설명해주세요.
                     반드시 올바른 JSON 형식으로만 응답해주세요.
                     """
@@ -130,28 +133,29 @@ class APIManager: ObservableObject {
     // MARK: - 한국어 첨삭 프롬프트 생성
     private func createKoreanCorrectionPrompt(for text: String) -> String {
         return """
-        다음 한국어 일기를 첨삭해주세요. 초급 학습자를 위해 친절하고 쉽게 설명해주세요.
+        아래는 한국어를 배우는 외국인 학습자가 쓴 일기입니다. 초급 학습자도 이해할 수 있도록 문법, 맞춤법, 표현을 친절하게 첨삭해주세요
         
-        일기 내용:
-        "\(text)"
+        1. 첨삭 규칙:
+            - 첨삭은 최대 3개까지만 해주세요.
+            - '원문 → 수정문 : 설명' 순서로 첨삭 내용을 정리해주세요.
+            - 설명은 반드시 초급자도 이해할 수 있도록 쉬운 말로 써주세요. (~가 자연스러워요, ~라고 써요)
+            - 'type'은 아래 중 하나로 분류해주세요: "문법", "맞춤법", "표현"
+            - JSON 형식은 아래 예시처럼 정확히 맞춰주세요. JSON 외의 어떠한 사족도 달지 마시오.
         
-        다음 JSON 형식으로만 응답해주세요:
-        {
-            "corrections": [
+        2. 일기 내용:
+            "\(text)"
+
+        3. 출력 JSON 형식:
+            {
+              "corrections": [
                 {
-                    "original": "틀린 표현",
-                    "corrected": "올바른 표현", 
-                    "explanation": "초급자도 이해할 수 있는 친절한 설명",
-                    "type": "문법"
+                  "original": "잘못 쓴 문장 또는 단어",
+                  "corrected": "자연스러운 문장 또는 단어",
+                  "explanation": "왜 이렇게 쓰는지 초급자도 이해할 수 있는 쉬운 설명",
+                  "type": "문법" // 혹은 "맞춤법", "표현"
                 }
-            ]
-        }
-        
-        규칙:
-        - 최대 5개까지만 첨삭
-        - type은 "문법", "맞춤법", "표현" 중 하나
-        - 설명은 친근한 말투로 ("~해주세요", "~가 자연스러워요")
-        - JSON 형식 정확히 준수
+              ]
+            }
         """
     }
     
@@ -172,6 +176,9 @@ class APIManager: ObservableObject {
         guard let content = openAIResponse.choices.first?.message.content else {
             throw APIError.emptyResponse
         }
+        
+        print("📝 GPT 응답 내용:")
+        print(content)
         
         return try parseCorrectionContent(content)
     }
@@ -197,7 +204,7 @@ class APIManager: ObservableObject {
             
             let response = try JSONDecoder().decode(CorrectionResponse.self, from: jsonData)
             
-            return response.corrections.map { correction in
+            let correctionItems = response.corrections.map { correction in
                 CorrectionItem(
                     original: correction.original,
                     corrected: correction.corrected,
@@ -206,32 +213,31 @@ class APIManager: ObservableObject {
                 )
             }
             
+            print("✅ 실제 AI 첨삭 \(correctionItems.count)개 파싱 완료")
+            return correctionItems
+            
         } catch {
             print("❌ JSON 파싱 에러: \(error)")
-            return createDevelopmentFallback()
+            print("📄 파싱 실패한 내용: \(content)")
+            throw APIError.invalidJSON
         }
     }
     
-    // MARK: - 개발용 폴백 데이터
+    // MARK: - 개발용 폴백 데이터 (이제 거의 안 쓰임)
     private func createDevelopmentFallback() -> [CorrectionItem] {
+        print("⚠️ 폴백 데이터 사용 중")
         return [
             CorrectionItem(
-                original: "좋다",
-                corrected: "좋아요",
-                explanation: "존댓말로 써주세요. '좋다'보다 '좋아요'가 자연스러워요.",
-                type: "문법"
-            ),
-            CorrectionItem(
-                original: "재미있었다",
-                corrected: "재미있었어요",
-                explanation: "과거형도 존댓말로 일관성 있게 써주세요.",
-                type: "문법"
+                original: "API 키 오류",
+                corrected: "실제 API 키를 설정해주세요",
+                explanation: "API 키가 유효하지 않아 더미 데이터를 표시하고 있습니다.",
+                type: "시스템"
             )
         ]
     }
 }
 
-// MARK: - API 에러 정의
+// MARK: - API 에러 정의 (동일)
 enum APIError: LocalizedError {
     case emptyText
     case invalidAPIKey
