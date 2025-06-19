@@ -8,79 +8,101 @@
 import SwiftUI
 import CoreData
 
+import SwiftUI
+
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    @State private var navigationPath = NavigationPath()
+    @State private var savedDiariesCount = 0  // 저장된 일기 개수
+    
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+        NavigationStack(path: $navigationPath) {
+            VStack(spacing: 30) {
+                // 앱 로고 영역
+                VStack(spacing: 10) {
+                    Text("✍️ Kodiary")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    
+                    Text("한국어 일기 첨삭")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+                
+                // 통계 카드
+                if savedDiariesCount > 0 {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("지금까지")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Text("\(savedDiariesCount)개 일기")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            Text("작성했어요! 🎉")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        Spacer()
+                        Text("📝")
+                            .font(.largeTitle)
                     }
+                    .padding()
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(10)
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                
+                Spacer()
+                
+                // 일기 쓰기 버튼
+                Button(action: {
+                    navigationPath.append("diary-write")
+                }) {
+                    HStack {
+                        Text("일기 쓰기")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        Image(systemName: "pencil")
                     }
+                    .foregroundColor(.white)
+                    .frame(width: 200, height: 50)
+                    .background(Color.blue)
+                    .cornerRadius(10)
                 }
+                
+                // 히스토리 버튼 (나중에 구현)
+                Button("일기 히스토리") {
+                    navigationPath.append("diary-history")
+                }
+                .font(.subheadline)
+                .foregroundColor(.blue)
+                
+                Spacer()
             }
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            .padding()
+            .navigationTitle("홈")
+            .navigationBarTitleDisplayMode(.large)
+            .navigationDestination(for: String.self) { destination in
+                switch destination {
+                case "diary-write":
+                    DiaryWriteView(
+                        navigationPath: $navigationPath,
+                        onDiarySaved: {
+                            savedDiariesCount += 1
+                        }
+                    )
+                case "diary-history":
+                    DiaryHistoryView()  // 나중에 구현
+                default:
+                    Text("Unknown destination")
+                }
             }
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
-#Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
