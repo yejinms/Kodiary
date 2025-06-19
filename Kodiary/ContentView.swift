@@ -6,13 +6,10 @@
 //
 
 import SwiftUI
-import CoreData
-
-import SwiftUI
 
 struct ContentView: View {
     @State private var navigationPath = NavigationPath()
-    @State private var savedDiariesCount = 0  // 저장된 일기 개수
+    @EnvironmentObject var dataManager: DataManager
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -28,14 +25,14 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                 }
                 
-                // 통계 카드
-                if savedDiariesCount > 0 {
+                // 통계 카드 - 실제 데이터 사용
+                if dataManager.getTotalDiariesCount() > 0 {
                     HStack {
                         VStack(alignment: .leading, spacing: 5) {
                             Text("지금까지")
                                 .font(.caption)
                                 .foregroundColor(.gray)
-                            Text("\(savedDiariesCount)개 일기")
+                            Text("\(dataManager.getTotalDiariesCount())개 일기")
                                 .font(.title2)
                                 .fontWeight(.bold)
                             Text("작성했어요! 🎉")
@@ -69,7 +66,7 @@ struct ContentView: View {
                     .cornerRadius(10)
                 }
                 
-                // 히스토리 버튼 (나중에 구현)
+                // 히스토리 버튼
                 Button("일기 히스토리") {
                     navigationPath.append("diary-history")
                 }
@@ -85,24 +82,26 @@ struct ContentView: View {
                 switch destination {
                 case "diary-write":
                     DiaryWriteView(
-                        navigationPath: $navigationPath,
-                        onDiarySaved: {
-                            savedDiariesCount += 1
-                        }
+                        navigationPath: $navigationPath
                     )
                 case "diary-history":
-                    DiaryHistoryView()  // 나중에 구현
+                    DiaryHistoryView()
                 default:
                     Text("Unknown destination")
                 }
             }
         }
+        .onAppear {
+            // 앱 시작 시 데이터 새로고침
+            dataManager.fetchDiaries()
+        }
     }
 }
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(DataManager.shared)
     }
 }
+

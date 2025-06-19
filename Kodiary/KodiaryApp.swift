@@ -9,12 +9,12 @@ import SwiftUI
 
 @main
 struct KodiaryApp: App {
-    let persistenceController = PersistenceController.shared
-
+    let dataManager = DataManager.shared
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(dataManager)
         }
     }
 }

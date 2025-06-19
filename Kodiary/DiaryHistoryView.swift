@@ -10,28 +10,23 @@ import SwiftUI
 struct DiaryHistoryView: View {
     @State private var selectedDate = Date()
     @State private var currentMonth = Date()
-    
-    // 임시 데이터 (나중에 실제 데이터로 교체)
-    let sampleDiaryDates: Set<String> = [
-        "2025-06-01", "2025-06-03", "2025-06-07",
-        "2025-06-12", "2025-06-15", "2025-06-18"
-    ]
+    @EnvironmentObject var dataManager: DataManager  // 실제 데이터 연결
     
     var body: some View {
         VStack(spacing: 0) {
             // 캘린더 헤더
             CalendarHeader(currentMonth: $currentMonth)
             
-            // 캘린더 그리드
+            // 캘린더 그리드 - 실제 데이터 사용
             CalendarGrid(
                 currentMonth: currentMonth,
                 selectedDate: $selectedDate,
-                diaryDates: sampleDiaryDates
+                diaryDates: dataManager.getDiaryDates()  // 실제 저장된 날짜들
             )
             
-            // 선택된 날짜의 일기 정보
-            if hasDiaryForDate(selectedDate) {
-                DiaryPreview(date: selectedDate)
+            // 선택된 날짜의 일기 정보 - 실제 데이터 사용
+            if let diary = dataManager.getDiary(for: selectedDate) {
+                DiaryPreview(diary: diary)  // 실제 일기 데이터
                     .padding()
             } else {
                 EmptyDateView(date: selectedDate)
@@ -42,18 +37,14 @@ struct DiaryHistoryView: View {
         }
         .navigationTitle("일기 히스토리")
         .navigationBarTitleDisplayMode(.inline)
-    }
-    
-    // 해당 날짜에 일기가 있는지 확인
-    func hasDiaryForDate(_ date: Date) -> Bool {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let dateString = formatter.string(from: date)
-        return sampleDiaryDates.contains(dateString)
+        .onAppear {
+            // 화면이 나타날 때 데이터 새로고침
+            dataManager.fetchDiaries()
+        }
     }
 }
 
-// 캘린더 헤더 (월 이동 버튼)
+// 캘린더 헤더 (동일)
 struct CalendarHeader: View {
     @Binding var currentMonth: Date
     
@@ -97,11 +88,11 @@ struct CalendarHeader: View {
     }
 }
 
-// 캘린더 그리드
+// 캘린더 그리드 (동일)
 struct CalendarGrid: View {
     let currentMonth: Date
     @Binding var selectedDate: Date
-    let diaryDates: Set<String>
+    let diaryDates: Set<String>  // 실제 데이터 받음
     
     private let calendar = Calendar.current
     private let dateFormatter: DateFormatter = {
@@ -168,7 +159,7 @@ struct CalendarGrid: View {
     }
 }
 
-// 요일 헤더
+// 요일 헤더 (동일)
 struct WeekdayHeader: View {
     private let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
     
@@ -187,7 +178,7 @@ struct WeekdayHeader: View {
     }
 }
 
-// 날짜 셀
+// 날짜 셀 (동일)
 struct DayCell: View {
     let date: Date
     let isSelected: Bool
@@ -236,22 +227,25 @@ struct DayCell: View {
     }
 }
 
-// 일기 미리보기
+// 일기 미리보기 - 실제 데이터 사용
 struct DiaryPreview: View {
-    let date: Date
+    let diary: DiaryEntry  // 실제 일기 데이터
+    @EnvironmentObject var dataManager: DataManager
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("📝")
                     .font(.title2)
-                Text(dateString(from: date))
+                Text(dateString(from: diary.date ?? Date()))
                     .font(.headline)
                     .fontWeight(.bold)
                 Spacer()
                 Button("보기") {
                     // 나중에 일기 상세보기로 이동
-                    print("일기 상세보기: \(date)")
+                    print("일기 상세보기: \(diary.originalText ?? "")")
+                    let corrections = dataManager.getCorrections(for: diary)
+                    print("첨삭 내용: \(corrections.count)개")
                 }
                 .font(.caption)
                 .padding(.horizontal, 12)
@@ -261,14 +255,48 @@ struct DiaryPreview: View {
                 .cornerRadius(8)
             }
             
-            // 일기 내용 미리보기 (임시)
-            Text("오늘은 날씨가 좋아서 친구와 함께 공원에 갔어요. 벚꽃이 정말 예뻤고...")
+            // 실제 일기 내용 미리보기
+            Text(diary.originalText ?? "내용 없음")
                 .font(.subheadline)
                 .foregroundColor(.gray)
-                .lineLimit(2)
+                .lineLimit(3)  // 3줄까지 표시
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
+            
+            // 통계 정보
+            HStack {
+                HStack(spacing: 4) {
+                    Image(systemName: "pencil.circle.fill")
+                        .foregroundColor(.blue)
+                        .font(.caption)
+                    Text("첨삭 \(diary.correctionCount)개")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "textformat.123")
+                        .foregroundColor(.gray)
+                        .font(.caption)
+                    Text("\(diary.characterCount)자")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "clock.fill")
+                        .foregroundColor(.green)
+                        .font(.caption)
+                    Text(timeString(from: diary.createdAt ?? Date()))
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+            }
         }
         .padding()
         .background(Color.white)
@@ -282,9 +310,16 @@ struct DiaryPreview: View {
         formatter.dateFormat = "M월 d일 (E)"
         return formatter.string(from: date)
     }
+    
+    func timeString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
+    }
 }
 
-// 일기 없는 날
+// 일기 없는 날 (동일)
 struct EmptyDateView: View {
     let date: Date
     
@@ -305,6 +340,14 @@ struct EmptyDateView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
+            
+            // 일기 쓰기 유도 버튼
+            if Calendar.current.isDate(date, inSameDayAs: Date()) {
+                Text("오늘 일기를 써보세요! ✍️")
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                    .padding(.top, 4)
+            }
         }
         .padding()
         .background(Color.white)
@@ -324,6 +367,7 @@ struct DiaryHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             DiaryHistoryView()
+                .environmentObject(DataManager.shared)  // 프리뷰에도 데이터 매니저 추가
         }
     }
 }

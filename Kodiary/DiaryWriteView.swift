@@ -3,7 +3,7 @@ import SwiftUI
 struct DiaryWriteView: View {
     @State private var diaryText = ""
     @Binding var navigationPath: NavigationPath
-    let onDiarySaved: () -> Void
+    @EnvironmentObject var dataManager: DataManager
     
     var body: some View {
         VStack(spacing: 20) {
@@ -49,8 +49,7 @@ struct DiaryWriteView: View {
             CorrectionResultView(
                 originalText: correctionData.originalText,
                 corrections: correctionData.corrections,
-                navigationPath: $navigationPath,
-                onDiarySaved: onDiarySaved
+                navigationPath: $navigationPath
             )
         }
     }

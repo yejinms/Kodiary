@@ -4,7 +4,6 @@ struct CorrectionResultView: View {
     let originalText: String
     let corrections: [CorrectionItem]
     @Binding var navigationPath: NavigationPath
-    let onDiarySaved: () -> Void
     
     @State private var expandedItems: Set<Int> = []
     @State private var isSaving = false
@@ -81,21 +80,21 @@ struct CorrectionResultView: View {
         }
     }
     
+    @EnvironmentObject var dataManager: DataManager
+
     func saveDiary() {
         isSaving = true
         
         print("일기 저장 시작...")
-        print("원본: \(originalText)")
-        print("첨삭 개수: \(corrections.count)")
+        
+        // DataManager를 통해 실제 저장
+        dataManager.saveDiary(text: originalText, corrections: corrections)
         
         // 저장 애니메이션을 위한 딜레이
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             print("일기 저장 완료!")
             
-            // 저장 완료 콜백 호출
-            onDiarySaved()
-            
-            // 홈 화면으로 돌아가기 (네비게이션 스택 초기화)
+            // 홈 화면으로 돌아가기
             navigationPath = NavigationPath()
             
             isSaving = false
