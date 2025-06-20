@@ -67,7 +67,8 @@ extension Font {
     // Title Fonts (섹션 제목용)
     static let titleHuge = CustomFont.font(name: CustomFont.chosunKm, size: 210)
     static let titleLarge = CustomFont.font(name: CustomFont.chosunKm, size: 27)
-    static let titleSmall = CustomFont.font(name: CustomFont.chosunKm, size: 24)
+    static let titleSmall1 = CustomFont.font(name: CustomFont.chosunKm, size: 24)
+    static let titleSmall2 = CustomFont.font(name: CustomFont.chosunSm, size: 24)
     
     // Body Fonts (본문용)
     static let bodyFont = CustomFont.font(name: CustomFont.chosunNm, size: 20)
