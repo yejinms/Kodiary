@@ -11,17 +11,21 @@ struct CorrectionResultView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // 원본 일기 표시
+                // 원본 일기 표시 (하이라이트 적용)
                 VStack(alignment: .leading, spacing: 10) {
                     Text("작성한 일기")
                         .font(.headline)
                         .fontWeight(.bold)
                     
-                    Text(originalText)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
+                    // 하이라이트된 텍스트 표시
+                    HighlightedText(
+                        originalText: originalText,
+                        corrections: corrections
+                    )
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
                 }
                 
                 // 첨삭 완료 헤더
@@ -103,7 +107,6 @@ struct CorrectionResultView: View {
 }
 
 // 나머지 CorrectionRow 코드는 동일...
-
 struct CorrectionRow: View {
     let correction: CorrectionItem
     let index: Int
@@ -218,4 +221,3 @@ struct CorrectionRow: View {
         }
     }
 }
-

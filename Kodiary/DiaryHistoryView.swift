@@ -241,18 +241,15 @@ struct DiaryPreview: View {
                     .font(.headline)
                     .fontWeight(.bold)
                 Spacer()
-                Button("보기") {
-                    // 나중에 일기 상세보기로 이동
-                    print("일기 상세보기: \(diary.originalText ?? "")")
-                    let corrections = dataManager.getCorrections(for: diary)
-                    print("첨삭 내용: \(corrections.count)개")
+                NavigationLink(destination: DiaryDetailView(diary: diary)) {
+                    Text("보기")
+                        .font(.caption)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .font(.caption)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
             }
             
             // 실제 일기 내용 미리보기
@@ -307,7 +304,7 @@ struct DiaryPreview: View {
     func dateString(from date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일 (E)"
+        formatter.dateFormat = "M월 d일 E요일"
         return formatter.string(from: date)
     }
     
@@ -334,7 +331,7 @@ struct EmptyDateView: View {
                 Spacer()
             }
             
-            Text("이 날에는 일기를 쓰지 않았어요")
+            Text("이 날은 일기를 쓰지 않았어요")
                 .font(.subheadline)
                 .foregroundColor(.gray)
                 .padding()
@@ -358,7 +355,7 @@ struct EmptyDateView: View {
     func dateString(from date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일 (E)"
+        formatter.dateFormat = "M월 d일 E요일"
         return formatter.string(from: date)
     }
 }
