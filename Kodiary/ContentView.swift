@@ -11,72 +11,85 @@ struct ContentView: View {
     @State private var navigationPath = NavigationPath()
     @EnvironmentObject var dataManager: DataManager
     
+    // 오늘 일기 작성 여부 확인
+    var hasTodayDiary: Bool {
+        let today = Date()
+        return dataManager.getDiary(for: today) != nil
+    }
+    
+    // 사용자 이름 (실제로는 UserDefaults나 다른 곳에서 가져올 수 있음)
+    var username: String {
+        return "사용자" // 나중에 실제 사용자 이름으로 변경 가능
+    }
+    
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            VStack(spacing: 30) {
-                // 앱 로고 영역
-                VStack(spacing: 10) {
-                    Text("✍️ Kodiary")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text("한국어 일기 첨삭")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
+            VStack(spacing: Spacing.xl) {
+                ZStack{
+                                Rectangle()
+                                    .foregroundColor(.clear)
+                                    .frame(width: 265.5, height: 265.5)
+                                    .cornerRadius(265.5)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 265.5)
+                                            .inset(by: 0.9)
+                                            .stroke(Color.primaryDark, lineWidth: 1.8)
+                                    )
+                                Text("5")
+                                    .font(.titleHuge)
+                                    .foregroundColor(.primaryDark)
+                            }
                 
-                // 통계 카드 - 실제 데이터 사용
-                if dataManager.getTotalDiariesCount() > 0 {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text("지금까지")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Text("\(dataManager.getTotalDiariesCount())개 일기")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            Text("작성했어요! 🎉")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                        Spacer()
-                        Text("📝")
-                            .font(.largeTitle)
+                // 인사말 (조건부)
+                VStack(spacing: Spacing.sm) {
+                    if hasTodayDiary {
+                        Text("안녕 \(username)!")
+                            .font(.bodyFont)
+                            .foregroundColor(.primaryDark)
+                        Text("멋진 하루 보내세요! 🌟")
+                            .font(.bodyFont)
+                            .foregroundColor(.primaryDark)
+                    } else {
+                        Text("안녕 \(username)!")
+                            .font(.bodyFont)
+                            .foregroundColor(.primaryDark)
+                        Text("오늘은 어떤 하루를 보냈나요? ✨")
+                            .font(.bodyFont)
+                            .foregroundColor(.primaryDark)
                     }
-                    .padding()
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(10)
                 }
+                .padding(Spacing.md)
+                .background(Color.background)
+                .cornerRadius(CornerRadius.md)
                 
                 Spacer()
                 
-                // 일기 쓰기 버튼
+                // 일기 쓰기 버튼 (조건부 텍스트)
                 Button(action: {
                     navigationPath.append("diary-write")
                 }) {
-                    HStack {
-                        Text("일기 쓰기")
-                            .font(.title2)
-                            .fontWeight(.semibold)
+                    HStack(spacing: Spacing.sm) {
+                        Text(hasTodayDiary ? "또 다른 일기 쓰기" : "일기 쓰기")
+                            .font(.buttonFont)
                         Image(systemName: "pencil")
+                            .font(.buttonFont)
                     }
-                    .foregroundColor(.white)
-                    .frame(width: 200, height: 50)
-                    .background(Color.blue)
-                    .cornerRadius(10)
+                    .foregroundColor(.primaryDark)
+                    .frame(width: 220, height: 50)
+                    .background(Color.background)
+                    .cornerRadius(CornerRadius.md)
                 }
                 
                 // 히스토리 버튼
                 Button("일기 히스토리") {
                     navigationPath.append("diary-history")
                 }
-                .font(.subheadline)
-                .foregroundColor(.blue)
+                .font(.bodyFont)
+                .foregroundColor(.primaryDark)
                 
                 Spacer()
             }
-            .padding()
-            .navigationTitle("홈")
+            .padding(Spacing.md)
             .navigationBarTitleDisplayMode(.large)
             .navigationDestination(for: String.self) { destination in
                 switch destination {
@@ -104,4 +117,3 @@ struct ContentView_Previews: PreviewProvider {
             .environmentObject(DataManager.shared)
     }
 }
-
