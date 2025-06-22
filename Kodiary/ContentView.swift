@@ -7,9 +7,65 @@
 
 import SwiftUI
 
+// ResponsiveDateHeader 컴포넌트
+struct ResponsiveDateHeader: View {
+    let dateComponents: (year: String, month: String, weekday: String)
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Rectangle()
+                    .frame(width: geometry.size.width, height: 70)
+                    .foregroundColor(.clear)
+                    .overlay(
+                       VStack(spacing: 0) {
+                           Rectangle()
+                               .fill(Color.primaryDark.opacity(0.2))
+                               .frame(height: 1.8)
+                           
+                           Spacer()
+                           
+                           Rectangle()
+                               .fill(Color.primaryDark.opacity(0.2))
+                               .frame(height: 1.8)
+                       }
+                       .padding(.horizontal, 0.9)
+                    )
+                
+                HStack(spacing: 0) {
+                    // 연도
+                    Text(dateComponents.year)
+                        .font(.titleLarge)
+                        .foregroundColor(.primaryDark)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                    
+                    // 월
+                    Text(dateComponents.month)
+                        .font(.titleLarge)
+                        .foregroundColor(.primaryDark)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                    
+                    // 요일
+                    Text(dateComponents.weekday)
+                        .font(.titleLarge)
+                        .foregroundColor(.primaryDark)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 20)
+            }
+        }
+        .frame(height: 70)
+    }
+}
+
 struct ContentView: View {
     @State private var navigationPath = NavigationPath()
+    @State private var showingLanguageSelection = false
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var languageManager: LanguageManager
     
     // 오늘 일기 작성 여부 확인
     var hasTodayDiary: Bool {
@@ -19,48 +75,51 @@ struct ContentView: View {
     
     // 사용자 이름 (실제로는 UserDefaults나 다른 곳에서 가져올 수 있음)
     var username: String {
-        return "사용자" // 나중에 실제 사용자 이름으로 변경 가능
+        return "Niko" // 나중에 실제 사용자 이름으로 변경 가능
     }
     
-    // 오늘 날짜 포맷팅
-    var todayDateString: String {
+    // 오늘 날짜의 각 구성 요소들 (다국어 지원)
+    var todayDateComponents: (year: String, month: String, weekday: String) {
         let today = Date()
+        let components = languageManager.currentLanguage.dateComponents
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy     M월     EEEE"
-        return formatter.string(from: today)
+        formatter.locale = languageManager.currentLanguage.locale
+        
+        formatter.dateFormat = components.year
+        let year = formatter.string(from: today)
+        
+        formatter.dateFormat = components.month
+        let month = formatter.string(from: today)
+        
+        formatter.dateFormat = components.weekday
+        let weekday = formatter.string(from: today)
+        
+        return (year, month, weekday)
     }
     
     var todayDayString: String {
         let today = Date()
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "d"
+        formatter.locale = languageManager.currentLanguage.locale
+        formatter.dateFormat = languageManager.currentLanguage.dayDateFormat
         return formatter.string(from: today)
     }
     
+    // 인사말 (다국어 지원)
+    var greetingTexts: (title: String, subtitle: String) {
+        if hasTodayDiary {
+            return languageManager.currentLanguage.greetingWithDiary(username: username)
+        } else {
+            return languageManager.currentLanguage.greetingWithoutDiary(username: username)
+        }
+    }
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            VStack(spacing: Spacing.lg) {
+            VStack(spacing: Spacing.md) {
                 
-                ZStack{
-                    Rectangle()
-                        .frame(width: 500, height: 70)
-                        .ignoresSafeArea()
-                        .foregroundColor(.clear)
-                        .overlay(
-                            Rectangle()
-                                .inset(by: 0.9)
-                                .stroke(Color.primaryDark.opacity(0.2), lineWidth: 1.8)
-                        )
-                        
-                    
-                    Text(todayDateString)
-                        .font(.titleLarge)
-                        .foregroundColor(.primaryDark)
-                        .multilineTextAlignment(.center)
-                }
+                // 반응형 날짜 헤더 사용
+                ResponsiveDateHeader(dateComponents: todayDateComponents)
         
                 ZStack {
                     Rectangle()
@@ -81,37 +140,26 @@ struct ContentView: View {
                     }
                 }
                 
-                // 인사말 (조건부)
+                // 인사말 (다국어 지원)
                 VStack(spacing: Spacing.sm) {
-                    if hasTodayDiary {
-                        Text("안녕 \(username).")
-                            .font(.titleSmall1)
-                            .foregroundColor(.primaryDark)
-                        Text("멋진 하루 보내세요!")
-                            .font(.titleSmall2)
-                            .foregroundColor(.primaryDark)
-                            .padding(.top, 4)
-                    } else {
-                        Text("안녕 \(username)!")
-                            .font(.bodyFont)
-                            .foregroundColor(.primaryDark)
-                        Text("오늘은 어떤 하루를 보냈나요? ✨")
-                            .font(.bodyFont)
-                            .foregroundColor(.primaryDark)
-                            .padding(.top, 4)
-                    }
+                    Text(greetingTexts.title)
+                        .font(.titleSmall1)
+                        .foregroundColor(.primaryDark)
+                    Text(greetingTexts.subtitle)
+                        .font(.titleSmall2)
+                        .foregroundColor(.primaryDark)
+                        .padding(.top, 4)
+                        .multilineTextAlignment(.center)
                 }
                 .padding(Spacing.md)
                 .cornerRadius(CornerRadius.md)
                 
-                Spacer()
-                
-                // 일기 쓰기 버튼 (조건부 텍스트)
+                // 일기 쓰기 버튼 (다국어 지원)
                 Button(action: {
                     navigationPath.append("diary-write")
                 }) {
                     HStack(spacing: Spacing.sm) {
-                        Text(hasTodayDiary ? "일기 쓰기 [오늘 완료]" : "일기 쓰기")
+                        Text(hasTodayDiary ? languageManager.currentLanguage.writeButtonCompletedText : languageManager.currentLanguage.writeButtonText)
                             .font(.buttonFont)
                             .padding(16)
                         
@@ -125,12 +173,12 @@ struct ContentView: View {
                     .background(hasTodayDiary ? Color.primaryDark.opacity(0.2) : Color.primaryBlue )
                 }
                 
-                // 히스토리 버튼
+                // 히스토리 버튼 (다국어 지원)
                 Button(action: {
                     navigationPath.append("diary-history")
                 }) {
                     HStack(spacing: Spacing.sm) {
-                        Text("일기 보기")
+                        Text(languageManager.currentLanguage.historyButtonText)
                             .font(.buttonFont)
                             .padding(16)
                         Spacer()
@@ -149,16 +197,32 @@ struct ContentView: View {
             .padding(Spacing.md)
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                // 언어 설정 버튼 (좌측 상단)
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        showingLanguageSelection = true
+                    }) {
+                        Circle()
+                            .fill(Color.background)
+                            .frame(width: 55, height: 55)
+                            .overlay(
+                                Text(languageManager.currentLanguage.flag)
+                                    .font(.system(size: 45))
+                            )
+                    }
+                }
+                
+                // 프로필 설정 버튼 (우측 상단)
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         navigationPath.append("profile-settings")
                     }) {
                         Circle()
                             .fill(Color.background)
-                            .frame(width: 32, height: 32)
+                            .frame(width: 55, height: 55)
                             .overlay(
-                                Image(systemName: "person.circle")
-                                    .font(.system(size: 16))
+                                Image(systemName: "person")
+                                    .font(.system(size: 20))
                                     .foregroundColor(.primaryDark)
                             )
                     }
@@ -178,6 +242,10 @@ struct ContentView: View {
                     Text("Unknown destination")
                 }
             }
+            .sheet(isPresented: $showingLanguageSelection) {
+                LanguageSelectionView()
+                    .environmentObject(languageManager)
+            }
         }
         .onAppear {
             // 앱 시작 시 데이터 새로고침
@@ -190,5 +258,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .environmentObject(DataManager.shared)
+            .environmentObject(LanguageManager.shared)
     }
 }

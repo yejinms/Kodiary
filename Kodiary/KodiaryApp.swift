@@ -15,6 +15,7 @@ struct KodiaryApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(dataManager)
+                .environmentObject(LanguageManager.shared)
         }
     }
 }
