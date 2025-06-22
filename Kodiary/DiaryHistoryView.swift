@@ -10,8 +10,9 @@ import SwiftUI
 struct DiaryHistoryView: View {
     @State private var selectedDate = Date()
     @State private var currentMonth = Date()
+    @Binding var navigationPath: NavigationPath
     @EnvironmentObject var dataManager: DataManager
-    @EnvironmentObject var languageManager: LanguageManager  // 추가
+    @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
         VStack(spacing: 0) {
@@ -36,49 +37,83 @@ struct DiaryHistoryView: View {
             
             Spacer()
         }
-        .navigationTitle(languageManager.currentLanguage.diaryHistoryTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)  // 기본 백버튼 숨기기
+        .toolbar {
+            // 커스텀 백버튼 (좌측)
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    navigationPath.removeLast()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .medium))
+                    }
+                    .foregroundColor(.primaryDark.opacity(0.5))
+                }
+            }
+        }
         .onAppear {
             dataManager.fetchDiaries()
         }
     }
 }
 
-// 캘린더 헤더 - 다국어 지원
+// 캘린더 헤더 - 다국어 지원 (상하 선 추가)
 struct CalendarHeader: View {
     @Binding var currentMonth: Date
     @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
-        HStack {
-            // 이전 달 버튼
-            Button(action: {
-                currentMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth) ?? currentMonth
-            }) {
-                Image(systemName: "chevron.left")
-                    .font(.title2)
-                    .foregroundColor(.blue)
+        Spacer()
+            .frame(height: 26)
+        ZStack {
+            Rectangle()
+                .frame(height: 70)
+                .foregroundColor(.clear)
+                .overlay(
+                   VStack(spacing: 0) {
+                       Rectangle()
+                           .fill(Color.primaryDark.opacity(0.2))
+                           .frame(height: 1.8)
+                       
+                       Spacer()
+                       
+                       Rectangle()
+                           .fill(Color.primaryDark.opacity(0.2))
+                           .frame(height: 1.8)
+                   }
+                   .padding(.horizontal, 0.9)
+                )
+            
+            HStack {
+                // 이전 달 버튼
+                Button(action: {
+                    currentMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth) ?? currentMonth
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.titleLarge)
+                        .foregroundColor(.primaryDark)
+                }
+                
+                // 현재 월 표시
+                Text(monthYearString(from: currentMonth))
+                    .font(.titleLarge)
+                    .foregroundColor(.primaryDark)
+                    .padding(.horizontal, 20)
+                
+                // 다음 달 버튼
+                Button(action: {
+                    currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth) ?? currentMonth
+                }) {
+                    Image(systemName: "chevron.right")
+                        .font(.titleLarge)
+                        .foregroundColor(.primaryDark)
+                }
             }
-            
-            Spacer()
-            
-            // 현재 월 표시
-            Text(monthYearString(from: currentMonth))
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            Spacer()
-            
-            // 다음 달 버튼
-            Button(action: {
-                currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth) ?? currentMonth
-            }) {
-                Image(systemName: "chevron.right")
-                    .font(.title2)
-                    .foregroundColor(.blue)
-            }
+            .padding(.horizontal, 20)
         }
-        .padding()
+        .frame(height: 70)
     }
     
     func monthYearString(from date: Date) -> String {
@@ -88,11 +123,13 @@ struct CalendarHeader: View {
         // 언어별 날짜 포맷
         switch languageManager.currentLanguage.locale.identifier {
         case "ko_KR":
-            formatter.dateFormat = "yyyy년 M월"
+            formatter.dateFormat = "yyyy     M월"
         case "ja_JP":
-            formatter.dateFormat = "yyyy年M月"
+            formatter.dateFormat = "yyyy     M月"
+        case "en_US":
+            formatter.dateFormat = "yyyy     MMMM"
         default:
-            formatter.dateFormat = "MMMM yyyy"
+            formatter.dateFormat = "MMMM     yyyy"
         }
         
         return formatter.string(from: date)
@@ -114,31 +151,44 @@ struct CalendarGrid: View {
     }()
     
     var body: some View {
-        VStack(spacing: 0) {
-            // 요일 헤더
-            WeekdayHeader()
-            
-            // 날짜 그리드
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 8) {
-                ForEach(calendarDays, id: \.self) { date in
-                    if let date = date {
-                        DayCell(
-                            date: date,
-                            isSelected: calendar.isDate(date, inSameDayAs: selectedDate),
-                            isCurrentMonth: calendar.isDate(date, equalTo: currentMonth, toGranularity: .month),
-                            hasDiary: hasDiaryForDate(date)
-                        ) {
-                            selectedDate = date
-                        }
-                    } else {
-                        Rectangle()
-                            .fill(Color.clear)
-                            .frame(height: 40)
-                    }
+        ZStack(alignment: .top){
+            //줄노트
+            VStack(spacing: 60) {
+                ForEach(0..<7, id: \.self) { _ in
+                    Rectangle()
+                        .fill(Color.primaryDark.opacity(0.4))
+                        .frame(height: 1.8)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 40)
+            
+            VStack(spacing: 0) {
+                // 요일 헤더
+                WeekdayHeader()
+                
+                // 날짜 그리드
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 22) {
+                    ForEach(calendarDays, id: \.self) { date in
+                        if let date = date {
+                            DayCell(
+                                date: date,
+                                isSelected: calendar.isDate(date, inSameDayAs: selectedDate),
+                                isCurrentMonth: calendar.isDate(date, equalTo: currentMonth, toGranularity: .month),
+                                hasDiary: hasDiaryForDate(date)
+                            ) {
+                                selectedDate = date
+                            }
+                        } else {
+                            Rectangle()
+                                .fill(Color.clear)
+                                .frame(height: 40)
+                        }
+                    }
+                }
+                .padding(.horizontal, 30)
+            }
         }
+        .padding(.top, 10)
     }
     
     var calendarDays: [Date?] {
@@ -177,18 +227,19 @@ struct WeekdayHeader: View {
         HStack {
             ForEach(languageManager.currentLanguage.shortWeekdayNames, id: \.self) { weekday in
                 Text(weekday)
-                    .font(.caption)
+                    .font(.buttonFont)
                     .fontWeight(.medium)
                     .foregroundColor(.gray)
                     .frame(maxWidth: .infinity)
             }
         }
-        .padding(.horizontal)
-        .padding(.bottom, 8)
+        .padding(.horizontal, 30)
+        .padding(.bottom, 40)
+        .padding(.top, 10)
     }
 }
 
-// 날짜 셀 (변경 없음)
+// 날짜 셀
 struct DayCell: View {
     let date: Date
     let isSelected: Bool
@@ -200,12 +251,13 @@ struct DayCell: View {
         Button(action: onTap) {
             VStack(spacing: 2) {
                 Text("\(Calendar.current.component(.day, from: date))")
-                    .font(.system(size: 16, weight: isSelected ? .bold : .medium))
-                    .foregroundColor(textColor)
+                    .font(.bodyFont)
+                    .foregroundColor(.primaryDark)
                 
                 Circle()
-                    .fill(hasDiary ? Color.blue : Color.clear)
-                    .frame(width: 6, height: 6)
+                    .fill(hasDiary ? Color.secondaryRed : Color.clear)
+                    .frame(width: 12, height: 12)
+                    .padding(.top, 4)
             }
             .frame(width: 40, height: 40)
             .background(backgroundColor)
@@ -226,88 +278,91 @@ struct DayCell: View {
     
     var backgroundColor: Color {
         if isSelected {
-            return .blue
+            return .primaryDark.opacity(0.1)
         } else if hasDiary {
-            return .blue.opacity(0.1)
+            return .clear
         } else {
             return .clear
         }
     }
 }
 
-// 일기 미리보기 - 다국어 지원
+// 일기 미리보기 - CorrectionResultView 스타일과 통일성 맞춤
 struct DiaryPreview: View {
     let diary: DiaryEntry
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("📝")
-                    .font(.title2)
-                Text(dateString(from: diary.date ?? Date()))
-                    .font(.headline)
-                    .fontWeight(.bold)
+        VStack(alignment: .leading, spacing: 16) {
+            // 헤더 - CorrectionResultView의 완료 상태 표시와 유사한 스타일
+            HStack(alignment: .bottom) {
+                    Text(dateString(from: diary.date ?? Date()))
+                        .font(.buttonFontSmall)
+                        .foregroundColor(.primaryDark)
+                        .background(Color.primaryYellow.opacity(0.3))
+                
                 Spacer()
+                
+                // 일기 보기 버튼 - CorrectionRow 스타일과 유사
                 NavigationLink(destination: DiaryDetailView(diary: diary)) {
-                    Text(languageManager.currentLanguage.viewDiaryButton)
-                        .font(.caption)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                    HStack(spacing: 4) {
+                        Text(languageManager.currentLanguage.correctionCountText(Int(diary.correctionCount)))
+                            .font(.buttonFontSmall)
+                            .foregroundColor(.secondaryRed)
+                        Image(systemName: "chevron.right")
+                            .font(.buttonFontSmall)
+                            .foregroundColor(.secondaryRed)
+                    }
+                    .foregroundColor(.primaryDark)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.secondaryRed.opacity(0.2))
+                    .overlay(
+                        Rectangle()
+                            .stroke(Color.secondaryRed.opacity(0.6), lineWidth: 1.8)
+                    )
                 }
             }
             
-            Text(diary.originalText ?? "내용 없음")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .lineLimit(3)
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
-            
-            // 통계 정보
-            HStack {
-                HStack(spacing: 4) {
-                    Image(systemName: "pencil.circle.fill")
-                        .foregroundColor(.blue)
-                        .font(.caption)
-                    Text(languageManager.currentLanguage.correctionCountText(Int(diary.correctionCount)))
-                        .font(.caption)
-                        .foregroundColor(.blue)
+            // 일기 내용 영역 - CorrectionResultView의 텍스트 영역과 유사한 스타일
+            ZStack(alignment: .topLeading) {
+                // 배경
+                Rectangle()
+                    .fill(Color.gray.opacity(0.1))
+                    .frame(minHeight: 120)
+                
+                // 줄 노트처럼 선들 추가 (CorrectionResultView와 동일)
+                VStack(spacing: 34) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        Rectangle()
+                            .fill(Color.primaryDark.opacity(0.4))
+                            .frame(height: 1)
+                    }
                 }
+                .padding(.top, 38)
+                .padding(.horizontal, 10)
                 
-                Spacer()
-                
-                HStack(spacing: 4) {
-                    Image(systemName: "textformat.123")
-                        .foregroundColor(.gray)
-                        .font(.caption)
-                    Text(languageManager.currentLanguage.characterCountText(Int(diary.characterCount)))
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-                
-                Spacer()
-                
-                HStack(spacing: 4) {
-                    Image(systemName: "clock.fill")
-                        .foregroundColor(.green)
-                        .font(.caption)
-                    Text(timeString(from: diary.createdAt ?? Date()))
-                        .font(.caption)
-                        .foregroundColor(.green)
-                }
+                // 일기 텍스트
+                Text(diary.originalText ?? "내용 없음")
+                    .font(.handWrite)
+                    .foregroundColor(.primaryDark)
+                    .lineSpacing(10)
+                    .lineLimit(3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(15)
             }
+            
         }
         .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: Color.gray.opacity(0.2), radius: 4, x: 0, y: 2)
+        .background(Color.clear)
+        .overlay(
+            Rectangle()
+                .stroke(Color.gray.opacity(0.4), lineWidth: 1.8)
+        )
+        .padding(.horizontal, 20)
     }
+        
     
     func dateString(from date: Date) -> String {
         let formatter = DateFormatter()
@@ -333,41 +388,95 @@ struct DiaryPreview: View {
     }
 }
 
-// 일기 없는 날 - 다국어 지원
+// 일기 없는 날 - 최신 DiaryPreview 스타일과 통일성 맞춤
 struct EmptyDateView: View {
     let date: Date
+    @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text("📅")
-                    .font(.title2)
+        VStack(alignment: .leading, spacing: 16) {
+            // 헤더 - DiaryPreview와 동일한 스타일
+            HStack(alignment: .bottom) {
                 Text(dateString(from: date))
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(.buttonFontSmall)
+                    .foregroundColor(.primaryDark)
+                    .background(Color.primaryDark.opacity(0.1))
+                
                 Spacer()
+                
+                // 오늘인 경우 일기 쓰기 유도 버튼
+                if Calendar.current.isDate(date, inSameDayAs: Date()) {
+                    HStack(spacing: 4) {
+                        Text(languageManager.currentLanguage.todayDiaryPrompt)
+                            .font(.buttonFontSmall)
+                            .foregroundColor(.primaryDark)
+                        Image(systemName: "plus")
+                            .font(.buttonFontSmall)
+                            .foregroundColor(.primaryDark)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.primaryBlue.opacity(0.3))
+                    .overlay(
+                        Rectangle()
+                            .stroke(Color.primaryDark.opacity(0.4), lineWidth: 1.8)
+                    )
+                } else {
+                    // 오늘이 아닌 경우 빈 상태 표시
+                    HStack(spacing: 4) {
+                        Text("empty")
+                            .font(.buttonFontSmall)
+                            .foregroundColor(.clear)
+                        Image(systemName: "minus")
+                            .font(.buttonFontSmall)
+                            .foregroundColor(.clear)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.clear)
+                }
             }
             
-            Text(languageManager.currentLanguage.noDiaryMessage)
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
-            
-            // 일기 쓰기 유도 버튼
-            if Calendar.current.isDate(date, inSameDayAs: Date()) {
-                Text(languageManager.currentLanguage.todayDiaryPrompt)
-                    .font(.caption)
-                    .foregroundColor(.blue)
-                    .padding(.top, 4)
+            // 빈 일기 내용 영역 - DiaryPreview의 텍스트 영역과 유사한 스타일
+            ZStack(alignment: .topLeading) {
+                // 배경
+                Rectangle()
+                    .fill(Color.gray.opacity(0.1))
+                    .frame(minHeight: 120)
+                
+                // 줄 노트처럼 선들 추가 (DiaryPreview와 동일)
+                VStack(spacing: 34) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        Rectangle()
+                            .fill(Color.primaryDark.opacity(0.4))
+                            .frame(height: 1)
+                    }
+                }
+                .padding(.top, 38)
+                .padding(.horizontal, 10)
+                
+                // 빈 상태 메시지
+                VStack(spacing: 8) {
+                    Text("📅")
+                        .font(.title2)
+                    
+                    Text(languageManager.currentLanguage.noDiaryMessage)
+                        .font(.handWrite)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(15)
             }
         }
         .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: Color.gray.opacity(0.1), radius: 2, x: 0, y: 1)
+        .background(Color.clear)
+        .overlay(
+            Rectangle()
+                .stroke(Color.gray.opacity(0.4), lineWidth: 1.8)
+        )
+        .padding(.horizontal, 20)
     }
     
     func dateString(from date: Date) -> String {
@@ -378,7 +487,7 @@ struct EmptyDateView: View {
         case "ko_KR":
             formatter.dateFormat = "M월 d일 E요일"
         case "ja_JP":
-            formatter.dateFormat = "M月d日 EEEE"
+            formatter.dateFormat = "M月d일 EEEE"
         default:
             formatter.dateFormat = "MMM d, EEEE"
         }
@@ -390,7 +499,7 @@ struct EmptyDateView: View {
 struct DiaryHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            DiaryHistoryView()
+            DiaryHistoryView(navigationPath: .constant(NavigationPath()))
                 .environmentObject(DataManager.shared)
                 .environmentObject(LanguageManager.shared)
         }

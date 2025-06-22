@@ -237,7 +237,9 @@ struct ContentView: View {
                         navigationPath: $navigationPath
                     )
                 case "diary-history":
-                    DiaryHistoryView()
+                    DiaryHistoryView(
+                                navigationPath: $navigationPath 
+                            )
                 case "profile-settings":
                     ProfileSettingsView()
                         .environmentObject(languageManager)
