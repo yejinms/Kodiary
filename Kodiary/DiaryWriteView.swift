@@ -47,7 +47,7 @@ struct DiaryWriteView: View {
                 ResponsiveDateHeader(dateComponents: todayDateComponents)
             
                 
-                VStack(spacing: 16) {
+                VStack(spacing: 10) {
                     // ContentView와 동일한 원형 날짜 표시
                     ZStack {
                         Rectangle()
@@ -88,6 +88,7 @@ struct DiaryWriteView: View {
                                 .foregroundColor(.gray)
                         }
                         .padding(.horizontal, 20)
+                        .padding(.top, 10)
                     }
                     .padding(.horizontal, 20)
                     
@@ -129,14 +130,16 @@ struct DiaryWriteView: View {
                                 .allowsHitTesting(false)
                         }
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 25)
                     
                     // 첨삭 버튼
-                    Button(languageManager.currentLanguage.analyzeDiaryButton) {
+                    Button(
+                        languageManager.currentLanguage.analyzeDiaryButton) {
                         Task {
                             await analyzeWithAI()
                         }
                     }
+                    .font(.buttonFont)
                     .foregroundColor(.primaryDark)
                     .frame(width: 350, height: 50)
                     .background(diaryText.isEmpty || showingLoading ? Color.primaryDark.opacity(0.2) : Color.primaryBlue)
@@ -146,9 +149,6 @@ struct DiaryWriteView: View {
             
             // 로딩 오버레이
             if showingLoading {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                
                 LoadingView()
             }
         }
@@ -201,6 +201,7 @@ struct DiaryWriteView: View {
     // AI 첨삭 분석 (다국어 지원)
     func analyzeWithAI() async {
         showingLoading = true
+        let startTime = Date()
         
         do {
             print("🤖 AI 첨삭 요청 시작: \(diaryText.prefix(50))...")
@@ -213,6 +214,12 @@ struct DiaryWriteView: View {
                 correctionLanguage: languageManager.correctionLanguageCode,
                 explanationLanguage: languageManager.nativeLanguageCode
             )
+            
+            // 최소 1.5초 대기
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            if elapsedTime < 1.5 {
+                try await Task.sleep(nanoseconds: UInt64((2.0 - elapsedTime) * 1_000_000_000))
+            }
             
             print("✅ AI 첨삭 완료: \(corrections.count)개 수정점")
             

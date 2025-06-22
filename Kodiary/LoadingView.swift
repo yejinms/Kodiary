@@ -8,58 +8,64 @@
 import SwiftUI
 
 struct LoadingView: View {
-    @State private var progress: Double = 0.0
     @EnvironmentObject var languageManager: LanguageManager
+    @State private var rotationAngle: Double = 0
     
     var body: some View {
-        VStack(spacing: 20) {
-            ZStack {
-                Circle()
-                    .stroke(Color.blue.opacity(0.3), lineWidth: 4)
-                    .frame(width: 60, height: 60)
-                
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(Color.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                    .frame(width: 60, height: 60)
-                    .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 0.1), value: progress)
-                
-                Text("🤖")
-                    .font(.title)
-            }
+        ZStack {
+            // 전체 화면 배경
+            Color.background
+                .ignoresSafeArea(.all)
             
-            VStack(spacing: 8) {
-                Text(languageManager.currentLanguage.loadingMessage)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                Text(getSubMessage())
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+            // 중앙 로딩 컨텐츠
+            VStack(spacing: 24) {
+                Spacer()
+                VStack(spacing: 12) {
+                    Text(languageManager.currentLanguage.loadingMessage)
+                        .font(.titleSmall1)
+                        .foregroundColor(.primaryDark)
+                        .multilineTextAlignment(.center)
+                    
+                    Text(languageManager.currentLanguage.loadingSubMessage)
+                        .font(.titleSmall2)
+                        .foregroundColor(.primaryDark)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.bottom, 20)
+                // SwiftUI 로딩 애니메이션
+                ZStack {
+                    Circle()
+                        .stroke(Color.primaryDark.opacity(0.1), lineWidth: 6)
+                        .frame(width: 80, height: 80)
+                    
+                    Circle()
+                        .trim(from: 0, to: 0.7)
+                        .stroke(Color.primaryDark, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                        .frame(width: 80, height: 80)
+                        .rotationEffect(.degrees(rotationAngle))
+                    
+                    Image(systemName: "text.quote")
+                        .foregroundColor(Color.primaryDark)
+                        .font(.largeTitle)
+                }
+                .padding(.bottom, 100)
+                .onAppear {
+                    withAnimation(.linear(duration: 1.4).repeatForever(autoreverses: false)) {
+                        rotationAngle = 360
+                    }
+                }
+                Spacer()
             }
-        }
-        .padding(30)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(radius: 10)
-        .onAppear {
-            withAnimation(.linear(duration: 5)) {
-                progress = 1.0
-            }
+            .padding(40)
         }
     }
-    
-    func getSubMessage() -> String {
-        switch languageManager.nativeLanguage.languageCode {
-        case "ko":
-            return "잠시만 기다려주세요"
-        case "en":
-            return "Please wait a moment"
-        case "ja":
-            return "少々お待ちください"
-        default:
-            return "Please wait"
-        }
+}
+
+
+struct LoadingView_Previews: PreviewProvider {
+    static var previews: some View {
+        LoadingView()
+            .environmentObject(DataManager.shared)
+            .environmentObject(LanguageManager.shared)
     }
 }
