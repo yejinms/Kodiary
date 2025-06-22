@@ -3,16 +3,21 @@ import SwiftUI
 
 // 언어별 텍스트 구조체 확장
 struct LanguageTexts {
-    // 기존 ContentView 텍스트들
+    // 기본 정보
     let flag: String
     let locale: Locale
+    let languageCode: String // "ko", "en", "ja" 등
+    let languageName: String // "한국어", "English", "日本語"
+    
+    // 날짜 관련
     let dateComponents: (year: String, month: String, weekday: String)
     let dayDateFormat: String
+    
+    // ContentView 텍스트들
     let writeButtonText: String
     let writeButtonCompletedText: String
     let historyButtonText: String
     
-    // 새로 추가되는 텍스트들
     // DiaryWriteView
     let diaryWriteTitle: String
     let diaryWritePlaceholder: String
@@ -41,13 +46,22 @@ struct LanguageTexts {
     let diaryDetailTitle: String
     
     // ProfileSettingsView
-        let profileSettingsTitle: String
-        let profileUserName: String
-        let profileInfoTitle: String
-        let notificationSettingsTitle: String
-        let privacySettingsTitle: String
-        let helpTitle: String
-        let appInfoTitle: String
+    let profileSettingsTitle: String
+    let profileUserName: String
+    let profileInfoTitle: String
+    let notificationSettingsTitle: String
+    let privacySettingsTitle: String
+    let helpTitle: String
+    let appInfoTitle: String
+    
+    // LanguageSelectionView (새로 추가)
+    let languageSettingsTitle: String
+    let nativeLanguageTab: String
+    let correctionLanguageTab: String
+    let nativeLanguageDescription: String
+    let correctionLanguageDescription: String
+    let currentNativeLanguage: String
+    let currentCorrectionLanguage: String
     
     // 로딩 및 에러 메시지
     let loadingMessage: String
@@ -69,23 +83,49 @@ struct LanguageTexts {
 class LanguageManager: ObservableObject {
     static let shared = LanguageManager()
     
-    @Published var currentLanguage: LanguageTexts
+    @Published var nativeLanguage: LanguageTexts      // 모국어 (UI 언어)
+    @Published var correctionLanguage: LanguageTexts  // 첨삭 언어
     
-    private init() {
-        self.currentLanguage = Self.korean
+    // UI에서 사용할 현재 언어 (모국어)
+    var currentLanguage: LanguageTexts {
+        return nativeLanguage
     }
     
-    func setLanguage(_ language: LanguageTexts) {
-        currentLanguage = language
+    private init() {
+        self.nativeLanguage = Self.korean
+        self.correctionLanguage = Self.korean
+    }
+    
+    func setNativeLanguage(_ language: LanguageTexts) {
+        nativeLanguage = language
+    }
+    
+    func setCorrectionLanguage(_ language: LanguageTexts) {
+        correctionLanguage = language
+    }
+    
+    // API 호출 시 사용할 언어 코드들
+    var correctionLanguageCode: String {
+        return correctionLanguage.languageCode
+    }
+    
+    var nativeLanguageCode: String {
+        return nativeLanguage.languageCode
     }
     
     // 한국어
     static let korean = LanguageTexts(
-        // 기존 ContentView
+        // 기본 정보
         flag: "🇰🇷",
         locale: Locale(identifier: "ko_KR"),
+        languageCode: "ko",
+        languageName: "한국어",
+        
+        // 날짜 관련
         dateComponents: (year: "yyyy", month: "M월", weekday: "E요일"),
         dayDateFormat: "d",
+        
+        // ContentView
         writeButtonText: "오늘의 일기 쓰기",
         writeButtonCompletedText: "오늘의 일기 (작성완료)",
         historyButtonText: "일기 히스토리",
@@ -118,13 +158,22 @@ class LanguageManager: ObservableObject {
         diaryDetailTitle: "첨삭 결과",
         
         // ProfileSettingsView
-                profileSettingsTitle: "설정",
-                profileUserName: "사용자",
-                profileInfoTitle: "프로필 정보",
-                notificationSettingsTitle: "알림 설정",
-                privacySettingsTitle: "개인정보 보호",
-                helpTitle: "도움말",
-                appInfoTitle: "앱 정보",
+        profileSettingsTitle: "설정",
+        profileUserName: "사용자",
+        profileInfoTitle: "프로필 정보",
+        notificationSettingsTitle: "알림 설정",
+        privacySettingsTitle: "개인정보 보호",
+        helpTitle: "도움말",
+        appInfoTitle: "앱 정보",
+        
+        // LanguageSelectionView
+        languageSettingsTitle: "언어 설정",
+        nativeLanguageTab: "모국어",
+        correctionLanguageTab: "첨삭 언어",
+        nativeLanguageDescription: "앱 화면에 표시되는 언어입니다",
+        correctionLanguageDescription: "일기를 작성하고 첨삭받을 언어입니다",
+        currentNativeLanguage: "현재 모국어",
+        currentCorrectionLanguage: "현재 첨삭 언어",
         
         // 로딩 및 에러
         loadingMessage: "AI가 일기를 첨삭하고 있어요...",
@@ -151,11 +200,17 @@ class LanguageManager: ObservableObject {
     
     // 영어
     static let english = LanguageTexts(
-        // 기존 ContentView
+        // 기본 정보
         flag: "🇺🇸",
         locale: Locale(identifier: "en_US"),
+        languageCode: "en",
+        languageName: "English",
+        
+        // 날짜 관련
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
+        
+        // ContentView
         writeButtonText: "Write Today's Diary",
         writeButtonCompletedText: "Today's Diary (Completed)",
         historyButtonText: "Diary History",
@@ -188,13 +243,22 @@ class LanguageManager: ObservableObject {
         diaryDetailTitle: "Correction Results",
         
         // ProfileSettingsView
-               profileSettingsTitle: "Settings",
-               profileUserName: "User",
-               profileInfoTitle: "Profile Information",
-               notificationSettingsTitle: "Notification Settings",
-               privacySettingsTitle: "Privacy Settings",
-               helpTitle: "Help",
-               appInfoTitle: "App Information",
+        profileSettingsTitle: "Settings",
+        profileUserName: "User",
+        profileInfoTitle: "Profile Information",
+        notificationSettingsTitle: "Notification Settings",
+        privacySettingsTitle: "Privacy Settings",
+        helpTitle: "Help",
+        appInfoTitle: "App Information",
+        
+        // LanguageSelectionView
+        languageSettingsTitle: "Language Settings",
+        nativeLanguageTab: "Native Language",
+        correctionLanguageTab: "Correction Language",
+        nativeLanguageDescription: "Language displayed in the app interface",
+        correctionLanguageDescription: "Language for writing and correcting diaries",
+        currentNativeLanguage: "Current Native Language",
+        currentCorrectionLanguage: "Current Correction Language",
         
         // 로딩 및 에러
         loadingMessage: "AI is correcting your diary...",
@@ -221,11 +285,17 @@ class LanguageManager: ObservableObject {
     
     // 일본어
     static let japanese = LanguageTexts(
-        // 기존 ContentView
+        // 기본 정보
         flag: "🇯🇵",
         locale: Locale(identifier: "ja_JP"),
+        languageCode: "ja",
+        languageName: "日本語",
+        
+        // 날짜 관련
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
         dayDateFormat: "d",
+        
+        // ContentView
         writeButtonText: "今日の日記を書く",
         writeButtonCompletedText: "今日の日記（完了）",
         historyButtonText: "日記履歴",
@@ -258,13 +328,22 @@ class LanguageManager: ObservableObject {
         diaryDetailTitle: "添削結果",
         
         // ProfileSettingsView
-                profileSettingsTitle: "設定",
-                profileUserName: "ユーザー",
-                profileInfoTitle: "プロフィール情報",
-                notificationSettingsTitle: "通知設定",
-                privacySettingsTitle: "プライバシー設定",
-                helpTitle: "ヘルプ",
-                appInfoTitle: "アプリ情報",
+        profileSettingsTitle: "設定",
+        profileUserName: "ユーザー",
+        profileInfoTitle: "プロフィール情報",
+        notificationSettingsTitle: "通知設定",
+        privacySettingsTitle: "プライバシー設定",
+        helpTitle: "ヘルプ",
+        appInfoTitle: "アプリ情報",
+        
+        // LanguageSelectionView
+        languageSettingsTitle: "言語設定",
+        nativeLanguageTab: "母国語",
+        correctionLanguageTab: "添削言語",
+        nativeLanguageDescription: "アプリの画面に表示される言語です",
+        correctionLanguageDescription: "日記を書いて添削を受ける言語です",
+        currentNativeLanguage: "現在の母国語",
+        currentCorrectionLanguage: "現在の添削言語",
         
         // 로딩 및 에러
         loadingMessage: "AIが日記を添削しています...",
@@ -280,7 +359,7 @@ class LanguageManager: ObservableObject {
         
         // 인사말
         greetingWithDiary: { username in
-            (title: "こんにちは、\(username)..",
+            (title: "こんにちは、\(username).",
              subtitle: "素敵な一日を過ごしてね！")
         },
         greetingWithoutDiary: { username in

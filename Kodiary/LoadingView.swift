@@ -30,11 +30,11 @@ struct LoadingView: View {
             }
             
             VStack(spacing: 8) {
-                Text("languageManager.currentLanguage.loadingMessage")
+                Text(languageManager.currentLanguage.loadingMessage)
                     .font(.headline)
                     .fontWeight(.semibold)
                 
-                Text("잠시만 기다려주세요")
+                Text(getSubMessage())
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
@@ -47,6 +47,19 @@ struct LoadingView: View {
             withAnimation(.linear(duration: 5)) {
                 progress = 1.0
             }
+        }
+    }
+    
+    func getSubMessage() -> String {
+        switch languageManager.nativeLanguage.languageCode {
+        case "ko":
+            return "잠시만 기다려주세요"
+        case "en":
+            return "Please wait a moment"
+        case "ja":
+            return "少々お待ちください"
+        default:
+            return "Please wait"
         }
     }
 }

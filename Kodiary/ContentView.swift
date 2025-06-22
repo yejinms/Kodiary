@@ -118,6 +118,9 @@ struct ContentView: View {
         NavigationStack(path: $navigationPath) {
             VStack(spacing: Spacing.md) {
                 
+                Spacer()
+                    .frame(height: 10)
+                
                 // 반응형 날짜 헤더 사용
                 ResponsiveDateHeader(dateComponents: todayDateComponents)
         
@@ -138,7 +141,7 @@ struct ContentView: View {
                             .foregroundColor(.primaryDark)
                         
                     }
-                }
+                }.padding(.top, 18)
                 
                 // 인사말 (다국어 지원)
                 VStack(spacing: Spacing.sm) {
@@ -151,7 +154,7 @@ struct ContentView: View {
                         .padding(.top, 4)
                         .multilineTextAlignment(.center)
                 }
-                .padding(Spacing.md)
+                .padding(Spacing.xl)
                 .cornerRadius(CornerRadius.md)
                 
                 // 일기 쓰기 버튼 (다국어 지원)
@@ -165,7 +168,7 @@ struct ContentView: View {
                         
                         Spacer()
                         Image(systemName: "plus")
-                            .font(.buttonFont)
+                            .font(.buttonFontSmall)
                             .padding(16)
                     }
                     .foregroundColor(.primaryDark)
@@ -182,8 +185,8 @@ struct ContentView: View {
                             .font(.buttonFont)
                             .padding(16)
                         Spacer()
-                        Image(systemName: "plus")
-                            .font(.buttonFont)
+                        Image(systemName: "chevron.forward")
+                            .font(.buttonFontSmall)
                             .padding(16)
                     }
                 }
@@ -194,8 +197,7 @@ struct ContentView: View {
                 
                 Spacer()
             }
-            .padding(Spacing.md)
-            .navigationBarTitleDisplayMode(.large)
+//            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 // 언어 설정 버튼 (좌측 상단)
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -221,7 +223,7 @@ struct ContentView: View {
                             .fill(Color.background)
                             .frame(width: 45, height: 45)
                             .overlay(
-                                Image(systemName: "person")
+                                Image(systemName: "person.fill")
                                     .font(.system(size: 20))
                                     .foregroundColor(.primaryDark)
                             )

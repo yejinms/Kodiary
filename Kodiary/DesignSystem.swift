@@ -75,6 +75,7 @@ extension Font {
     
     // Custom App Fonts (앱 전용)
     static let buttonFont = CustomFont.font(name: CustomFont.chosunNm, size: 17)
+    static let buttonFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 12)
     static let handWrite = CustomFont.font(name: CustomFont.yoonChild, size: 17)
 }
 
