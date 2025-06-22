@@ -69,6 +69,8 @@ struct LanguageTexts {
     // 로딩 및 에러 메시지
     let loadingMessage: String
     let loadingSubMessage: String
+    let savingMessage: String
+    let savingSubMessage: String
     let errorTitle: String
     let confirmButton: String
     let retryButton: String
@@ -198,6 +200,8 @@ class LanguageManager: ObservableObject {
         // 로딩 및 에러
         loadingMessage: "AI가 일기를 첨삭하고 있어요",
         loadingSubMessage: "잠시만 기다려주세요",
+        savingMessage: "오늘도 수고 많았어요.",
+        savingSubMessage: "멋진 일기를 보여줘서 고마워요!",
         errorTitle: "첨삭 오류",
         confirmButton: "확인",
         retryButton: "다시 시도",
@@ -291,6 +295,8 @@ class LanguageManager: ObservableObject {
         // 로딩 및 에러
         loadingMessage: "AI is correcting your diary",
         loadingSubMessage: "Please wait a moment",
+        savingMessage: "Great work today!",
+        savingSubMessage: "Thanks for sharing your wonderful diary!",
         errorTitle: "Correction Error",
         confirmButton: "OK",
         retryButton: "Retry",
@@ -384,6 +390,8 @@ class LanguageManager: ObservableObject {
         // 로딩 및 에러
         loadingMessage: "AIが日記を添削しています",
         loadingSubMessage: "少々お待ちください",
+        savingMessage: "今日もお疲れ様でした。",
+        savingSubMessage: "素敵な日記を見せてくれてありがとう！",
         errorTitle: "添削エラー",
         confirmButton: "確認",
         retryButton: "再試行",

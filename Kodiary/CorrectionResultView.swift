@@ -8,7 +8,7 @@ struct CorrectionResultView: View {
     @EnvironmentObject var dataManager: DataManager
     
     @State private var expandedItems: Set<Int> = []
-    @State private var isSaving = false
+    @State private var showSaveLoading = false
     
     // DiaryWriteView와 동일한 날짜 관련 computed properties
     var todayDateComponents: (year: String, month: String, weekday: String) {
@@ -38,111 +38,121 @@ struct CorrectionResultView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                Spacer()
-                    .frame(height: 16)
-                
-                // DiaryWriteView와 동일한 날짜 헤더
-                ResponsiveDateHeader(dateComponents: todayDateComponents)
-                
+        ZStack {
+            // 메인 컨텐츠
+            ScrollView {
                 VStack(spacing: 16) {
-                    // DiaryWriteView와 동일한 원형 날짜 표시
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(.clear)
-                            .frame(width: 265.5, height: 265.5)
-                            .cornerRadius(265.5)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 265.5)
-                                    .inset(by: 0.9)
-                                    .stroke(Color.primaryDark, lineWidth: 1.8)
-                            )
-                        
-                        VStack(spacing: Spacing.sm) {
-                            Text(todayDayString)
-                                .font(.titleHuge)
-                                .foregroundColor(.primaryDark)
-                        }
-                    }
-                    .padding(.top, 10)
+                    Spacer()
+                        .frame(height: 16)
                     
-                    // 첨삭 완료 상태 표시
-                    HStack {
-                        HStack{
-                            Image(systemName: "checkmark")
-                                .font(.buttonFontSmall)
-                                .foregroundColor(.primaryDark)
-                            Text("첨삭 완료")
-                                .font(.buttonFontSmall)
-                                .foregroundColor(.primaryDark)
+                    // DiaryWriteView와 동일한 날짜 헤더
+                    ResponsiveDateHeader(dateComponents: todayDateComponents)
+                    
+                    VStack(spacing: 16) {
+                        // DiaryWriteView와 동일한 원형 날짜 표시
+                        ZStack {
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(width: 265.5, height: 265.5)
+                                .cornerRadius(265.5)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 265.5)
+                                        .inset(by: 0.9)
+                                        .stroke(Color.primaryDark, lineWidth: 1.8)
+                                )
+                            
+                            VStack(spacing: Spacing.sm) {
+                                Text(todayDayString)
+                                    .font(.titleHuge)
+                                    .foregroundColor(.primaryDark)
+                            }
                         }
-                        .padding(5)
-                        .background(Color.primaryYellow.opacity(0.3))
-                        Spacer()
-                        // 첨삭 개수 표시
+                        .padding(.top, 10)
+                        
+                        // 첨삭 완료 상태 표시
                         HStack {
-                            Text(languageManager.currentLanguage.correctionCompleteSubtitle(corrections.count))
-                                .font(.buttonFontSmall)
-                                .foregroundColor(.gray)
+                            HStack{
+                                Image(systemName: "checkmark")
+                                    .font(.buttonFontSmall)
+                                    .foregroundColor(.primaryDark)
+                                Text("첨삭 완료")
+                                    .font(.buttonFontSmall)
+                                    .foregroundColor(.primaryDark)
+                            }
+                            .padding(5)
+                            .background(Color.primaryYellow.opacity(0.3))
+                            Spacer()
+                            // 첨삭 개수 표시
+                            HStack {
+                                Text(languageManager.currentLanguage.correctionCompleteSubtitle(corrections.count))
+                                    .font(.buttonFontSmall)
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
                         }
                         .padding(.horizontal, 20)
-                        .padding(.top, 10)
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    // 작성된 텍스트 영역 (하이라이트 포함)
-                    ZStack(alignment: .topLeading) {
-                        // 배경
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.1))
-                            .frame(minHeight: 180)
                         
-                        // 줄 노트처럼 선들 추가
-                        VStack(spacing: 34) {
-                            ForEach(0..<6, id: \.self) { _ in
-                                Rectangle()
-                                    .fill(Color.primaryDark.opacity(0.4))
-                                    .frame(height: 1)
-                            }
-                        }
-                        .padding(.top, 38)
-                        .padding(.horizontal, 10)
-                        
-                        // 하이라이트된 텍스트
-                        ScrollView {
-                            HighlightedText(
-                                originalText: originalText,
-                                corrections: corrections
-                            )
-                            .font(.handWrite)
-                            .lineSpacing(10)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(15)
-                        }
-                        .frame(minHeight: 230)
-                        .background(Color.clear)
-                        .scrollContentBackground(.hidden)
-                    }
-                    .padding(.horizontal, 25)
-                    
-                    // 첨삭 결과 섹션
-                    VStack(spacing: 16) {
-                        // 첨삭 목록
-                        VStack(spacing: 10) {
-                            ForEach(corrections.indices, id: \.self) { index in
-                                CorrectionRow(
-                                    correction: corrections[index],
-                                    index: index,
-                                    isExpanded: expandedItems.contains(index)
-                                ) {
-                                    toggleExpansion(for: index)
+                        // 작성된 텍스트 영역 (하이라이트 포함)
+                        ZStack(alignment: .topLeading) {
+                            // 배경
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.1))
+                                .frame(minHeight: 180)
+                            
+                            // 줄 노트처럼 선들 추가
+                            VStack(spacing: 34) {
+                                ForEach(0..<6, id: \.self) { _ in
+                                    Rectangle()
+                                        .fill(Color.primaryDark.opacity(0.4))
+                                        .frame(height: 1)
                                 }
                             }
+                            .padding(.top, 38)
+                            .padding(.horizontal, 10)
+                            
+                            // 하이라이트된 텍스트
+                            ScrollView {
+                                HighlightedText(
+                                    originalText: originalText,
+                                    corrections: corrections
+                                )
+                                .font(.handWrite)
+                                .lineSpacing(10)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(15)
+                            }
+                            .frame(minHeight: 230)
+                            .background(Color.clear)
+                            .scrollContentBackground(.hidden)
                         }
                         .padding(.horizontal, 25)
+                        
+                        // 첨삭 결과 섹션
+                        VStack(spacing: 16) {
+                            // 첨삭 목록
+                            VStack(spacing: 10) {
+                                ForEach(corrections.indices, id: \.self) { index in
+                                    CorrectionRow(
+                                        correction: corrections[index],
+                                        index: index,
+                                        isExpanded: expandedItems.contains(index)
+                                    ) {
+                                        toggleExpansion(for: index)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 25)
+                        }
                     }
                 }
+            }
+            
+            // 저장 로딩 화면 오버레이
+            if showSaveLoading {
+                SaveLoadingView()
+                    .transition(.opacity)
+                    .zIndex(1)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -151,17 +161,11 @@ struct CorrectionResultView: View {
                 Button(action: {
                     saveDiary()
                 }) {
-                    if isSaving {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .primaryDark))
-                            .scaleEffect(0.8)
-                    } else {
-                        Text(languageManager.currentLanguage.saveButton)
-                            .font(.buttonFont)
-                            .foregroundColor(.primaryDark)
-                    }
+                    Text(languageManager.currentLanguage.saveButton)
+                        .font(.buttonFont)
+                        .foregroundColor(.primaryDark)
                 }
-                .disabled(isSaving)
+                .disabled(showSaveLoading)
             }
         }
     }
@@ -175,21 +179,25 @@ struct CorrectionResultView: View {
     }
     
     func saveDiary() {
-        isSaving = true
-        
         print("일기 저장 시작...")
+        
+        // 저장 로딩 화면 표시
+        withAnimation(.easeInOut(duration: 0.3)) {
+            showSaveLoading = true
+        }
         
         // DataManager를 통해 실제 저장
         dataManager.saveDiary(text: originalText, corrections: corrections)
         
-        // 저장 애니메이션을 위한 딜레이
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        // 2초 후 홈 화면으로 이동
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             print("일기 저장 완료!")
             
             // 홈 화면으로 돌아가기
             navigationPath = NavigationPath()
             
-            isSaving = false
+            // 저장 로딩 화면 숨기기
+            showSaveLoading = false
         }
     }
 }
