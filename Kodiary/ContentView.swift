@@ -238,7 +238,7 @@ struct ContentView: View {
                     )
                 case "diary-history":
                     DiaryHistoryView(
-                                navigationPath: $navigationPath 
+                                navigationPath: $navigationPath
                             )
                 case "profile-settings":
                     ProfileSettingsView()

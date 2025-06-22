@@ -11,12 +11,39 @@ struct DiaryDetailView: View {
     @State var diary: DiaryEntry
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var dataManager: DataManager
-    @EnvironmentObject var languageManager: LanguageManager  // 추가
+    @EnvironmentObject var languageManager: LanguageManager
     
     @State private var expandedItems: Set<Int> = []
     
     var corrections: [CorrectionItem] {
         dataManager.getCorrections(for: diary)
+    }
+    
+    // 날짜 관련 computed properties - CorrectionResultView와 동일
+    var dateComponents: (year: String, month: String, weekday: String) {
+        let targetDate = diary.date ?? Date()
+        let components = languageManager.currentLanguage.dateComponents
+        let formatter = DateFormatter()
+        formatter.locale = languageManager.currentLanguage.locale
+        
+        formatter.dateFormat = components.year
+        let year = formatter.string(from: targetDate)
+        
+        formatter.dateFormat = components.month
+        let month = formatter.string(from: targetDate)
+        
+        formatter.dateFormat = components.weekday
+        let weekday = formatter.string(from: targetDate)
+        
+        return (year, month, weekday)
+    }
+    
+    var dayString: String {
+        let targetDate = diary.date ?? Date()
+        let formatter = DateFormatter()
+        formatter.locale = languageManager.currentLanguage.locale
+        formatter.dateFormat = languageManager.currentLanguage.dayDateFormat
+        return formatter.string(from: targetDate)
     }
     
     // 이전/다음 일기 찾기
@@ -40,113 +67,211 @@ struct DiaryDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
-                // 날짜 헤더 (이전/다음 버튼 포함)
-                VStack(spacing: 10) {
-                    HStack {
-                        // 이전 일기 버튼
-                        Button(action: {
-                            if let prev = previousDiary {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    diary = prev
-                                    expandedItems.removeAll()
-                                }
-                            }
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(.title2)
-                                .foregroundColor(previousDiary != nil ? .blue : .gray)
+            VStack(spacing: 16) {
+                Spacer()
+                    .frame(height: 16)
+                
+                // CorrectionResultView와 동일한 날짜 헤더 + 좌우 쉐브론 버튼
+                ZStack {
+                    // ResponsiveDateHeader와 동일한 구조
+                    ZStack {
+                        Rectangle()
+                            .frame(height: 70)
+                            .foregroundColor(.clear)
+                            .overlay(
+                               VStack(spacing: 0) {
+                                   Rectangle()
+                                       .fill(Color.primaryDark.opacity(0.2))
+                                       .frame(height: 1.8)
+                                   
+                                   Spacer()
+                                   
+                                   Rectangle()
+                                       .fill(Color.primaryDark.opacity(0.2))
+                                       .frame(height: 1.8)
+                               }
+                               .padding(.horizontal, 0.9)
+                            )
+                        
+                        HStack(spacing: 0) {
+                            // 연도
+                            Text(dateComponents.year)
+                                .font(.titleLarge)
+                                .foregroundColor(.primaryDark)
+                                .frame(maxWidth: .infinity)
+                                .multilineTextAlignment(.center)
+                            
+                            // 월
+                            Text(dateComponents.month)
+                                .font(.titleLarge)
+                                .foregroundColor(.primaryDark)
+                                .frame(maxWidth: .infinity)
+                                .multilineTextAlignment(.center)
+                            
+                            // 요일
+                            Text(dateComponents.weekday)
+                                .font(.titleLarge)
+                                .foregroundColor(.primaryDark)
+                                .frame(maxWidth: .infinity)
+                                .multilineTextAlignment(.center)
                         }
-                        .disabled(previousDiary == nil)
-                        
-                        Spacer()
-                        
-                        // 현재 일기 날짜
-                        VStack(spacing: 4) {
-                            Text(dateString(from: diary.date ?? Date()))
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            Text(timeString(from: diary.createdAt ?? Date()))
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                        
-                        Spacer()
-                        
-                        // 다음 일기 버튼
-                        Button(action: {
-                            if let next = nextDiary {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    diary = next
-                                    expandedItems.removeAll()
-                                }
-                            }
-                        }) {
-                            Image(systemName: "chevron.right")
-                                .font(.title2)
-                                .foregroundColor(nextDiary != nil ? .blue : .gray)
-                        }
-                        .disabled(nextDiary == nil)
+                        .padding(.horizontal, 20)
                     }
-                    .padding()
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(12)
+                    .frame(height: 70)
                 }
                 
-                // 원본 일기 표시
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(languageManager.currentLanguage.writtenDiaryTitle)
-                        .font(.headline)
-                        .fontWeight(.bold)
+                VStack(spacing: 16) {
+                    // CorrectionResultView와 동일한 원형 날짜 표시
+                    ZStack {
+                        // 좌우 쉐브론 버튼 오버레이
+                        HStack {
+                            // 이전 일기 버튼
+                            Button(action: {
+                                if let prev = previousDiary {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        diary = prev
+                                        expandedItems.removeAll()
+                                    }
+                                }
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .font(.title2)
+                                    .foregroundColor(previousDiary != nil ? .primaryDark : .gray.opacity(0.3))
+                                    .padding(.leading, 10)
+                            }
+                            .disabled(previousDiary == nil)
+                            
+                            Spacer()
+                            
+                            // 다음 일기 버튼
+                            Button(action: {
+                                if let next = nextDiary {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        diary = next
+                                        expandedItems.removeAll()
+                                    }
+                                }
+                            }) {
+                                Image(systemName: "chevron.right")
+                                    .font(.title2)
+                                    .foregroundColor(nextDiary != nil ? .primaryDark : .gray.opacity(0.3))
+                                    .padding(.trailing, 10)
+                            }
+                            .disabled(nextDiary == nil)
+                        }
+                        
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(width: 265.5, height: 265.5)
+                            .cornerRadius(265.5)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 265.5)
+                                    .inset(by: 0.9)
+                                    .stroke(Color.primaryDark, lineWidth: 1.8)
+                            )
+                        
+                        VStack(spacing: Spacing.sm) {
+                            Text(dayString)
+                                .font(.titleHuge)
+                                .foregroundColor(.primaryDark)
+                        }
+                    }
+                    .padding(.top, 10)
                     
-                    // 하이라이트된 텍스트 표시
-                    HighlightedText(
-                        originalText: diary.originalText ?? "내용 없음",
-                        corrections: corrections
-                    )
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-                }
-                
-                // 첨삭 완료 헤더
-                VStack(spacing: 10) {
+                    // 첨삭 완료 상태 표시 (CorrectionResultView와 동일)
                     HStack {
-                        Text("🎉")
-                            .font(.largeTitle)
-                        VStack(alignment: .leading) {
-                            Text(languageManager.currentLanguage.correctionCompleteTitle)
-                                .font(.title2)
-                                .fontWeight(.bold)
+                        HStack{
+                            Image(systemName: "checkmark")
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.primaryDark)
+                            Text("첨삭 완료")
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.primaryDark)
+                        }
+                        .padding(5)
+                        .background(Color.primaryYellow.opacity(0.3))
+                        Spacer()
+                        // 첨삭 개수 표시
+                        HStack {
                             Text(languageManager.currentLanguage.correctionCompleteSubtitle(corrections.count))
-                                .font(.subheadline)
+                                .font(.buttonFontSmall)
                                 .foregroundColor(.gray)
                         }
-                        Spacer()
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
                     }
-                    .padding()
-                    .background(Color.green.opacity(0.1))
-                    .cornerRadius(10)
-                }
-                
-                // 첨삭 목록
-                VStack(spacing: 10) {
-                    ForEach(corrections.indices, id: \.self) { index in
-                        CorrectionRow(
-                            correction: corrections[index],
-                            index: index,
-                            isExpanded: expandedItems.contains(index)
-                        ) {
-                            toggleExpansion(for: index)
+                    .padding(.horizontal, 20)
+                    
+                    // 작성된 텍스트 영역 (CorrectionResultView와 동일)
+                    ZStack(alignment: .topLeading) {
+                        // 배경
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.1))
+                            .frame(minHeight: 180)
+                        
+                        // 줄 노트처럼 선들 추가
+                        VStack(spacing: 34) {
+                            ForEach(0..<6, id: \.self) { _ in
+                                Rectangle()
+                                    .fill(Color.primaryDark.opacity(0.4))
+                                    .frame(height: 1)
+                            }
                         }
+                        .padding(.top, 38)
+                        .padding(.horizontal, 10)
+                        
+                        // 하이라이트된 텍스트
+                        ScrollView {
+                            HighlightedText(
+                                originalText: diary.originalText ?? "내용 없음",
+                                corrections: corrections
+                            )
+                            .font(.handWrite)
+                            .lineSpacing(10)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(15)
+                        }
+                        .frame(minHeight: 230)
+                        .background(Color.clear)
+                        .scrollContentBackground(.hidden)
+                    }
+                    .padding(.horizontal, 25)
+                    
+                    // 첨삭 결과 섹션 (CorrectionResultView와 동일)
+                    VStack(spacing: 16) {
+                        // 첨삭 목록
+                        VStack(spacing: 10) {
+                            ForEach(corrections.indices, id: \.self) { index in
+                                CorrectionRow(
+                                    correction: corrections[index],
+                                    index: index,
+                                    isExpanded: expandedItems.contains(index)
+                                ) {
+                                    toggleExpansion(for: index)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 25)
                     }
                 }
             }
-            .padding()
         }
-        .navigationTitle(languageManager.currentLanguage.diaryDetailTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)  // 기본 백버튼 숨기기
+        .toolbar {
+            // 커스텀 백버튼 (좌측)
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .medium))
+                    }
+                    .foregroundColor(.primaryDark.opacity(0.5))
+                }
+            }
+        }
         .onAppear {
             dataManager.fetchDiaries()
         }

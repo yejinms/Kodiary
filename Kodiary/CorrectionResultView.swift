@@ -285,6 +285,7 @@ struct HighlightedText: View {
     
     var body: some View {
         Text(attributedString)
+            .font(.handWrite) // 전체 텍스트에 handWrite 폰트 적용
             .lineSpacing(10)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
@@ -305,8 +306,6 @@ struct HighlightedText: View {
                 // 빨간 배경색 (형광펜 효과) 적용
                 result[range].backgroundColor = Color.red.opacity(0.2)
                 
-                // 볼드체 적용 (더 눈에 띄게)
-                result[range].font = .system(size: 16, weight: .semibold)
             }
         }
         
