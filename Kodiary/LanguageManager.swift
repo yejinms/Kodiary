@@ -9,6 +9,9 @@ struct LanguageTexts {
     let languageCode: String // "ko", "en", "ja" 등
     let languageName: String // "한국어", "English", "日本語"
     
+    // 언어 번역 맵 (언어 코드 -> 해당 언어명)
+    let languageNameTranslations: [String: String]
+    
     // 날짜 관련
     let dateComponents: (year: String, month: String, weekday: String)
     let dayDateFormat: String
@@ -121,6 +124,13 @@ class LanguageManager: ObservableObject {
         languageCode: "ko",
         languageName: "한국어",
         
+        // 언어 번역 맵
+        languageNameTranslations: [
+            "ko": "한국어",
+            "en": "영어",
+            "ja": "일본어"
+        ],
+        
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M월", weekday: "E요일"),
         dayDateFormat: "d",
@@ -133,7 +143,7 @@ class LanguageManager: ObservableObject {
         // DiaryWriteView
         diaryWriteTitle: "오늘의 일기",
         diaryWritePlaceholder: "오늘 있었던 일을 자유롭게 써보세요...",
-        analyzeDiaryButton: "첨삭받기",
+        analyzeDiaryButton: "첨삭 받기",
         characterCount: { current, max in "\(current)/\(max)" },
         
         // DiaryHistoryView
@@ -205,6 +215,13 @@ class LanguageManager: ObservableObject {
         locale: Locale(identifier: "en_US"),
         languageCode: "en",
         languageName: "English",
+        
+        // 언어 번역 맵
+        languageNameTranslations: [
+            "ko": "Korean",
+            "en": "English",
+            "ja": "Japanese"
+        ],
         
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
@@ -290,6 +307,13 @@ class LanguageManager: ObservableObject {
         locale: Locale(identifier: "ja_JP"),
         languageCode: "ja",
         languageName: "日本語",
+        
+        // 언어 번역 맵
+        languageNameTranslations: [
+            "ko": "韓国語",
+            "en": "英語",
+            "ja": "日本語"
+        ],
         
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
