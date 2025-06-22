@@ -182,7 +182,7 @@ struct CorrectionResultView: View {
         print("일기 저장 시작...")
         
         // 저장 로딩 화면 표시
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(.easeInOut(duration: 1.0)) {
             showSaveLoading = true
         }
         

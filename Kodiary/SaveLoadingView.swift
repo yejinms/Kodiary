@@ -70,11 +70,10 @@ struct SaveLoadingView: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 20)
-                .padding(.bottom, 100)
+                .padding(.bottom, 80)
                 
                 Spacer()
             }
-            .padding(40)
         }
     }
 }
