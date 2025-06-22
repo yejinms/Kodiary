@@ -209,7 +209,7 @@ struct ContentView: View {
                             .frame(width: 45, height: 45)
                             .overlay(
                                 Text(languageManager.currentCorrectionLanguage.flag)
-                                    .font(.system(size: 45))
+                                    .font(.system(size: 35))
                             )
                     }
                 }

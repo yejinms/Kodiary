@@ -133,16 +133,19 @@ struct DiaryWriteView: View {
                     .padding(.horizontal, 25)
                     
                     // 첨삭 버튼
-                    Button(
-                        languageManager.currentLanguage.analyzeDiaryButton) {
+                    Button(action: {
                         Task {
                             await analyzeWithAI()
                         }
+                    }) {
+                        Text(languageManager.currentLanguage.analyzeDiaryButton)
+                            .font(.buttonFont)
+                            .foregroundColor(.primaryDark)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    .font(.buttonFont)
-                    .foregroundColor(.primaryDark)
                     .frame(width: 350, height: 50)
                     .background(diaryText.isEmpty || showingLoading ? Color.primaryDark.opacity(0.2) : Color.primaryBlue)
+                    .disabled(diaryText.isEmpty || showingLoading)
                     Spacer()
                 }
             }

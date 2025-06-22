@@ -71,7 +71,9 @@ extension Font {
     static let titleSmall2 = CustomFont.font(name: CustomFont.chosunSm, size: 22)
     
     // Body Fonts (본문용)
+    static let bodyFontTitle = CustomFont.font(name: CustomFont.chosunKm, size: 17)
     static let bodyFont = CustomFont.font(name: CustomFont.chosunNm, size: 17)
+    static let bodyFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 15)
     
     // Custom App Fonts (앱 전용)
     static let buttonFont = CustomFont.font(name: CustomFont.chosunNm, size: 17)

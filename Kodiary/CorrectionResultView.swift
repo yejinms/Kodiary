@@ -156,8 +156,8 @@ struct CorrectionResultView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .primaryDark))
                             .scaleEffect(0.8)
                     } else {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.title3)
+                        Text(languageManager.currentLanguage.saveButton)
+                            .font(.buttonFont)
                             .foregroundColor(.primaryDark)
                     }
                 }

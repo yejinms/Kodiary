@@ -11,9 +11,8 @@ struct LanguageSelectionView: View {
                 // 커스텀 탭 헤더
                 VStack(spacing: 12) {
                     Text(languageManager.currentLanguage.languageSettingsTitle)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .padding(.top, 20)
+                        .font(.titleLarge)
+                        .padding(.vertical, 20)
                     
                     // 탭 선택기
                     HStack(spacing: 0) {
@@ -53,6 +52,8 @@ struct LanguageSelectionView: View {
                     Button(languageManager.currentLanguage.confirmButton) {
                         dismiss()
                     }
+                    .font(.buttonFont)
+                    .foregroundColor(.primaryDark)
                 }
             }
         }
@@ -69,13 +70,13 @@ struct TabButton: View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Text(title)
-                    .font(.subheadline)
-                    .fontWeight(isSelected ? .semibold : .regular)
-                    .foregroundColor(isSelected ? .blue : .gray)
+                    .font(.bodyFontTitle)
+                    .foregroundColor(isSelected ? .primaryDark : .primaryDark.opacity(0.2))
                 
                 Rectangle()
-                    .fill(isSelected ? Color.blue : Color.clear)
+                    .fill(isSelected ? Color.primaryDark : Color.clear)
                     .frame(height: 2)
+                    .padding(.top, 4)
             }
         }
         .frame(maxWidth: .infinity)
@@ -92,7 +93,7 @@ struct NativeLanguageTab: View {
                 // 설명
                 VStack(spacing: 8) {
                     Text(languageManager.currentLanguage.nativeLanguageDescription)
-                        .font(.subheadline)
+                        .font(.buttonFontSmall)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
@@ -128,7 +129,7 @@ struct CorrectionLanguageTab: View {
                 // 설명
                 VStack(spacing: 8) {
                     Text(languageManager.currentLanguage.correctionLanguageDescription)
-                        .font(.subheadline)
+                        .font(.buttonFontSmall)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
@@ -171,20 +172,19 @@ struct LanguageCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     // 언어 이름
                     Text(language.languageName)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
+                        .font(.bodyFont)
+                        .foregroundColor(Color.primaryDark)
                     
                     // 예시 텍스트 (모국어 설정에서만 표시)
                     if showSampleText {
                         Text(sampleText)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
+                            .font(.bodyFontSmall)
+                            .foregroundColor(Color.primaryDark.opacity(0.5))
                             .lineLimit(1)
                     } else {
                         Text(correctionSampleText)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
+                            .font(.bodyFontSmall)
+                            .foregroundColor(Color.primaryDark.opacity(0.7))
                             .lineLimit(1)
                     }
                 }
@@ -194,16 +194,15 @@ struct LanguageCard: View {
                 // 선택 표시
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.primaryDark)
                         .font(.title2)
                 }
             }
             .padding(16)
-            .background(isSelected ? Color.blue.opacity(0.1) : Color.gray.opacity(0.05))
-            .cornerRadius(12)
+            .background(isSelected ? Color.primaryYellow.opacity(0.1) : Color.gray.opacity(0.05))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+                Rectangle()
+                    .stroke(isSelected ? Color.primaryDark : Color.clear, lineWidth: 2)
             )
         }
         .buttonStyle(PlainButtonStyle())
