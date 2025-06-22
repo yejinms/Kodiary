@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoadingView: View {
     @State private var progress: Double = 0.0
+    @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
         VStack(spacing: 20) {
@@ -29,7 +30,7 @@ struct LoadingView: View {
             }
             
             VStack(spacing: 8) {
-                Text("AI 첨삭 중...")
+                Text("languageManager.currentLanguage.loadingMessage")
                     .font(.headline)
                     .fontWeight(.semibold)
                 

@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct DiaryDetailView: View {
-    @State var diary: DiaryEntry  // let에서 @State var로 변경
+    @State var diary: DiaryEntry
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var languageManager: LanguageManager  // 추가
     
     @State private var expandedItems: Set<Int> = []
     
@@ -48,7 +49,7 @@ struct DiaryDetailView: View {
                             if let prev = previousDiary {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     diary = prev
-                                    expandedItems.removeAll() // 펼쳐진 항목 초기화
+                                    expandedItems.removeAll()
                                 }
                             }
                         }) {
@@ -77,7 +78,7 @@ struct DiaryDetailView: View {
                             if let next = nextDiary {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     diary = next
-                                    expandedItems.removeAll() // 펼쳐진 항목 초기화
+                                    expandedItems.removeAll()
                                 }
                             }
                         }) {
@@ -94,7 +95,7 @@ struct DiaryDetailView: View {
                 
                 // 원본 일기 표시
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("작성한 일기")
+                    Text(languageManager.currentLanguage.writtenDiaryTitle)
                         .font(.headline)
                         .fontWeight(.bold)
                     
@@ -115,10 +116,10 @@ struct DiaryDetailView: View {
                         Text("🎉")
                             .font(.largeTitle)
                         VStack(alignment: .leading) {
-                            Text("첨삭 완료!")
+                            Text(languageManager.currentLanguage.correctionCompleteTitle)
                                 .font(.title2)
                                 .fontWeight(.bold)
-                            Text("총 \(corrections.count)개의 수정점을 찾았어요")
+                            Text(languageManager.currentLanguage.correctionCompleteSubtitle(corrections.count))
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
@@ -144,10 +145,9 @@ struct DiaryDetailView: View {
             }
             .padding()
         }
-        .navigationTitle("첨삭 결과")
+        .navigationTitle(languageManager.currentLanguage.diaryDetailTitle)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // 최신 데이터 보장을 위한 새로고침
             dataManager.fetchDiaries()
         }
     }
@@ -164,56 +164,30 @@ struct DiaryDetailView: View {
     
     func dateString(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년 M월 d일 E요일"
+        formatter.locale = languageManager.currentLanguage.locale
+        
+        switch languageManager.currentLanguage.locale.identifier {
+        case "ko_KR":
+            formatter.dateFormat = "yyyy년 M월 d일 E요일"
+        case "ja_JP":
+            formatter.dateFormat = "yyyy年M月d日 EEEE"
+        default:
+            formatter.dateFormat = "MMMM d, yyyy EEEE"
+        }
+        
         return formatter.string(from: date)
     }
     
     func timeString(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.locale = languageManager.currentLanguage.locale
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: date)
     }
 }
 
-// 하이라이트된 텍스트 컴포넌트
-struct HighlightedText: View {
-    let originalText: String
-    let corrections: [CorrectionItem]
-    
-    var body: some View {
-        Text(attributedString)
-            .lineSpacing(4)
-    }
-    
-    private var attributedString: AttributedString {
-        var result = AttributedString(originalText)
-        
-        // 모든 correction의 original 텍스트를 찾아서 하이라이트
-        for correction in corrections {
-            let searchText = correction.original
-            
-            // 대소문자 구분 없이 검색
-            if let range = result.range(of: searchText, options: [.caseInsensitive]) {
-                // 빨간 글씨색 적용
-                result[range].foregroundColor = .red
-                
-                // 빨간 배경색 (형광펜 효과) 적용
-                result[range].backgroundColor = Color.red.opacity(0.2)
-                
-                // 볼드체 적용 (더 눈에 띄게)
-                result[range].font = .system(size: 16, weight: .semibold)
-            }
-        }
-        
-        return result
-    }
-}
-
 struct DiaryDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        // 프리뷰용 더미 데이터
         let dummyDiary = DiaryEntry()
         dummyDiary.id = UUID()
         dummyDiary.date = Date()
@@ -226,6 +200,7 @@ struct DiaryDetailView_Previews: PreviewProvider {
         return NavigationView {
             DiaryDetailView(diary: dummyDiary)
                 .environmentObject(DataManager.shared)
+                .environmentObject(LanguageManager.shared)
         }
     }
 }

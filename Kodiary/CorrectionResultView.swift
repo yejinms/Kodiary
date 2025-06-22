@@ -4,6 +4,7 @@ struct CorrectionResultView: View {
     let originalText: String
     let corrections: [CorrectionItem]
     @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var languageManager: LanguageManager  // 추가
     
     @State private var expandedItems: Set<Int> = []
     @State private var isSaving = false
@@ -13,7 +14,7 @@ struct CorrectionResultView: View {
             VStack(spacing: 20) {
                 // 원본 일기 표시 (하이라이트 적용)
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("작성한 일기")
+                    Text(languageManager.currentLanguage.writtenDiaryTitle)
                         .font(.headline)
                         .fontWeight(.bold)
                     
@@ -34,10 +35,10 @@ struct CorrectionResultView: View {
                         Text("🎉")
                             .font(.largeTitle)
                         VStack(alignment: .leading) {
-                            Text("첨삭 완료!")
+                            Text(languageManager.currentLanguage.correctionCompleteTitle)
                                 .font(.title2)
                                 .fontWeight(.bold)
-                            Text("총 \(corrections.count)개의 수정점을 찾았어요")
+                            Text(languageManager.currentLanguage.correctionCompleteSubtitle(corrections.count))
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
@@ -63,11 +64,11 @@ struct CorrectionResultView: View {
             }
             .padding()
         }
-        .navigationTitle("첨삭 결과")
+        .navigationTitle(languageManager.currentLanguage.correctionResultTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("저장") {
+                Button(languageManager.currentLanguage.saveButton) {
                     saveDiary()
                 }
                 .fontWeight(.semibold)
@@ -106,12 +107,13 @@ struct CorrectionResultView: View {
     }
 }
 
-// 나머지 CorrectionRow 코드는 동일...
+// 첨삭 항목 행 - 다국어 지원
 struct CorrectionRow: View {
     let correction: CorrectionItem
     let index: Int
     let isExpanded: Bool
     let onTap: () -> Void
+    @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
         VStack(spacing: 0) {
@@ -153,7 +155,7 @@ struct CorrectionRow: View {
                     
                     // 원본
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("원래 표현")
+                        Text(languageManager.currentLanguage.originalExpressionTitle)
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.red)
@@ -174,7 +176,7 @@ struct CorrectionRow: View {
                     
                     // 수정안
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("수정 제안")
+                        Text(languageManager.currentLanguage.correctionSuggestionTitle)
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.green)
@@ -187,7 +189,7 @@ struct CorrectionRow: View {
                     
                     // 설명
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("설명")
+                        Text(languageManager.currentLanguage.explanationTitle)
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.blue)
@@ -210,14 +212,48 @@ struct CorrectionRow: View {
     // 수정 타입별 색상
     var typeColor: Color {
         switch correction.type {
-        case "문법":
+        case "문법", "Grammar", "文法":
             return .orange
-        case "맞춤법":
+        case "맞춤법", "Spelling", "スペル":
             return .red
-        case "표현":
+        case "표현", "Expression", "表現":
             return .purple
         default:
             return .gray
         }
+    }
+}
+
+// 하이라이트된 텍스트 컴포넌트 (변경 없음)
+struct HighlightedText: View {
+    let originalText: String
+    let corrections: [CorrectionItem]
+    
+    var body: some View {
+        Text(attributedString)
+            .lineSpacing(4)
+    }
+    
+    private var attributedString: AttributedString {
+        var result = AttributedString(originalText)
+        
+        // 모든 correction의 original 텍스트를 찾아서 하이라이트
+        for correction in corrections {
+            let searchText = correction.original
+            
+            // 대소문자 구분 없이 검색
+            if let range = result.range(of: searchText, options: [.caseInsensitive]) {
+                // 빨간 글씨색 적용
+                result[range].foregroundColor = .red
+                
+                // 빨간 배경색 (형광펜 효과) 적용
+                result[range].backgroundColor = Color.red.opacity(0.2)
+                
+                // 볼드체 적용 (더 눈에 띄게)
+                result[range].font = .system(size: 16, weight: .semibold)
+            }
+        }
+        
+        return result
     }
 }

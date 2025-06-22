@@ -108,9 +108,9 @@ struct ContentView: View {
     // 인사말 (다국어 지원)
     var greetingTexts: (title: String, subtitle: String) {
         if hasTodayDiary {
-            return languageManager.currentLanguage.greetingWithDiary(username: username)
+            return languageManager.currentLanguage.greetingWithDiary(username)
         } else {
-            return languageManager.currentLanguage.greetingWithoutDiary(username: username)
+            return languageManager.currentLanguage.greetingWithoutDiary(username)
         }
     }
     
@@ -204,7 +204,7 @@ struct ContentView: View {
                     }) {
                         Circle()
                             .fill(Color.background)
-                            .frame(width: 55, height: 55)
+                            .frame(width: 45, height: 45)
                             .overlay(
                                 Text(languageManager.currentLanguage.flag)
                                     .font(.system(size: 45))
@@ -219,7 +219,7 @@ struct ContentView: View {
                     }) {
                         Circle()
                             .fill(Color.background)
-                            .frame(width: 55, height: 55)
+                            .frame(width: 45, height: 45)
                             .overlay(
                                 Image(systemName: "person")
                                     .font(.system(size: 20))
@@ -237,7 +237,8 @@ struct ContentView: View {
                 case "diary-history":
                     DiaryHistoryView()
                 case "profile-settings":
-                    ProfileSettingsView() // 이 뷰는 별도로 구현해야 합니다
+                    ProfileSettingsView()
+                        .environmentObject(languageManager)
                 default:
                     Text("Unknown destination")
                 }

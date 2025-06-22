@@ -10,7 +10,8 @@ import SwiftUI
 struct DiaryHistoryView: View {
     @State private var selectedDate = Date()
     @State private var currentMonth = Date()
-    @EnvironmentObject var dataManager: DataManager  // 실제 데이터 연결
+    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var languageManager: LanguageManager  // 추가
     
     var body: some View {
         VStack(spacing: 0) {
@@ -21,12 +22,12 @@ struct DiaryHistoryView: View {
             CalendarGrid(
                 currentMonth: currentMonth,
                 selectedDate: $selectedDate,
-                diaryDates: dataManager.getDiaryDates()  // 실제 저장된 날짜들
+                diaryDates: dataManager.getDiaryDates()
             )
             
             // 선택된 날짜의 일기 정보 - 실제 데이터 사용
             if let diary = dataManager.getDiary(for: selectedDate) {
-                DiaryPreview(diary: diary)  // 실제 일기 데이터
+                DiaryPreview(diary: diary)
                     .padding()
             } else {
                 EmptyDateView(date: selectedDate)
@@ -35,18 +36,18 @@ struct DiaryHistoryView: View {
             
             Spacer()
         }
-        .navigationTitle("일기 히스토리")
+        .navigationTitle(languageManager.currentLanguage.diaryHistoryTitle)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // 화면이 나타날 때 데이터 새로고침
             dataManager.fetchDiaries()
         }
     }
 }
 
-// 캘린더 헤더 (동일)
+// 캘린더 헤더 - 다국어 지원
 struct CalendarHeader: View {
     @Binding var currentMonth: Date
+    @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
         HStack {
@@ -82,17 +83,28 @@ struct CalendarHeader: View {
     
     func monthYearString(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년 M월"
+        formatter.locale = languageManager.currentLanguage.locale
+        
+        // 언어별 날짜 포맷
+        switch languageManager.currentLanguage.locale.identifier {
+        case "ko_KR":
+            formatter.dateFormat = "yyyy년 M월"
+        case "ja_JP":
+            formatter.dateFormat = "yyyy年M月"
+        default:
+            formatter.dateFormat = "MMMM yyyy"
+        }
+        
         return formatter.string(from: date)
     }
 }
 
-// 캘린더 그리드 (동일)
+// 캘린더 그리드 - 다국어 지원
 struct CalendarGrid: View {
     let currentMonth: Date
     @Binding var selectedDate: Date
-    let diaryDates: Set<String>  // 실제 데이터 받음
+    let diaryDates: Set<String>
+    @EnvironmentObject var languageManager: LanguageManager
     
     private let calendar = Calendar.current
     private let dateFormatter: DateFormatter = {
@@ -119,7 +131,6 @@ struct CalendarGrid: View {
                             selectedDate = date
                         }
                     } else {
-                        // 빈 셀
                         Rectangle()
                             .fill(Color.clear)
                             .frame(height: 40)
@@ -130,7 +141,6 @@ struct CalendarGrid: View {
         }
     }
     
-    // 캘린더에 표시할 날짜들 계산
     var calendarDays: [Date?] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: currentMonth),
               let firstWeek = calendar.dateInterval(of: .weekOfYear, for: monthInterval.start),
@@ -145,7 +155,7 @@ struct CalendarGrid: View {
             if calendar.isDate(currentDate, equalTo: currentMonth, toGranularity: .month) {
                 dates.append(currentDate)
             } else {
-                dates.append(nil) // 다른 달의 날짜는 nil
+                dates.append(nil)
             }
             currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
         }
@@ -159,13 +169,13 @@ struct CalendarGrid: View {
     }
 }
 
-// 요일 헤더 (동일)
+// 요일 헤더 - 다국어 지원
 struct WeekdayHeader: View {
-    private let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
+    @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
         HStack {
-            ForEach(weekdays, id: \.self) { weekday in
+            ForEach(languageManager.currentLanguage.shortWeekdayNames, id: \.self) { weekday in
                 Text(weekday)
                     .font(.caption)
                     .fontWeight(.medium)
@@ -178,7 +188,7 @@ struct WeekdayHeader: View {
     }
 }
 
-// 날짜 셀 (동일)
+// 날짜 셀 (변경 없음)
 struct DayCell: View {
     let date: Date
     let isSelected: Bool
@@ -189,12 +199,10 @@ struct DayCell: View {
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 2) {
-                // 날짜 숫자
                 Text("\(Calendar.current.component(.day, from: date))")
                     .font(.system(size: 16, weight: isSelected ? .bold : .medium))
                     .foregroundColor(textColor)
                 
-                // 일기 존재 표시 점
                 Circle()
                     .fill(hasDiary ? Color.blue : Color.clear)
                     .frame(width: 6, height: 6)
@@ -227,10 +235,11 @@ struct DayCell: View {
     }
 }
 
-// 일기 미리보기 - 실제 데이터 사용
+// 일기 미리보기 - 다국어 지원
 struct DiaryPreview: View {
-    let diary: DiaryEntry  // 실제 일기 데이터
+    let diary: DiaryEntry
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -242,7 +251,7 @@ struct DiaryPreview: View {
                     .fontWeight(.bold)
                 Spacer()
                 NavigationLink(destination: DiaryDetailView(diary: diary)) {
-                    Text("보기")
+                    Text(languageManager.currentLanguage.viewDiaryButton)
                         .font(.caption)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -252,11 +261,10 @@ struct DiaryPreview: View {
                 }
             }
             
-            // 실제 일기 내용 미리보기
             Text(diary.originalText ?? "내용 없음")
                 .font(.subheadline)
                 .foregroundColor(.gray)
-                .lineLimit(3)  // 3줄까지 표시
+                .lineLimit(3)
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
@@ -267,7 +275,7 @@ struct DiaryPreview: View {
                     Image(systemName: "pencil.circle.fill")
                         .foregroundColor(.blue)
                         .font(.caption)
-                    Text("첨삭 \(diary.correctionCount)개")
+                    Text(languageManager.currentLanguage.correctionCountText(Int(diary.correctionCount)))
                         .font(.caption)
                         .foregroundColor(.blue)
                 }
@@ -278,7 +286,7 @@ struct DiaryPreview: View {
                     Image(systemName: "textformat.123")
                         .foregroundColor(.gray)
                         .font(.caption)
-                    Text("\(diary.characterCount)자")
+                    Text(languageManager.currentLanguage.characterCountText(Int(diary.characterCount)))
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
@@ -303,22 +311,32 @@ struct DiaryPreview: View {
     
     func dateString(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일 E요일"
+        formatter.locale = languageManager.currentLanguage.locale
+        
+        switch languageManager.currentLanguage.locale.identifier {
+        case "ko_KR":
+            formatter.dateFormat = "M월 d일 E요일"
+        case "ja_JP":
+            formatter.dateFormat = "M月d日 EEEE"
+        default:
+            formatter.dateFormat = "MMM d, EEEE"
+        }
+        
         return formatter.string(from: date)
     }
     
     func timeString(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.locale = languageManager.currentLanguage.locale
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: date)
     }
 }
 
-// 일기 없는 날 (동일)
+// 일기 없는 날 - 다국어 지원
 struct EmptyDateView: View {
     let date: Date
+    @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
         VStack(spacing: 12) {
@@ -331,7 +349,7 @@ struct EmptyDateView: View {
                 Spacer()
             }
             
-            Text("이 날은 일기를 쓰지 않았어요")
+            Text(languageManager.currentLanguage.noDiaryMessage)
                 .font(.subheadline)
                 .foregroundColor(.gray)
                 .padding()
@@ -340,7 +358,7 @@ struct EmptyDateView: View {
             
             // 일기 쓰기 유도 버튼
             if Calendar.current.isDate(date, inSameDayAs: Date()) {
-                Text("오늘 일기를 써보세요! ✍️")
+                Text(languageManager.currentLanguage.todayDiaryPrompt)
                     .font(.caption)
                     .foregroundColor(.blue)
                     .padding(.top, 4)
@@ -354,8 +372,17 @@ struct EmptyDateView: View {
     
     func dateString(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일 E요일"
+        formatter.locale = languageManager.currentLanguage.locale
+        
+        switch languageManager.currentLanguage.locale.identifier {
+        case "ko_KR":
+            formatter.dateFormat = "M월 d일 E요일"
+        case "ja_JP":
+            formatter.dateFormat = "M月d日 EEEE"
+        default:
+            formatter.dateFormat = "MMM d, EEEE"
+        }
+        
         return formatter.string(from: date)
     }
 }
@@ -364,7 +391,8 @@ struct DiaryHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             DiaryHistoryView()
-                .environmentObject(DataManager.shared)  // 프리뷰에도 데이터 매니저 추가
+                .environmentObject(DataManager.shared)
+                .environmentObject(LanguageManager.shared)
         }
     }
 }

@@ -1,10 +1,3 @@
-//
-//  LanguageSelectionView.swift
-//  Kodiary
-//
-//  Created by Niko on 6/22/25.
-//
-
 import SwiftUI
 
 struct LanguageSelectionView: View {
@@ -14,55 +7,46 @@ struct LanguageSelectionView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // 헤더
-                VStack(spacing: 8) {
-                    Text("🌍")
-                        .font(.largeTitle)
-                    Text("언어 선택")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Text("일기를 작성할 언어를 선택해주세요")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.top, 20)
+                Text("언어 선택 / Language / 言語")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.top, 20)
                 
-                // 언어 옵션들
+                Text("Choose your preferred language")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                
                 VStack(spacing: 12) {
-                    ForEach(SupportedLanguage.allCases) { language in
-                        LanguageOptionRow(
+                    ForEach(Array(LanguageManager.availableLanguages.enumerated()), id: \.offset) { index, language in
+                        LanguageCard(
                             language: language,
-                            isSelected: languageManager.currentLanguage == language
+                            isSelected: language.locale.identifier == languageManager.currentLanguage.locale.identifier
                         ) {
                             languageManager.setLanguage(language)
-                            
-                            // 선택 후 잠시 대기한 다음 모달 닫기
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                dismiss()
-                            }
+                            dismiss()
                         }
                     }
                 }
                 .padding(.horizontal)
                 
                 Spacer()
-                
-                // 취소 버튼
-                Button("취소") {
-                    dismiss()
-                }
-                .font(.headline)
-                .foregroundColor(.blue)
-                .padding(.bottom, 20)
             }
-            .navigationBarHidden(true)
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }
 
-struct LanguageOptionRow: View {
-    let language: SupportedLanguage
+struct LanguageCard: View {
+    let language: LanguageTexts
     let isSelected: Bool
     let onTap: () -> Void
     
@@ -71,19 +55,20 @@ struct LanguageOptionRow: View {
             HStack(spacing: 16) {
                 // 국기
                 Text(language.flag)
-                    .font(.title)
+                    .font(.system(size: 40))
                 
-                // 언어명
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(language.displayName)
+                VStack(alignment: .leading, spacing: 4) {
+                    // 언어 이름
+                    Text(languageName)
                         .font(.headline)
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
                         .foregroundColor(.primary)
                     
-                    // 샘플 텍스트
+                    // 예시 텍스트
                     Text(sampleText)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundColor(.gray)
+                        .lineLimit(1)
                 }
                 
                 Spacer()
@@ -91,37 +76,44 @@ struct LanguageOptionRow: View {
                 // 선택 표시
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.title2)
                         .foregroundColor(.blue)
-                } else {
-                    Image(systemName: "circle")
                         .font(.title2)
-                        .foregroundColor(.gray.opacity(0.3))
                 }
             }
-            .padding(16)
-            .background(
+            .padding()
+            .background(isSelected ? Color.blue.opacity(0.1) : Color.gray.opacity(0.05))
+            .cornerRadius(12)
+            .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.blue.opacity(0.1) : Color.gray.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
-                    )
+                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
             )
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isSelected ? 1.02 : 1.0)
-        .animation(.easeInOut(duration: 0.2), value: isSelected)
+    }
+    
+    var languageName: String {
+        switch language.locale.identifier {
+        case "ko_KR":
+            return "한국어"
+        case "en_US":
+            return "English"
+        case "ja_JP":
+            return "日本語"
+        default:
+            return "Unknown"
+        }
     }
     
     var sampleText: String {
-        switch language {
-        case .korean:
-            return "일기 쓰기"
-        case .english:
-            return "Write Diary"
-        case .spanish:
-            return "Escribir Diario"
+        switch language.locale.identifier {
+        case "ko_KR":
+            return "오늘의 일기 쓰기"
+        case "en_US":
+            return "Write Today's Diary"
+        case "ja_JP":
+            return "今日の日記を書く"
+        default:
+            return "Sample text"
         }
     }
 }

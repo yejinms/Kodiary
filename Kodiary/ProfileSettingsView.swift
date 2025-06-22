@@ -1,14 +1,8 @@
-//
-//  ProfileSettingsView.swift
-//  Kodiary
-//
-//  Created by Niko on 6/20/25.
-//
-
 import SwiftUI
 
 struct ProfileSettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var languageManager: LanguageManager  // 추가
     
     var body: some View {
         VStack(spacing: Spacing.lg) {
@@ -23,7 +17,7 @@ struct ProfileSettingsView: View {
                             .foregroundColor(.primaryDark)
                     )
                 
-                Text("사용자")
+                Text(languageManager.currentLanguage.profileUserName)
                     .font(.titleLarge)
                     .foregroundColor(.primaryDark)
             }
@@ -33,31 +27,31 @@ struct ProfileSettingsView: View {
             VStack(spacing: Spacing.md) {
                 SettingsRow(
                     icon: "person",
-                    title: "프로필 정보",
+                    title: languageManager.currentLanguage.profileInfoTitle,
                     action: { /* 프로필 정보 수정 */ }
                 )
                 
                 SettingsRow(
                     icon: "bell",
-                    title: "알림 설정",
+                    title: languageManager.currentLanguage.notificationSettingsTitle,
                     action: { /* 알림 설정 */ }
                 )
                 
                 SettingsRow(
                     icon: "lock",
-                    title: "개인정보 보호",
+                    title: languageManager.currentLanguage.privacySettingsTitle,
                     action: { /* 개인정보 보호 설정 */ }
                 )
                 
                 SettingsRow(
                     icon: "questionmark.circle",
-                    title: "도움말",
+                    title: languageManager.currentLanguage.helpTitle,
                     action: { /* 도움말 */ }
                 )
                 
                 SettingsRow(
                     icon: "info.circle",
-                    title: "앱 정보",
+                    title: languageManager.currentLanguage.appInfoTitle,
                     action: { /* 앱 정보 */ }
                 )
             }
@@ -66,12 +60,12 @@ struct ProfileSettingsView: View {
             Spacer()
         }
         .background(Color.background)
-        .navigationTitle("설정")
+        .navigationTitle(languageManager.currentLanguage.profileSettingsTitle)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-// 설정 행 컴포넌트
+// 설정 행 컴포넌트 (변경 없음)
 struct SettingsRow: View {
     let icon: String
     let title: String
@@ -108,6 +102,7 @@ struct ProfileSettingsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             ProfileSettingsView()
+                .environmentObject(LanguageManager.shared)
         }
     }
 }

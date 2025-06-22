@@ -4,6 +4,7 @@ struct DiaryWriteView: View {
     @State private var diaryText = ""
     @Binding var navigationPath: NavigationPath
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var languageManager: LanguageManager  // 추가
     @StateObject private var apiManager = APIManager.shared
     
     @State private var showingLoading = false
@@ -12,7 +13,7 @@ struct DiaryWriteView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                Text("오늘의 일기")
+                Text(languageManager.currentLanguage.diaryWriteTitle)
                     .font(.title)
                     .fontWeight(.bold)
                 
@@ -20,21 +21,32 @@ struct DiaryWriteView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 
-                TextEditor(text: $diaryText)
-                    .frame(minHeight: 200)
-                    .padding(10)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
-                    .disabled(showingLoading)
+                ZStack(alignment: .topLeading) {
+                    TextEditor(text: $diaryText)
+                        .frame(minHeight: 200)
+                        .padding(10)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
+                        .disabled(showingLoading)
+                    
+                    // Placeholder 텍스트 (TextEditor에는 placeholder가 없어서 수동 구현)
+                    if diaryText.isEmpty {
+                        Text(languageManager.currentLanguage.diaryWritePlaceholder)
+                            .foregroundColor(.gray.opacity(0.7))
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 18)
+                            .allowsHitTesting(false)
+                    }
+                }
                 
                 HStack {
                     Spacer()
-                    Text("\(diaryText.count)/500")
+                    Text(languageManager.currentLanguage.characterCount(diaryText.count, 500))
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
                 
-                Button("첨삭받기") {
+                Button(languageManager.currentLanguage.analyzeDiaryButton) {
                     Task {
                         await analyzeWithAI()
                     }
@@ -50,7 +62,6 @@ struct DiaryWriteView: View {
             }
             .padding()
             
-            
             // 로딩 오버레이
             if showingLoading {
                 Color.black.opacity(0.3)
@@ -59,7 +70,6 @@ struct DiaryWriteView: View {
                 LoadingView()
             }
         }
-        .navigationTitle("일기 쓰기")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: CorrectionData.self) { correctionData in
             CorrectionResultView(
@@ -67,21 +77,23 @@ struct DiaryWriteView: View {
                 corrections: correctionData.corrections,
                 navigationPath: $navigationPath
             )
+            .environmentObject(dataManager)
+            .environmentObject(languageManager)
         }
-        .alert("첨삭 오류", isPresented: $showingError) {
-            Button("확인") { }
-            Button("다시 시도") {
+        .alert(languageManager.currentLanguage.errorTitle, isPresented: $showingError) {
+            Button(languageManager.currentLanguage.confirmButton) { }
+            Button(languageManager.currentLanguage.retryButton) {
                 Task { await analyzeWithAI() }
             }
         } message: {
-            Text(apiManager.errorMessage ?? "알 수 없는 오류가 발생했습니다.")
+            Text(apiManager.errorMessage ?? languageManager.currentLanguage.unknownErrorMessage)
         }
     }
     
     func getCurrentDate() -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .full
-        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.locale = languageManager.currentLanguage.locale
         return formatter.string(from: Date())
     }
     
