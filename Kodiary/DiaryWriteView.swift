@@ -71,13 +71,14 @@ struct DiaryWriteView: View {
                     // 첨삭 언어 표시
                     HStack {
                         HStack{
-                            Text("✍️")
+                            Image(systemName: "pencil.line")
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.primaryDark)
                             Text(getCorrectionLanguageText())
                                 .font(.buttonFontSmall)
                                 .foregroundColor(.primaryDark)
-//                                .padding(.horizontal, 2)
                         }
-                        .padding(.horizontal, 5)
+                        .padding(5)
                         .background(Color.primaryYellow.opacity(0.5))
                         Spacer()
                         // 글자 수 표시
@@ -97,12 +98,11 @@ struct DiaryWriteView: View {
                         // 배경
                         Rectangle()
                             .fill(Color.gray.opacity(0.1))
-                            .frame(minHeight: 180)
-                            .cornerRadius(10)
+                            .frame(height: 230)
                         
                         // 줄 노트처럼 선들 추가
                         VStack(spacing: 34) {
-                            ForEach(0..<5, id: \.self) { _ in
+                            ForEach(0..<6, id: \.self) { _ in
                                 Rectangle()
                                     .fill(Color.primaryDark.opacity(0.4))
                                     .frame(height: 1)
@@ -113,7 +113,7 @@ struct DiaryWriteView: View {
                         
                         TextEditor(text: $diaryText)
                             .font(.handWrite)
-                            .frame(minHeight: 180)
+                            .frame(minHeight: 230)
                             .padding(5)
                             .background(Color.clear)
                             .disabled(showingLoading)
@@ -215,9 +215,9 @@ struct DiaryWriteView: View {
                 explanationLanguage: languageManager.nativeLanguageCode
             )
             
-            // 최소 1.5초 대기
+            // 최소 1초 대기
             let elapsedTime = Date().timeIntervalSince(startTime)
-            if elapsedTime < 1.5 {
+            if elapsedTime < 1 {
                 try await Task.sleep(nanoseconds: UInt64((2.0 - elapsedTime) * 1_000_000_000))
             }
             

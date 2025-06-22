@@ -162,7 +162,7 @@ struct ContentView: View {
                     navigationPath.append("diary-write")
                 }) {
                     HStack(spacing: Spacing.sm) {
-                        Text(hasTodayDiary ? languageManager.currentLanguage.writeButtonCompletedText : languageManager.currentLanguage.writeButtonText)
+                        Text(hasTodayDiary ? languageManager.currentLanguage.writeButtonCompletedText(languageManager.correctionLanguageDisplayName) : languageManager.currentLanguage.writeButtonText(languageManager.correctionLanguageDisplayName))
                             .font(.buttonFont)
                             .padding(16)
                         
@@ -208,7 +208,7 @@ struct ContentView: View {
                             .fill(Color.background)
                             .frame(width: 45, height: 45)
                             .overlay(
-                                Text(languageManager.currentLanguage.flag)
+                                Text(languageManager.currentCorrectionLanguage.flag)
                                     .font(.system(size: 45))
                             )
                     }

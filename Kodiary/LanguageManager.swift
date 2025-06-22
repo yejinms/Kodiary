@@ -17,8 +17,8 @@ struct LanguageTexts {
     let dayDateFormat: String
     
     // ContentView 텍스트들
-    let writeButtonText: String
-    let writeButtonCompletedText: String
+    let writeButtonText: (String) -> String // 첨삭 언어명을 매개변수로 받는 클로저
+    let writeButtonCompletedText: (String) -> String  // 첨삭 언어명을 매개변수로 받는 클로저
     let historyButtonText: String
     
     // DiaryWriteView
@@ -95,6 +95,10 @@ class LanguageManager: ObservableObject {
         return nativeLanguage
     }
     
+    var currentCorrectionLanguage: LanguageTexts {
+        return correctionLanguage
+    }
+    
     private init() {
         self.nativeLanguage = Self.korean
         self.correctionLanguage = Self.korean
@@ -117,6 +121,11 @@ class LanguageManager: ObservableObject {
         return nativeLanguage.languageCode
     }
     
+    // 첨삭 언어명을 모국어로 번역해서 반환
+    var correctionLanguageDisplayName: String {
+        return nativeLanguage.languageNameTranslations[correctionLanguage.languageCode] ?? correctionLanguage.languageName
+    }
+    
     // 한국어
     static let korean = LanguageTexts(
         // 기본 정보
@@ -137,8 +146,8 @@ class LanguageManager: ObservableObject {
         dayDateFormat: "d",
         
         // ContentView
-        writeButtonText: "오늘의 일기 쓰기",
-        writeButtonCompletedText: "오늘의 일기 (작성완료)",
+        writeButtonText: { correctionLanguageName in "오늘의 \(correctionLanguageName) 일기 쓰기" },
+        writeButtonCompletedText: { correctionLanguageName in "오늘의 \(correctionLanguageName) 일기 [작성 완료]" },
         historyButtonText: "일기 히스토리",
         
         // DiaryWriteView
@@ -158,7 +167,7 @@ class LanguageManager: ObservableObject {
         // CorrectionResultView
         correctionResultTitle: "첨삭 결과",
         writtenDiaryTitle: "작성한 일기",
-        correctionCompleteTitle: "첨삭 완료!",
+        correctionCompleteTitle: "첨삭 완료",
         correctionCompleteSubtitle: { count in "총 \(count)개의 수정점을 찾았어요" },
         saveButton: "저장",
         originalExpressionTitle: "원래 표현",
@@ -230,8 +239,8 @@ class LanguageManager: ObservableObject {
         dayDateFormat: "d",
         
         // ContentView
-        writeButtonText: "Write Today's Diary",
-        writeButtonCompletedText: "Today's Diary (Completed)",
+        writeButtonText: { correctionLanguageName in "Today's \(correctionLanguageName) Diary" },
+        writeButtonCompletedText: { correctionLanguageName in "Today's \(correctionLanguageName) Diary [Completed]" },
         historyButtonText: "Diary History",
         
         // DiaryWriteView
@@ -251,7 +260,7 @@ class LanguageManager: ObservableObject {
         // CorrectionResultView
         correctionResultTitle: "Correction Results",
         writtenDiaryTitle: "Your Diary",
-        correctionCompleteTitle: "Corrections Complete!",
+        correctionCompleteTitle: "Corrected",
         correctionCompleteSubtitle: { count in "Found \(count) correction points" },
         saveButton: "Save",
         originalExpressionTitle: "Original",
@@ -323,8 +332,8 @@ class LanguageManager: ObservableObject {
         dayDateFormat: "d",
         
         // ContentView
-        writeButtonText: "今日の日記を書く",
-        writeButtonCompletedText: "今日の日記（完了）",
+        writeButtonText: { correctionLanguageName in "今日の\(correctionLanguageName)日記を書く" },
+        writeButtonCompletedText: { correctionLanguageName in "今日の\(correctionLanguageName)日記 [完了]" },
         historyButtonText: "日記履歴",
         
         // DiaryWriteView
@@ -344,7 +353,7 @@ class LanguageManager: ObservableObject {
         // CorrectionResultView
         correctionResultTitle: "添削結果",
         writtenDiaryTitle: "書いた日記",
-        correctionCompleteTitle: "添削完了！",
+        correctionCompleteTitle: "添削完了",
         correctionCompleteSubtitle: { count in "合計\(count)個の修正点を見つけました" },
         saveButton: "保存",
         originalExpressionTitle: "元の表現",
