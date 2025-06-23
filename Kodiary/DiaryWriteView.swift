@@ -89,6 +89,8 @@ struct DiaryWriteView: View {
                             Text(getCorrectionLanguageText())
                                 .font(.buttonFontSmall)
                                 .foregroundColor(.primaryDark)
+                                .lineLimit(1)
+                                .fixedSize(horizontal: true, vertical: false)
                         }
                         .padding(5)
                         .background(Color.primaryYellow.opacity(0.5))
@@ -103,7 +105,7 @@ struct DiaryWriteView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.leading, 20)
                     .onTapGesture {
                         isTextEditorFocused = false
                     }

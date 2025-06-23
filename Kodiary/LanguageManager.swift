@@ -92,6 +92,10 @@ class LanguageManager: ObservableObject {
     @Published var nativeLanguage: LanguageTexts      // 모국어 (UI 언어)
     @Published var correctionLanguage: LanguageTexts  // 첨삭 언어
     
+    // UserDefaults 키들
+    private let nativeLanguageKey = "native_language_code"
+    private let correctionLanguageKey = "correction_language_code"
+    
     // UI에서 사용할 현재 언어 (모국어)
     var currentLanguage: LanguageTexts {
         return nativeLanguage
@@ -102,16 +106,44 @@ class LanguageManager: ObservableObject {
     }
     
     private init() {
-        self.nativeLanguage = Self.korean
-        self.correctionLanguage = Self.korean
+        // UserDefaults에서 저장된 언어 설정을 불러오기
+        self.nativeLanguage = Self.loadSavedLanguage(key: nativeLanguageKey) ?? Self.getDeviceLanguage()
+        self.correctionLanguage = Self.loadSavedLanguage(key: correctionLanguageKey) ?? Self.korean
+    }
+    
+    // UserDefaults에서 저장된 언어 불러오기
+    private static func loadSavedLanguage(key: String) -> LanguageTexts? {
+        let savedLanguageCode = UserDefaults.standard.string(forKey: key)
+        return availableLanguages.first { $0.languageCode == savedLanguageCode }
+    }
+    
+    // 디바이스 설정 언어 감지
+    private static func getDeviceLanguage() -> LanguageTexts {
+        // 디바이스의 기본 언어 코드 가져오기
+        let deviceLanguageCode = Locale.preferredLanguages.first?.prefix(2) ?? "en"
+        
+        // 지원하는 언어 중에서 찾기
+        if let matchedLanguage = availableLanguages.first(where: { $0.languageCode == deviceLanguageCode }) {
+            return matchedLanguage
+        }
+        
+        // 지원하지 않는 언어면 영어로 기본 설정 (글로벌 언어)
+        return english
+    }
+    
+    // 언어 설정을 UserDefaults에 저장
+    private func saveLanguageToUserDefaults(languageCode: String, key: String) {
+        UserDefaults.standard.set(languageCode, forKey: key)
     }
     
     func setNativeLanguage(_ language: LanguageTexts) {
         nativeLanguage = language
+        saveLanguageToUserDefaults(languageCode: language.languageCode, key: nativeLanguageKey)
     }
     
     func setCorrectionLanguage(_ language: LanguageTexts) {
         correctionLanguage = language
+        saveLanguageToUserDefaults(languageCode: language.languageCode, key: correctionLanguageKey)
     }
     
     // API 호출 시 사용할 언어 코드들
@@ -244,7 +276,7 @@ class LanguageManager: ObservableObject {
         
         // ContentView
         writeButtonText: { correctionLanguageName in "Today's \(correctionLanguageName) Diary" },
-        writeButtonCompletedText: { correctionLanguageName in "Today's \(correctionLanguageName) Diary [Completed]" },
+        writeButtonCompletedText: { correctionLanguageName in "Today's \(correctionLanguageName) Diary [Done!]" },
         historyButtonText: "Diary History",
         
         // DiaryWriteView
@@ -398,7 +430,7 @@ class LanguageManager: ObservableObject {
         unknownErrorMessage: "不明なエラーが発生しました。",
         
         // 월/요일
-        monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+        monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11월", "12月"],
         weekdayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
         shortWeekdayNames: ["日", "月", "火", "水", "木", "金", "土"],
         
