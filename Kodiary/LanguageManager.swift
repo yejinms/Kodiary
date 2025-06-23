@@ -26,6 +26,8 @@ struct LanguageTexts {
     let diaryWritePlaceholder: String
     let analyzeDiaryButton: String
     let characterCount: (Int, Int) -> String
+    let writeInLanguageText: (String) -> String // "한국어로 써주세요" 등
+    let correctionLanguagePlaceholder: String // 첨삭 언어로 된 placeholder
     
     // DiaryHistoryView
     let diaryHistoryTitle: String
@@ -189,6 +191,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "오늘 있었던 일을 자유롭게 써보세요...",
         analyzeDiaryButton: "첨삭 받기",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "\(languageName)로 써주세요" },
+        correctionLanguagePlaceholder: "오늘 있었던 일을 자유롭게 써보세요...",
         
         // DiaryHistoryView
         diaryHistoryTitle: "일기 히스토리",
@@ -284,6 +288,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "Write freely about what happened today...",
         analyzeDiaryButton: "Get Corrections",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "Please write in \(languageName)" },
+        correctionLanguagePlaceholder: "Tell me about your day...",
         
         // DiaryHistoryView
         diaryHistoryTitle: "Diary History",
@@ -291,7 +297,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) corrections" },
         characterCountText: { count in "\(count) chars" },
         noDiaryMessage: "No diary entry for this day",
-        todayDiaryPrompt: "Write today's diary!",
+        todayDiaryPrompt: "Write today's diary! ✍️",
         
         // CorrectionResultView
         correctionResultTitle: "Correction Results",
@@ -379,6 +385,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "今日あったことを自由に書いてみてください...",
         analyzeDiaryButton: "添削を受ける",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "\(languageName)で書いてください" },
+        correctionLanguagePlaceholder: "今日あったことを自由に書いてみてください...",
         
         // DiaryHistoryView
         diaryHistoryTitle: "日記履歴",
@@ -440,7 +448,7 @@ class LanguageManager: ObservableObject {
              subtitle: "素敵な一日を過ごしてね！")
         },
         greetingWithoutDiary: { username in
-            (title: "こんにちは、\(username)さん！",
+            (title: "こんにちは、\(username)さん！ 👋",
              subtitle: "今日はどうだった？")
         }
     )
@@ -469,13 +477,15 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "Escribe libremente sobre lo que pasó hoy...",
         analyzeDiaryButton: "Obtener correcciones",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "Por favor escribe en \(languageName)" },
+        correctionLanguagePlaceholder: "Cuéntame sobre tu día...",
         
         diaryHistoryTitle: "Historial del diario",
         viewDiaryButton: "Ver",
         correctionCountText: { count in "\(count) correcciones" },
         characterCountText: { count in "\(count) caracteres" },
         noDiaryMessage: "No hay entrada de diario para este día",
-        todayDiaryPrompt: "¡Escribe el diario de hoy!",
+        todayDiaryPrompt: "¡Escribe el diario de hoy! ✍️",
         
         correctionResultTitle: "Resultados de corrección",
         writtenDiaryTitle: "Tu diario",
@@ -551,6 +561,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "เขียนอย่างอิสระเกี่ยวกับสิ่งที่เกิดขึ้นวันนี้...",
         analyzeDiaryButton: "รับการแก้ไข",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "โปรดเขียนเป็น\(languageName)" },
+        correctionLanguagePlaceholder: "เล่าให้ฟังเกี่ยวกับวันของคุณ...",
         
         diaryHistoryTitle: "ประวัติไดอารี่",
         viewDiaryButton: "ดู",
@@ -633,6 +645,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "Schreibe frei über das, was heute passiert ist...",
         analyzeDiaryButton: "Korrekturen erhalten",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "Bitte schreibe auf \(languageName)" },
+        correctionLanguagePlaceholder: "Erzähl mir von deinem Tag...",
         
         diaryHistoryTitle: "Tagebuch-Historie",
         viewDiaryButton: "Ansehen",
@@ -715,6 +729,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "自由写下今天发生的事情...",
         analyzeDiaryButton: "获取批改",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "请用\(languageName)写" },
+        correctionLanguagePlaceholder: "告诉我你今天的经历...",
         
         diaryHistoryTitle: "日记历史",
         viewDiaryButton: "查看",
@@ -797,6 +813,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "اكتب بحرية عما حدث اليوم...",
         analyzeDiaryButton: "الحصول على التصحيحات",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "يرجى الكتابة بـ\(languageName)" },
+        correctionLanguagePlaceholder: "أخبرني عن يومك...",
         
         diaryHistoryTitle: "تاريخ اليوميات",
         viewDiaryButton: "عرض",
@@ -879,6 +897,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "Écrivez librement sur ce qui s'est passé aujourd'hui...",
         analyzeDiaryButton: "Obtenir des corrections",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "Veuillez écrire en \(languageName)" },
+        correctionLanguagePlaceholder: "Parlez-moi de votre journée...",
         
         diaryHistoryTitle: "Historique du journal",
         viewDiaryButton: "Voir",
@@ -961,6 +981,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "Scrivi liberamente su quello che è successo oggi...",
         analyzeDiaryButton: "Ottieni correzioni",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "Per favore scrivi in \(languageName)" },
+        correctionLanguagePlaceholder: "Raccontami della tua giornata...",
         
         diaryHistoryTitle: "Cronologia del diario",
         viewDiaryButton: "Visualizza",
@@ -1043,6 +1065,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "Escreva livremente sobre o que aconteceu hoje...",
         analyzeDiaryButton: "Obter correções",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "Por favor escreva em \(languageName)" },
+        correctionLanguagePlaceholder: "Conte-me sobre o seu dia...",
         
         diaryHistoryTitle: "Histórico do diário",
         viewDiaryButton: "Ver",
@@ -1125,6 +1149,8 @@ class LanguageManager: ObservableObject {
         diaryWritePlaceholder: "आज जो कुछ हुआ उसके बारे में स्वतंत्र रूप से लिखें...",
         analyzeDiaryButton: "सुधार प्राप्त करें",
         characterCount: { current, max in "\(current)/\(max)" },
+        writeInLanguageText: { languageName in "कृपया \(languageName) में लिखें" },
+        correctionLanguagePlaceholder: "मुझे अपने दिन के बारे में बताएं...",
         
         diaryHistoryTitle: "डायरी इतिहास",
         viewDiaryButton: "देखें",

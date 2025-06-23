@@ -71,17 +71,17 @@ extension Font {
     // Title Fonts (섹션 제목용)
     static let titleHuge = CustomFont.font(name: CustomFont.gravitasOne, size: 140)
     static let titleLarge = CustomFont.font(name: CustomFont.chosunKm, size: 24)
-    static let titleSmall1 = CustomFont.font(name: CustomFont.chosunKm, size: 22)
-    static let titleSmall2 = CustomFont.font(name: CustomFont.chosunSm, size: 22)
+    static let titleSmall1 = CustomFont.font(name: CustomFont.chosunKm, size: 20)
+    static let titleSmall2 = CustomFont.font(name: CustomFont.chosunSm, size: 20)
     
     // Body Fonts (본문용)
-    static let bodyFontTitle = CustomFont.font(name: CustomFont.chosunKm, size: 20)
-    static let bodyFont = CustomFont.font(name: CustomFont.chosunNm, size: 20)
-    static let bodyFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 18)
+    static let bodyFontTitle = CustomFont.font(name: CustomFont.chosunKm, size: 18)
+    static let bodyFont = CustomFont.font(name: CustomFont.chosunNm, size: 18)
+    static let bodyFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 16)
     
     // Custom App Fonts (앱 전용)
-    static let buttonFont = CustomFont.font(name: CustomFont.chosunNm, size: 18)
-    static let buttonFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 15)
+    static let buttonFont = CustomFont.font(name: CustomFont.chosunNm, size: 16)
+    static let buttonFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 14)
     static let handWrite = CustomFont.font(name: CustomFont.lSY, size: 18)
 }
 

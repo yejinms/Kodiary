@@ -211,30 +211,16 @@ struct DiaryWriteView: View {
         }
     }
     
-    // 첨삭 언어 표시 텍스트
+    // 첨삭 언어 표시 텍스트 (LanguageManager 사용)
     func getCorrectionLanguageText() -> String {
         let correctionLanguageName = languageManager.nativeLanguage.languageNameTranslations[languageManager.correctionLanguage.languageCode] ?? languageManager.correctionLanguage.languageName
         
-        switch languageManager.nativeLanguage.languageCode {
-        case "ko": return "\(correctionLanguageName)로 써주세요"
-        case "en": return "Please write in \(correctionLanguageName)"
-        case "ja": return "\(correctionLanguageName)で書いてください"
-        default: return "Please write in \(correctionLanguageName)"
-        }
+        return languageManager.currentLanguage.writeInLanguageText(correctionLanguageName)
     }
     
-    // 첨삭 언어에 따른 placeholder
+    // 첨삭 언어에 따른 placeholder (LanguageManager 사용)
     func getCorrectionPlaceholder() -> String {
-        switch languageManager.correctionLanguage.languageCode {
-        case "ko":
-            return "오늘 있었던 일을 자유롭게 써보세요..."
-        case "en":
-            return "Tell me about your day..."
-        case "ja":
-            return "今日あったことを자유に書いてみてください..."
-        default:
-            return "Write about your day..."
-        }
+        return languageManager.correctionLanguage.correctionLanguagePlaceholder
     }
     
     // AI 첨삭 분석 (다국어 지원)
