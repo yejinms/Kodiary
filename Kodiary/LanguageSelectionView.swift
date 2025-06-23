@@ -216,6 +216,24 @@ struct LanguageCard: View {
             return "Write Today's Diary"
         case "ja":
             return "今日の日記を書く"
+        case "es":
+            return "Escribir diario de hoy"
+        case "th":
+            return "เขียนไดอารี่วันนี้"
+        case "de":
+            return "Heutiges Tagebuch schreiben"
+        case "zh":
+            return "写今天的日记"
+        case "ar":
+            return "كتابة يوميات اليوم"
+        case "fr":
+            return "Écrire le journal d'aujourd'hui"
+        case "it":
+            return "Scrivi il diario di oggi"
+        case "pt":
+            return "Escrever diário de hoje"
+        case "hi":
+            return "आज की डायरी लिखें"
         default:
             return "Sample text"
         }
@@ -229,6 +247,24 @@ struct LanguageCard: View {
             return "Write diary in English"
         case "ja":
             return "日本語で日記を書く"
+        case "es":
+            return "Escribir diario en español"
+        case "th":
+            return "เขียนไดอารี่เป็นภาษาไทย"
+        case "de":
+            return "Tagebuch auf Deutsch schreiben"
+        case "zh":
+            return "用中文写日记"
+        case "ar":
+            return "كتابة يوميات بالعربية"
+        case "fr":
+            return "Écrire journal en français"
+        case "it":
+            return "Scrivi diario in italiano"
+        case "pt":
+            return "Escrever diário em português"
+        case "hi":
+            return "हिन्दी में डायरी लिखें"
         default:
             return "Diary language"
         }

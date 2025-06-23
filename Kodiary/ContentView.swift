@@ -153,6 +153,7 @@ struct ContentView: View {
                         .foregroundColor(.primaryDark)
                         .padding(.top, 4)
                         .multilineTextAlignment(.center)
+                        .lineSpacing(10)
                 }
                 .padding(Spacing.xl)
                 .cornerRadius(CornerRadius.md)
