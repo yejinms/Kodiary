@@ -11,6 +11,19 @@ struct DiaryWriteView: View {
     @State private var showingError = false
     @FocusState private var isTextEditorFocused: Bool
     
+    // 글자 수 제한 상수
+    private let maxCharacterCount = 160
+    
+    // 글자 수 초과 여부 계산 (161자부터 빨간색)
+    private var isOverCharacterLimit: Bool {
+        diaryText.count > maxCharacterCount
+    }
+    
+    // 첨삭 버튼 활성화 여부 (1자 이상 160자 이하일 때만 활성화)
+    private var isAnalyzeButtonEnabled: Bool {
+        !diaryText.isEmpty && diaryText.count <= maxCharacterCount && !showingLoading
+    }
+    
     // ContentView와 동일한 날짜 관련 computed properties
     var todayDateComponents: (year: String, month: String, weekday: String) {
         let today = Date()
@@ -95,12 +108,12 @@ struct DiaryWriteView: View {
                         .padding(1)
                         .background(Color.primaryYellow.opacity(0.5))
                         Spacer()
-                        // 글자 수 표시
+                        // 글자 수 표시 - 160자 초과 시 빨간색
                         HStack {
                             Spacer()
-                            Text(languageManager.currentLanguage.characterCount(diaryText.count, 160))
+                            Text(languageManager.currentLanguage.characterCount(diaryText.count, maxCharacterCount))
                                 .font(.buttonFontSmall)
-                                .foregroundColor(.gray)
+                                .foregroundColor(isOverCharacterLimit ? .secondaryRed : .gray)
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
@@ -130,6 +143,7 @@ struct DiaryWriteView: View {
                         
                         TextEditor(text: $diaryText)
                             .font(.handWrite)
+                            .foregroundColor(isOverCharacterLimit ? .secondaryRed : .primary)
                             .frame(minHeight: 230)
                             .padding(5)
                             .background(Color.clear)
@@ -137,6 +151,12 @@ struct DiaryWriteView: View {
                             .scrollContentBackground(.hidden)
                             .lineSpacing(17)
                             .focused($isTextEditorFocused)
+                            .onChange(of: diaryText) { newValue in
+                                // 161자 이상 입력 시 161자에서 멈춤 (161자까지는 허용해서 빨간색 표시)
+                                if newValue.count > maxCharacterCount + 1 {
+                                    diaryText = String(newValue.prefix(maxCharacterCount + 1))
+                                }
+                            }
                         
                         // Placeholder 텍스트 (첨삭 언어에 따라 변경)
                         if diaryText.isEmpty {
@@ -163,8 +183,8 @@ struct DiaryWriteView: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     .frame(width: 350, height: 50)
-                    .background(diaryText.isEmpty || showingLoading ? Color.primaryDark.opacity(0.2) : Color.primaryBlue)
-                    .disabled(diaryText.isEmpty || showingLoading)
+                    .background(isAnalyzeButtonEnabled ? Color.primaryBlue : Color.primaryDark.opacity(0.2))
+                    .disabled(!isAnalyzeButtonEnabled)
                     Spacer()
                 }
             }
