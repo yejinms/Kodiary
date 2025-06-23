@@ -47,130 +47,127 @@ struct DiaryWriteView: View {
                     isTextEditorFocused = false
                 }
             
-            ScrollView {
-                VStack {
-                    Spacer()
-                        .frame(height: 26)
-                    // ContentView와 동일한 날짜 헤더
-                    ResponsiveDateHeader(dateComponents: todayDateComponents)
-                        .onTapGesture {
-                            isTextEditorFocused = false
-                        }
-                
-                    VStack(spacing: 10) {
-                        // ContentView와 동일한 원형 날짜 표시
-                        ZStack {
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .frame(width: 265.5, height: 265.5)
-                                .cornerRadius(265.5)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 265.5)
-                                        .inset(by: 0.9)
-                                        .stroke(Color.primaryDark, lineWidth: 1.8)
-                                )
-                            
-                            VStack(spacing: Spacing.sm) {
-                                Text(todayDayString)
-                                    .font(.titleHuge)
-                                    .foregroundColor(.primaryDark)
-                            }
-                        }
-                        .padding(.top, 10)
-                        .onTapGesture {
-                            isTextEditorFocused = false
-                        }
+            VStack {
+                Spacer()
+                    .frame(height: 26)
+                // ContentView와 동일한 날짜 헤더
+                ResponsiveDateHeader(dateComponents: todayDateComponents)
+                    .onTapGesture {
+                        isTextEditorFocused = false
+                    }
+            
+                VStack(spacing: 10) {
+                    // ContentView와 동일한 원형 날짜 표시
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(width: 265.5, height: 265.5)
+                            .cornerRadius(265.5)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 265.5)
+                                    .inset(by: 0.9)
+                                    .stroke(Color.primaryDark, lineWidth: 1.8)
+                            )
                         
-                        // 첨삭 언어 표시
+                        VStack(spacing: Spacing.sm) {
+                            Text(todayDayString)
+                                .font(.titleHuge)
+                                .foregroundColor(.primaryDark)
+                        }
+                    }
+                    .padding(.top, 10)
+                    .onTapGesture {
+                        isTextEditorFocused = false
+                    }
+                    
+                    // 첨삭 언어 표시
+                    HStack {
+                        HStack{
+                            Image(systemName: "pencil.line")
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.primaryDark)
+                            Text(getCorrectionLanguageText())
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.primaryDark)
+                        }
+                        .padding(5)
+                        .background(Color.primaryYellow.opacity(0.5))
+                        Spacer()
+                        // 글자 수 표시
                         HStack {
-                            HStack{
-                                Image(systemName: "pencil.line")
-                                    .font(.buttonFontSmall)
-                                    .foregroundColor(.primaryDark)
-                                Text(getCorrectionLanguageText())
-                                    .font(.buttonFontSmall)
-                                    .foregroundColor(.primaryDark)
-                            }
-                            .padding(5)
-                            .background(Color.primaryYellow.opacity(0.5))
                             Spacer()
-                            // 글자 수 표시
-                            HStack {
-                                Spacer()
-                                Text(languageManager.currentLanguage.characterCount(diaryText.count, 160))
-                                    .font(.buttonFontSmall)
-                                    .foregroundColor(.gray)
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.top, 10)
+                            Text(languageManager.currentLanguage.characterCount(diaryText.count, 160))
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.gray)
                         }
                         .padding(.horizontal, 20)
-                        .onTapGesture {
-                            isTextEditorFocused = false
-                        }
-                        
-                        // 줄 노트 스타일 및 폰트 스타일
-                        ZStack(alignment: .topLeading) {
-                            // 배경
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.1))
-                                .frame(height: 230)
-                            
-                            // 줄 노트처럼 선들 추가
-                            VStack(spacing: 34) {
-                                ForEach(0..<6, id: \.self) { _ in
-                                    Rectangle()
-                                        .fill(Color.primaryDark.opacity(0.4))
-                                        .frame(height: 1)
-                                }
-                            }
-                            .padding(.top, 38)
-                            .padding(.horizontal, 10)
-                            
-                            TextEditor(text: $diaryText)
-                                .font(.handWrite)
-                                .frame(minHeight: 230)
-                                .padding(5)
-                                .background(Color.clear)
-                                .disabled(showingLoading)
-                                .scrollContentBackground(.hidden)
-                                .lineSpacing(17)
-                                .focused($isTextEditorFocused)
-                            
-                            // Placeholder 텍스트 (첨삭 언어에 따라 변경)
-                            if diaryText.isEmpty {
-                                Text(getCorrectionPlaceholder())
-                                    .font(.handWrite)
-                                    .foregroundColor(.gray.opacity(0.7))
-                                    .padding(.horizontal, 15)
-                                    .padding(.vertical, 12)
-                                    .allowsHitTesting(false)
-                            }
-                        }
-                        .padding(.horizontal, 25)
-                        
-                        // 첨삭 버튼
-                        Button(action: {
-                            isTextEditorFocused = false // 키보드 내리기
-                            Task {
-                                await analyzeWithAI()
-                            }
-                        }) {
-                            Text(languageManager.currentLanguage.analyzeDiaryButton)
-                                .font(.buttonFont)
-                                .foregroundColor(.primaryDark)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        }
-                        .frame(width: 350, height: 50)
-                        .background(diaryText.isEmpty || showingLoading ? Color.primaryDark.opacity(0.2) : Color.primaryBlue)
-                        .disabled(diaryText.isEmpty || showingLoading)
-                        
-                        Spacer()
-                            .frame(height: 100) // 키보드가 올라왔을 때 버튼이 보이도록 여백 추가
+                        .padding(.top, 10)
                     }
+                    .padding(.horizontal, 20)
+                    .onTapGesture {
+                        isTextEditorFocused = false
+                    }
+                    
+                    // 줄 노트 스타일 및 폰트 스타일
+                    ZStack(alignment: .topLeading) {
+                        // 배경
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.1))
+                            .frame(height: 230)
+                        
+                        // 줄 노트처럼 선들 추가
+                        VStack(spacing: 34) {
+                            ForEach(0..<6, id: \.self) { _ in
+                                Rectangle()
+                                    .fill(Color.primaryDark.opacity(0.4))
+                                    .frame(height: 1)
+                            }
+                        }
+                        .padding(.top, 38)
+                        .padding(.horizontal, 10)
+                        
+                        TextEditor(text: $diaryText)
+                            .font(.handWrite)
+                            .frame(minHeight: 230)
+                            .padding(5)
+                            .background(Color.clear)
+                            .disabled(showingLoading)
+                            .scrollContentBackground(.hidden)
+                            .lineSpacing(17)
+                            .focused($isTextEditorFocused)
+                        
+                        // Placeholder 텍스트 (첨삭 언어에 따라 변경)
+                        if diaryText.isEmpty {
+                            Text(getCorrectionPlaceholder())
+                                .font(.handWrite)
+                                .foregroundColor(.gray.opacity(0.7))
+                                .padding(.horizontal, 15)
+                                .padding(.vertical, 12)
+                                .allowsHitTesting(false)
+                        }
+                    }
+                    .padding(.horizontal, 25)
+                    
+                    // 첨삭 버튼
+                    Button(action: {
+                        isTextEditorFocused = false // 키보드 내리기
+                        Task {
+                            await analyzeWithAI()
+                        }
+                    }) {
+                        Text(languageManager.currentLanguage.analyzeDiaryButton)
+                            .font(.buttonFont)
+                            .foregroundColor(.primaryDark)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .frame(width: 350, height: 50)
+                    .background(diaryText.isEmpty || showingLoading ? Color.primaryDark.opacity(0.2) : Color.primaryBlue)
+                    .disabled(diaryText.isEmpty || showingLoading)
+                    Spacer()
                 }
             }
-            .scrollDismissesKeyboard(.interactively) // 스크롤로 키보드 내리기
+            .offset(y: isTextEditorFocused ? -130 : 0) // 키보드가 올라오면 전체 화면을 위로 이동
+            .animation(.easeInOut(duration: 0.3), value: isTextEditorFocused)
             
             // 로딩 오버레이
             if showingLoading {
