@@ -255,12 +255,12 @@ struct DayCell: View {
                     .foregroundColor(.primaryDark)
                 
                 Circle()
-                    .fill(hasDiary ? Color.secondaryRed : Color.clear)
+                    .fill(hasDiary ? Color.secondaryTeal : Color.primaryDark.opacity(0.2))
                     .frame(width: 12, height: 12)
                     .padding(.top, 4)
             }
             .frame(width: 40, height: 40)
-            .background(backgroundColor)
+            .background(backgroundColor.opacity(0.8))
             .cornerRadius(8)
         }
         .buttonStyle(PlainButtonStyle())
@@ -347,7 +347,7 @@ struct DiaryPreview: View {
                 Text(diary.originalText ?? "내용 없음")
                     .font(.handWrite)
                     .foregroundColor(.primaryDark)
-                    .lineSpacing(10)
+                    .lineSpacing(17)
                     .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(15)

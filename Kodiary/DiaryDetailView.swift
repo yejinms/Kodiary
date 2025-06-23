@@ -227,7 +227,7 @@ struct DiaryDetailView: View {
                                 corrections: corrections
                             )
                             .font(.handWrite)
-                            .lineSpacing(10)
+                            .lineSpacing(17)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(15)
                         }

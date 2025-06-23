@@ -16,7 +16,7 @@ extension Color {
     
     // Secondary Colors
     static let secondaryRed = Color(red: 0.99, green: 0.4, blue: 0.29)     // #FD664B
-    static let secondaryOrange = Color(red: 1.0, green: 0.6, blue: 0.2)    // #FF9933
+    static let secondaryTeal = Color(red: 0.19, green: 0.82, blue: 0.73)    // #30D1B9
     static let secondaryPurple = Color(red: 0.6, green: 0.4, blue: 0.8)    // #9966CC
     
     // Semantic Colors
@@ -32,10 +32,14 @@ extension Color {
 
 // MARK: - 커스텀 폰트 헬퍼
 struct CustomFont {
+    static let Sandoll = "SDKukdetopokki-aLt"
     static let chosunKm = "ChosunKm"
     static let chosunNm = "ChosunilboNM"
     static let chosunSm = "ChosunSm"
     static let yoonChild = "YoonChildfundkoreaDaeHan"
+    static let cafe24 = "Cafe24ClassicType-Regular"
+    static let gravitasOne = "GravitasOne"
+    static let lSY = "LeeSeoyun"
     
     static func font(name: String, size: CGFloat) -> Font {
         // 폰트 사용 가능 여부 확인
@@ -65,20 +69,20 @@ struct CustomFont {
 // MARK: - 폰트 시스템
 extension Font {
     // Title Fonts (섹션 제목용)
-    static let titleHuge = CustomFont.font(name: CustomFont.chosunKm, size: 160)
-    static let titleLarge = CustomFont.font(name: CustomFont.chosunKm, size: 28)
+    static let titleHuge = CustomFont.font(name: CustomFont.gravitasOne, size: 140)
+    static let titleLarge = CustomFont.font(name: CustomFont.chosunKm, size: 24)
     static let titleSmall1 = CustomFont.font(name: CustomFont.chosunKm, size: 22)
     static let titleSmall2 = CustomFont.font(name: CustomFont.chosunSm, size: 22)
     
     // Body Fonts (본문용)
-    static let bodyFontTitle = CustomFont.font(name: CustomFont.chosunKm, size: 17)
-    static let bodyFont = CustomFont.font(name: CustomFont.chosunNm, size: 17)
-    static let bodyFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 15)
+    static let bodyFontTitle = CustomFont.font(name: CustomFont.chosunKm, size: 20)
+    static let bodyFont = CustomFont.font(name: CustomFont.chosunNm, size: 20)
+    static let bodyFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 18)
     
     // Custom App Fonts (앱 전용)
-    static let buttonFont = CustomFont.font(name: CustomFont.chosunNm, size: 17)
-    static let buttonFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 12)
-    static let handWrite = CustomFont.font(name: CustomFont.yoonChild, size: 17)
+    static let buttonFont = CustomFont.font(name: CustomFont.chosunNm, size: 18)
+    static let buttonFontSmall = CustomFont.font(name: CustomFont.chosunNm, size: 15)
+    static let handWrite = CustomFont.font(name: CustomFont.lSY, size: 18)
 }
 
 

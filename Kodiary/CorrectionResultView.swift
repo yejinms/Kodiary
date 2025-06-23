@@ -118,7 +118,7 @@ struct CorrectionResultView: View {
                                     corrections: corrections
                                 )
                                 .font(.handWrite)
-                                .lineSpacing(10)
+                                .lineSpacing(17)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(15)
                             }
@@ -258,7 +258,7 @@ struct CorrectionRow: View {
                         .padding(.horizontal, 5)
                         .font(.bodyFont)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .lineSpacing(10)
+                        .lineSpacing(17)
                 }
                 .padding()
                 .background(Color.clear)
@@ -294,7 +294,7 @@ struct HighlightedText: View {
     var body: some View {
         Text(attributedString)
             .font(.handWrite) // 전체 텍스트에 handWrite 폰트 적용
-            .lineSpacing(10)
+            .lineSpacing(17)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
     }
