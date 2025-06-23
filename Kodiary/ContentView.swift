@@ -154,6 +154,7 @@ struct ContentView: View {
                         .padding(.top, 4)
                         .multilineTextAlignment(.center)
                         .lineSpacing(10)
+                        .padding(.horizontal)
                 }
                 .padding(Spacing.xl)
                 .cornerRadius(CornerRadius.md)

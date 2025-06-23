@@ -92,7 +92,7 @@ struct DiaryWriteView: View {
                                 .lineLimit(1)
                                 .fixedSize(horizontal: true, vertical: false)
                         }
-                        .padding(5)
+                        .padding(1)
                         .background(Color.primaryYellow.opacity(0.5))
                         Spacer()
                         // 글자 수 표시

@@ -68,6 +68,8 @@ struct SaveLoadingView: View {
                         .font(.titleSmall2)
                         .foregroundColor(.primaryDark)
                         .multilineTextAlignment(.center)
+                        .lineSpacing(10)
+                        .padding(.horizontal)
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 97)
