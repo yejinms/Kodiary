@@ -27,14 +27,14 @@ struct ProfileSettingsView: View {
                     editingName = userManager.userName
                     showingNameEditAlert = true
                 }) {
-                    VStack(spacing: 4) {
+                    HStack(spacing: 10) {
                         Text(userManager.userName.isEmpty ? languageManager.currentLanguage.profileUserName : userManager.userName)
                             .font(.titleLarge)
                             .foregroundColor(.primaryDark)
                         
-                        Text("이름 수정하기")
-                            .font(.buttonFontSmall)
-                            .foregroundColor(.gray)
+                        Image(systemName: "pencil")
+                            .font(.bodyFont)
+                            .foregroundColor(.primaryDark.opacity(0.5))
                     }
                 }
             }
@@ -42,20 +42,6 @@ struct ProfileSettingsView: View {
             
             // 설정 메뉴들
             VStack(spacing: Spacing.md) {
-                SettingsRow(
-                    icon: "pencil",
-                    title: "이름 변경",
-                    action: {
-                        editingName = userManager.userName
-                        showingNameEditAlert = true
-                    }
-                )
-                
-                SettingsRow(
-                    icon: "person",
-                    title: languageManager.currentLanguage.profileInfoTitle,
-                    action: { /* 프로필 정보 수정 */ }
-                )
                 
                 SettingsRow(
                     icon: "bell",

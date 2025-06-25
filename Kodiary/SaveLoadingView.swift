@@ -72,7 +72,7 @@ struct SaveLoadingView: View {
                         .padding(.horizontal)
                 }
                 .padding(.top, 20)
-                .padding(.bottom, 97)
+                .padding(.bottom, 150)
                 
                 Spacer()
             }

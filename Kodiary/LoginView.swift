@@ -26,16 +26,13 @@ struct LoginView: View {
                 // 앱 로고 및 제목
                 VStack(spacing: 20) {
                     // 앱 아이콘 (원형)
-                    ZStack {
-                        Circle()
-                            .fill(Color.primaryYellow)
-                            .frame(width: 120, height: 120)
-                            .shadow(color: .primaryDark.opacity(0.1), radius: 10, x: 0, y: 5)
-                        
-                        Text("📔")
-                            .font(.system(size: 60))
-                    }
-                    
+                        Image("KoDiary_icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 150, height: 150)
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.2), radius: 15, x: 0, y: 5)
+                   
                     // 앱 이름
                     Text("Kodiary")
                         .font(.custom("GravitasOne", size: 36))
