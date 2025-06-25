@@ -22,7 +22,24 @@ struct DiaryHistoryView: View {
     var body: some View {
         VStack(spacing: 0) {
             // 캘린더 헤더
-            CalendarHeader(currentMonth: $currentMonth)
+            CalendarHeader(
+                currentMonth: $currentMonth,
+                onMonthChanged: { newMonth in
+                    // 이번 달인지 확인
+                    let today = Date()
+                    let calendar = Calendar.current
+                    
+                    if calendar.isDate(newMonth, equalTo: today, toGranularity: .month) {
+                        // 이번 달로 돌아온 경우 오늘 날짜 선택
+                        selectedDate = today
+                    } else {
+                        // 다른 달인 경우 해당 월의 1일 선택
+                        if let firstDayOfMonth = calendar.dateInterval(of: .month, for: newMonth)?.start {
+                            selectedDate = firstDayOfMonth
+                        }
+                    }
+                }
+            )
             
             // 캘린더 그리드 - 실제 데이터 사용
             CalendarGrid(
@@ -69,9 +86,10 @@ struct DiaryHistoryView: View {
     }
 }
 
-// 캘린더 헤더 - 다국어 지원 (상하 선 추가)
+// 캘린더 헤더 - 월 변경 콜백 추가
 struct CalendarHeader: View {
     @Binding var currentMonth: Date
+    let onMonthChanged: (Date) -> Void // 월 변경 콜백 추가
     @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
@@ -99,7 +117,10 @@ struct CalendarHeader: View {
             HStack {
                 // 이전 달 버튼
                 Button(action: {
-                    currentMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth) ?? currentMonth
+                    if let newMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth) {
+                        currentMonth = newMonth
+                        onMonthChanged(newMonth) // 콜백 호출
+                    }
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.titleLarge)
@@ -114,7 +135,10 @@ struct CalendarHeader: View {
                 
                 // 다음 달 버튼
                 Button(action: {
-                    currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth) ?? currentMonth
+                    if let newMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth) {
+                        currentMonth = newMonth
+                        onMonthChanged(newMonth) // 콜백 호출
+                    }
                 }) {
                     Image(systemName: "chevron.right")
                         .font(.titleLarge)

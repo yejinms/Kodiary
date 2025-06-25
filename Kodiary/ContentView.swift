@@ -29,7 +29,6 @@ struct ResponsiveDateHeader: View {
                                .fill(Color.primaryDark.opacity(0.2))
                                .frame(height: 1.8)
                        }
-                       .padding(.horizontal, 0.9)
                     )
                 
                 HStack(spacing: 0) {
@@ -58,6 +57,7 @@ struct ResponsiveDateHeader: View {
             }
         }
         .frame(height: 70)
+        .padding(.top, -15)
     }
 }
 
@@ -116,93 +116,10 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            VStack(spacing: Spacing.md) {
-                
-                Spacer()
-                    .frame(height: 10)
-                
-                // 반응형 날짜 헤더 사용
-                ResponsiveDateHeader(dateComponents: todayDateComponents)
-        
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(width: 265.5, height: 265.5)
-                        .cornerRadius(265.5)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 265.5)
-                                .inset(by: 0.9)
-                                .stroke(Color.primaryDark, lineWidth: 1.8)
-                        )
-                    
-                    VStack(spacing: Spacing.sm) {
-                        Text(todayDayString)
-                            .font(.titleHuge)
-                            .foregroundColor(.primaryDark)
-                        
-                    }
-                }.padding(.top, 18)
-                
-                // 인사말 (다국어 지원)
-                VStack(spacing: Spacing.sm) {
-                    Text(greetingTexts.title)
-                        .font(.titleSmall1)
-                        .foregroundColor(.primaryDark)
-                    Text(greetingTexts.subtitle)
-                        .font(.titleSmall2)
-                        .foregroundColor(.primaryDark)
-                        .padding(.top, 4)
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(10)
-                        .padding(.horizontal)
-                }
-                .padding(Spacing.xl)
-                .cornerRadius(CornerRadius.md)
-                
-                // 일기 쓰기 버튼 (다국어 지원)
-                Button(action: {
-                    navigationPath.append("diary-write")
-                }) {
-                    HStack(spacing: Spacing.sm) {
-                        Text(hasTodayDiary ? languageManager.currentLanguage.writeButtonCompletedText(languageManager.correctionLanguageDisplayName) : languageManager.currentLanguage.writeButtonText(languageManager.correctionLanguageDisplayName))
-                            .font(.buttonFont)
-                            .padding(16)
-                        
-                        Spacer()
-                        Image(systemName: "plus")
-                            .font(.buttonFontSmall)
-                            .padding(16)
-                    }
-                    .foregroundColor(.primaryDark)
-                    .frame(width: 350, height: 50)
-                    .background(hasTodayDiary ? Color.primaryDark.opacity(0.2) : Color.primaryBlue )
-                }
-                
-                // 히스토리 버튼 (다국어 지원)
-                Button(action: {
-                    navigationPath.append("diary-history")
-                }) {
-                    HStack(spacing: Spacing.sm) {
-                        Text(languageManager.currentLanguage.historyButtonText)
-                            .font(.buttonFont)
-                            .padding(16)
-                        Spacer()
-                        Image(systemName: "chevron.forward")
-                            .font(.buttonFontSmall)
-                            .padding(16)
-                    }
-                }
-                .font(.buttonFont)
-                .foregroundColor(.primaryDark)
-                .frame(width: 350, height: 50)
-                .background(Color.primaryYellow)
-                
-                Spacer()
-            }
-//            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                // 언어 설정 버튼 (좌측 상단)
-                ToolbarItem(placement: .navigationBarLeading) {
+            VStack(spacing: 0) {
+                // 사용자 정의 툴바
+                HStack {
+                    // 언어 설정 버튼 (좌측)
                     Button(action: {
                         showingLanguageSelection = true
                     }) {
@@ -214,10 +131,10 @@ struct ContentView: View {
                                     .font(.system(size: 35))
                             )
                     }
-                }
-                
-                // 프로필 설정 버튼 (우측 상단)
-                ToolbarItem(placement: .navigationBarTrailing) {
+                    
+                    Spacer()
+                    
+                    // 프로필 설정 버튼 (우측)
                     Button(action: {
                         navigationPath.append("profile-settings")
                     }) {
@@ -231,7 +148,95 @@ struct ContentView: View {
                             )
                     }
                 }
+                .padding(.horizontal, 30)
+                .padding(.top, 20)
+                
+                
+                VStack(spacing: Spacing.md) {
+                    
+                    Spacer()
+                        .frame(height: 10)
+                    
+                    // 반응형 날짜 헤더 사용
+                    ResponsiveDateHeader(dateComponents: todayDateComponents)
+            
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(.clear)
+                            .frame(width: 265.5, height: 265.5)
+                            .cornerRadius(265.5)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 265.5)
+                                    .inset(by: 0.9)
+                                    .stroke(Color.primaryDark, lineWidth: 1.8)
+                            )
+                        
+                        VStack(spacing: Spacing.sm) {
+                            Text(todayDayString)
+                                .font(.titleHuge)
+                                .foregroundColor(.primaryDark)
+                            
+                        }
+                    }.padding(.top, 18)
+                    
+                    // 인사말 (다국어 지원)
+                    VStack(spacing: Spacing.sm) {
+                        Text(greetingTexts.title)
+                            .font(.titleSmall1)
+                            .foregroundColor(.primaryDark)
+                        Text(greetingTexts.subtitle)
+                            .font(.titleSmall2)
+                            .foregroundColor(.primaryDark)
+                            .padding(.top, 4)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(10)
+                            .padding(.horizontal)
+                    }
+                    .padding(Spacing.xl)
+                    .cornerRadius(CornerRadius.md)
+                    
+                    // 일기 쓰기 버튼 (다국어 지원)
+                    Button(action: {
+                        navigationPath.append("diary-write")
+                    }) {
+                        HStack(spacing: Spacing.sm) {
+                            Text(hasTodayDiary ? languageManager.currentLanguage.writeButtonCompletedText(languageManager.correctionLanguageDisplayName) : languageManager.currentLanguage.writeButtonText(languageManager.correctionLanguageDisplayName))
+                                .font(.buttonFont)
+                                .padding(16)
+                            
+                            Spacer()
+                            Image(systemName: "plus")
+                                .font(.buttonFontSmall)
+                                .padding(16)
+                        }
+                        .foregroundColor(.primaryDark)
+                        .frame(width: 350, height: 50)
+                        .background(hasTodayDiary ? Color.primaryDark.opacity(0.2) : Color.primaryBlue )
+                    }
+                    
+                    // 히스토리 버튼 (다국어 지원)
+                    Button(action: {
+                        navigationPath.append("diary-history")
+                    }) {
+                        HStack(spacing: Spacing.sm) {
+                            Text(languageManager.currentLanguage.historyButtonText)
+                                .font(.buttonFont)
+                                .padding(16)
+                            Spacer()
+                            Image(systemName: "chevron.forward")
+                                .font(.buttonFontSmall)
+                                .padding(16)
+                        }
+                    }
+                    .font(.buttonFont)
+                    .foregroundColor(.primaryDark)
+                    .frame(width: 350, height: 50)
+                    .background(Color.primaryYellow)
+                    
+                    Spacer()
+                }
             }
+            .navigationBarHidden(true) // 기본 네비게이션 바 숨기기
             .navigationDestination(for: String.self) { destination in
                 switch destination {
                 case "diary-write":
