@@ -2,7 +2,8 @@ import SwiftUI
 
 struct ProfileSettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var languageManager: LanguageManager  // 추가
+    @EnvironmentObject var languageManager: LanguageManager
+    @State private var showingHelpView = false
     
     var body: some View {
         VStack(spacing: Spacing.lg) {
@@ -46,7 +47,9 @@ struct ProfileSettingsView: View {
                 SettingsRow(
                     icon: "questionmark.circle",
                     title: languageManager.currentLanguage.helpTitle,
-                    action: { /* 도움말 */ }
+                    action: {
+                        showingHelpView = true
+                    }
                 )
                 
                 SettingsRow(
@@ -74,6 +77,12 @@ struct ProfileSettingsView: View {
                     }
                     .foregroundColor(.primaryDark.opacity(0.5))
                 }
+            }
+        }
+        .sheet(isPresented: $showingHelpView) {
+            NavigationView {
+                HelpView()
+                    .environmentObject(languageManager)
             }
         }
     }
