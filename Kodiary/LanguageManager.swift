@@ -136,12 +136,21 @@ class LanguageManager: ObservableObject {
         // UserDefaults에서 저장된 언어 설정을 불러오기
         self.nativeLanguage = Self.loadSavedLanguage(key: nativeLanguageKey) ?? Self.getDeviceLanguage()
         self.correctionLanguage = Self.loadSavedLanguage(key: correctionLanguageKey) ?? Self.korean
+        
+        print("🌍 언어 설정 로드됨 - 모국어: \(nativeLanguage.languageCode), 첨삭언어: \(correctionLanguage.languageCode)")
     }
-    
-    // UserDefaults에서 저장된 언어 불러오기
+
+    // UserDefaults에서 저장된 언어 불러오기 (개선된 버전)
     private static func loadSavedLanguage(key: String) -> LanguageTexts? {
         let savedLanguageCode = UserDefaults.standard.string(forKey: key)
-        return availableLanguages.first { $0.languageCode == savedLanguageCode }
+        let foundLanguage = availableLanguages.first { $0.languageCode == savedLanguageCode }
+        
+        if let languageCode = savedLanguageCode, let language = foundLanguage {
+            print("📱 UserDefaults에서 언어 복원: \(key) = \(languageCode)")
+            return language
+        }
+        
+        return nil
     }
     
     // 디바이스 설정 언어 감지
@@ -163,14 +172,47 @@ class LanguageManager: ObservableObject {
         UserDefaults.standard.set(languageCode, forKey: key)
     }
     
-    func setNativeLanguage(_ language: LanguageTexts) {
-        nativeLanguage = language
-        saveLanguageToUserDefaults(languageCode: language.languageCode, key: nativeLanguageKey)
-    }
-    
     func setCorrectionLanguage(_ language: LanguageTexts) {
         correctionLanguage = language
         saveLanguageToUserDefaults(languageCode: language.languageCode, key: correctionLanguageKey)
+        
+        print("🌍 첨삭 언어 설정됨: \(language.languageCode)")
+        
+        // CloudKit에도 저장 (로그인된 경우)
+        saveToCloudKitIfNeeded()
+    }
+
+    func setNativeLanguage(_ language: LanguageTexts) {
+        nativeLanguage = language
+        saveLanguageToUserDefaults(languageCode: language.languageCode, key: nativeLanguageKey)
+        
+        print("🌍 모국어 설정됨: \(language.languageCode)")
+        
+        // CloudKit에도 저장 (로그인된 경우)
+        saveToCloudKitIfNeeded()
+    }
+
+    private func saveToCloudKitIfNeeded() {
+        // 온보딩 중이거나 로그인하지 않은 경우 저장하지 않음
+        guard let currentUserID = UserDefaults.standard.string(forKey: "user_id"),
+              UserDefaults.standard.bool(forKey: "is_logged_in"),
+              !UserManager.shared.needsNameSetup,
+              !UserManager.shared.needsLanguageSetup else {
+            print("⏸️ CloudKit 저장 건너뛰기 (온보딩 중 또는 로그인 안됨)")
+            return
+        }
+        
+        let userName = UserManager.shared.userName
+        
+        // 비동기로 CloudKit에 저장
+        Task {
+            await UserManager.shared.saveSettingsDirectlyToCloudKit(
+                appleUserID: currentUserID,
+                userName: userName,
+                correctionLanguageCode: correctionLanguageCode,
+                nativeLanguageCode: nativeLanguageCode
+            )
+        }
     }
     
     // API 호출 시 사용할 언어 코드들

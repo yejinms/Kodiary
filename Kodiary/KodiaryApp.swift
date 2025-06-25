@@ -49,7 +49,7 @@ struct MainAppView: View {
                     .onAppear {
                         print("🌍 LanguageLearningSetupView 표시됨")
                     }
-            } else {
+            } else if userManager.isSettingsLoaded {
                 ContentView()
                     .environmentObject(DataManager.shared)
                     .environmentObject(LanguageManager.shared)
@@ -57,20 +57,65 @@ struct MainAppView: View {
                     .onAppear {
                         print("🏠 ContentView 표시됨 - 사용자: \(userManager.userName)")
                     }
+            } else {
+                // 설정 로드 중 - 깔끔한 배경만 표시
+                Color.background
+                    .ignoresSafeArea()
+                    .onAppear {
+                        print("⏳ 설정 로드 대기 중...")
+                    }
             }
         }
         .id(viewId)
-        .onReceive(userManager.$isLoggedIn) { isLoggedIn in
-            print("🔄 MainAppView - 로그인 상태 변경됨: \(isLoggedIn)")
+        .onReceive(userManager.$isLoggedIn) { newValue in
+            print("🔄 MainAppView - 로그인 상태 변경됨: \(newValue)")
             viewId = UUID()
         }
-        .onReceive(userManager.$needsNameSetup) { needsSetup in
-            print("🔄 MainAppView - 이름 설정 필요 상태 변경됨: \(needsSetup)")
+        .onReceive(userManager.$needsNameSetup) { newValue in
+            print("🔄 MainAppView - 이름 설정 필요 상태 변경됨: \(newValue)")
             viewId = UUID()
         }
-        .onReceive(userManager.$needsLanguageSetup) { needsSetup in
-            print("🔄 MainAppView - 언어 설정 필요 상태 변경됨: \(needsSetup)")
+        .onReceive(userManager.$isSettingsLoaded) { newValue in
+            print("🔄 MainAppView - 설정 로드 상태 변경됨: \(newValue)")
             viewId = UUID()
         }
+    }
+}
+
+// CloudKit 동기화 대기 화면
+struct CloudKitSyncWaitingView: View {
+    @EnvironmentObject var languageManager: LanguageManager
+    
+    var body: some View {
+        VStack(spacing: 30) {
+            Spacer()
+            
+            // 로딩 애니메이션
+            VStack(spacing: 20) {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .primaryDark))
+                    .scaleEffect(1.5)
+                
+                Text("☁️")
+                    .font(.system(size: 60))
+                    .opacity(0.8)
+            }
+            
+            VStack(spacing: 12) {
+                Text("데이터 동기화 중...")
+                    .font(.titleLarge)
+                    .foregroundColor(.primaryDark)
+                
+                Text("클라우드에서 설정과 일기를 불러오고 있어요")
+                    .font(.bodyFont)
+                    .foregroundColor(.primaryDark.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                    .lineSpacing(5)
+            }
+            
+            Spacer()
+        }
+        .background(Color.background)
     }
 }

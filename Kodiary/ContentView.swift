@@ -263,56 +263,17 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // 앱 시작 시 데이터 새로고침
-            dataManager.fetchDiaries()
-            FontNameChecker.checkActualFontNames()
+            print("🏠 ContentView 나타남")
+            print("👤 현재 사용자: \(userManager.userName)")
+            print("🌍 현재 첨삭 언어: \(languageManager.correctionLanguageCode)")
+            print("📚 현재 일기 수: \(dataManager.savedDiaries.count)")
             
-        }
-    }
-}
-
-struct FontNameChecker {
-    static func checkActualFontNames() {
-        print("=== 실제 폰트 이름 확인 ===")
-        
-        let fontFiles = [
-            "ChosunKm.TTF",
-            "ChosunNm.ttf",
-            "ChosunSm.TTF",
-            "YoonChild.otf",
-            "산돌국대떡볶이체.otf",
-            "Cafe24Classictype-v1.1.ttf",
-            "GravitasOne-Regular.ttf",
-            "이서윤체.ttf"
-        ]
-        
-        for fileName in fontFiles {
-            let nameWithoutExtension = (fileName as NSString).deletingPathExtension
-            let fileExtension = (fileName as NSString).pathExtension
+            // 항상 앱 시작 시 데이터 새로고침 실행
+            dataManager.refreshDataOnAppStart()
             
-            if let fontPath = Bundle.main.path(forResource: nameWithoutExtension, ofType: fileExtension),
-               let fontData = NSData(contentsOfFile: fontPath),
-               let dataProvider = CGDataProvider(data: fontData),
-               let cgFont = CGFont(dataProvider) {
-                
-                if let postScriptName = cgFont.postScriptName {
-                    print("📄 파일: \(fileName)")
-                    print("   실제 폰트 이름: \(postScriptName)")
-                    print("   가정한 이름: \(nameWithoutExtension)")
-                    print("   일치 여부: \(postScriptName as String == nameWithoutExtension ? "✅" : "❌")")
-                    print()
-                }
-            }
-        }
-        
-        // 현재 사용 가능한 모든 폰트 중에서 "Chosun"이나 "Yoon" 포함된 것들 찾기
-        print("=== 'Chosun' 또는 'Yoon' 포함 폰트 검색 ===")
-        for family in UIFont.familyNames {
-            if family.lowercased().contains("chosun") || family.lowercased().contains("yoon") {
-                print("📁 Family: \(family)")
-                for fontName in UIFont.fontNames(forFamilyName: family) {
-                    print("   • \(fontName)")
-                }
+            // CloudKit 계정 상태 확인
+            if dataManager.syncStatus == "확인 중..." {
+                dataManager.checkCloudKitAccount()
             }
         }
     }

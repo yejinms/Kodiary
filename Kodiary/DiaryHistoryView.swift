@@ -18,6 +18,7 @@ struct DiaryHistoryView: View {
     @Binding var navigationPath: NavigationPath
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
+    @State private var diaryDates: Set<String> = []
     
     var body: some View {
         VStack(spacing: 0) {
@@ -45,7 +46,7 @@ struct DiaryHistoryView: View {
             CalendarGrid(
                 currentMonth: currentMonth,
                 selectedDate: $selectedDate,
-                diaryDates: dataManager.getDiaryDates()
+                diaryDates: diaryDates
             )
             
             // 선택된 날짜의 일기 정보 - 실제 데이터 사용
@@ -77,7 +78,11 @@ struct DiaryHistoryView: View {
         }
         .onAppear {
             dataManager.fetchDiaries()
+            diaryDates = dataManager.getDiaryDates()
         }
+        .onChange(of: dataManager.savedDiaries) { _, _ in
+                    diaryDates = dataManager.getDiaryDates()  // ← 추가: 데이터 변경 시 업데이트
+                }
         .navigationDestination(for: DiaryWriteDestination.self) { _ in
             DiaryWriteView(navigationPath: $navigationPath)
                 .environmentObject(dataManager)
@@ -176,6 +181,7 @@ struct CalendarGrid: View {
     @Binding var selectedDate: Date
     let diaryDates: Set<String>
     @EnvironmentObject var languageManager: LanguageManager
+    @EnvironmentObject var dataManager: DataManager
     
     private let calendar = Calendar.current
     private let dateFormatter: DateFormatter = {

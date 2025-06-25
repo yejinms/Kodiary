@@ -114,12 +114,16 @@ struct LanguageLearningSetupView: View {
         // 선택한 언어를 첨삭 언어로 설정
         languageManager.setCorrectionLanguage(selectedLanguage)
         
-        // 온보딩 완료
-        userManager.completeOnboarding()
-        
-        // 로딩 애니메이션을 위한 딜레이
+        // 로딩 애니메이션을 위한 짧은 딜레이 후 온보딩 완료
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            isLoading = false
+            // UserManager를 통해 온보딩 완료 및 CloudKit 저장
+            userManager.completeOnboarding()
+            
+            // 추가 딜레이 후 로딩 해제
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                isLoading = false
+                print("🎉 언어 설정 완료 및 CloudKit 저장 완료!")
+            }
         }
     }
 }
