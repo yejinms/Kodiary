@@ -24,12 +24,12 @@ struct LanguageLearningSetupView: View {
                 }
                 
                 VStack(spacing: 12) {
-                    Text(getWelcomeTitle())
+                    Text(languageManager.currentLanguage.languageLearningWelcomeTitle(userManager.userName))
                         .font(.titleLarge)
                         .foregroundColor(.primaryDark)
                         .multilineTextAlignment(.center)
                     
-                    Text(getWelcomeSubtitle())
+                    Text(languageManager.currentLanguage.languageLearningWelcomeSubtitle)
                         .font(.bodyFont)
                         .foregroundColor(.primaryDark.opacity(0.7))
                         .multilineTextAlignment(.center)
@@ -42,7 +42,7 @@ struct LanguageLearningSetupView: View {
             
             // 언어 선택 섹션
             VStack(spacing: 20) {
-                Text(getLanguagePrompt())
+                Text(languageManager.currentLanguage.languageLearningPrompt)
                     .font(.bodyFontTitle)
                     .foregroundColor(.primaryDark)
                 
@@ -79,7 +79,7 @@ struct LanguageLearningSetupView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .primaryDark))
                             .scaleEffect(0.8)
                     } else {
-                        Text(getContinueButtonText())
+                        Text(languageManager.currentLanguage.languageLearningContinueButton)
                             .font(.buttonFont)
                             .foregroundColor(.primaryDark)
                     }
@@ -120,79 +120,6 @@ struct LanguageLearningSetupView: View {
         // 로딩 애니메이션을 위한 딜레이
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             isLoading = false
-        }
-    }
-    
-    // MARK: - Localized Strings
-    private func getWelcomeTitle() -> String {
-        switch languageManager.currentLanguage.languageCode {
-        case "ko": return "\(userManager.userName)님!"
-        case "en": return "\(userManager.userName)!"
-        case "ja": return "\(userManager.userName)さん！"
-        case "es": return "¡\(userManager.userName)!"
-        case "th": return "\(userManager.userName)!"
-        case "de": return "\(userManager.userName)!"
-        case "zh": return "\(userManager.userName)！"
-        case "ar": return "\(userManager.userName)!"
-        case "fr": return "\(userManager.userName)!"
-        case "it": return "\(userManager.userName)!"
-        case "pt": return "\(userManager.userName)!"
-        case "hi": return "\(userManager.userName)!"
-        default: return "\(userManager.userName)!"
-        }
-    }
-    
-    private func getWelcomeSubtitle() -> String {
-        switch languageManager.currentLanguage.languageCode {
-        case "ko": return "어떤 언어를 학습하고 싶으세요?"
-        case "en": return "Which language would you like to learn?"
-        case "ja": return "どの言語を学習したいですか？"
-        case "es": return "¿Qué idioma te gustaría aprender?"
-        case "th": return "คุณอยากเรียนภาษาอะไร?"
-        case "de": return "Welche Sprache möchten Sie lernen?"
-        case "zh": return "您想学习哪种语言？"
-        case "ar": return "أي لغة تريد أن تتعلم؟"
-        case "fr": return "Quelle langue souhaitez-vous apprendre?"
-        case "it": return "Quale lingua vorresti imparare?"
-        case "pt": return "Qual idioma você gostaria de aprender?"
-        case "hi": return "आप कौन सी भाषा सीखना चाहते हैं?"
-        default: return "Which language would you like to learn?"
-        }
-    }
-    
-    private func getLanguagePrompt() -> String {
-        switch languageManager.currentLanguage.languageCode {
-        case "ko": return "학습할 언어를 선택해주세요"
-        case "en": return "Choose your learning language"
-        case "ja": return "学習言語を選択してください"
-        case "es": return "Elige tu idioma de aprendizaje"
-        case "th": return "เลือกภาษาที่จะเรียน"
-        case "de": return "Wählen Sie Ihre Lernsprache"
-        case "zh": return "选择您的学习语言"
-        case "ar": return "اختر لغة التعلم"
-        case "fr": return "Choisissez votre langue d'apprentissage"
-        case "it": return "Scegli la tua lingua di apprendimento"
-        case "pt": return "Escolha seu idioma de aprendizado"
-        case "hi": return "अपनी सीखने की भाषा चुनें"
-        default: return "Choose your learning language"
-        }
-    }
-    
-    private func getContinueButtonText() -> String {
-        switch languageManager.currentLanguage.languageCode {
-        case "ko": return "학습 시작하기"
-        case "en": return "Start Learning"
-        case "ja": return "学習を始める"
-        case "es": return "Empezar a aprender"
-        case "th": return "เริ่มเรียน"
-        case "de": return "Lernen beginnen"
-        case "zh": return "开始学习"
-        case "ar": return "ابدأ التعلم"
-        case "fr": return "Commencer à apprendre"
-        case "it": return "Inizia ad imparare"
-        case "pt": return "Começar a aprender"
-        case "hi": return "सीखना शुरू करें"
-        default: return "Start Learning"
         }
     }
 }

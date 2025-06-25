@@ -31,6 +31,12 @@ struct LanguageTexts {
         let appTourGetStarted: String
         let appTourSkip: String
     
+    // 언어 학습 설정 관련 (새로 추가)
+        let languageLearningWelcomeTitle: (String) -> String  // 사용자 이름을 받는 클로저
+        let languageLearningWelcomeSubtitle: String
+        let languageLearningPrompt: String
+        let languageLearningContinueButton: String
+    
     // 날짜 관련
     let dateComponents: (year: String, month: String, weekday: String)
     let dayDateFormat: String
@@ -216,6 +222,12 @@ class LanguageManager: ObservableObject {
            appTourGetStarted: "시작하기",
            appTourSkip: "건너뛰기",
         
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)님!" },
+            languageLearningWelcomeSubtitle: "어떤 언어를 학습하고 싶으세요?",
+            languageLearningPrompt: "학습할 언어를 선택해주세요",
+            languageLearningContinueButton: "학습 시작하기",
+        
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M월", weekday: "E요일"),
         dayDateFormat: "d",
@@ -333,6 +345,12 @@ class LanguageManager: ObservableObject {
             appTourGetStarted: "Get Started",
             appTourSkip: "Skip",
         
+        // 언어 학습 설정 관련
+           languageLearningWelcomeTitle: { username in "\(username)!" },
+           languageLearningWelcomeSubtitle: "Which language would you like to learn?",
+           languageLearningPrompt: "Choose your learning language",
+           languageLearningContinueButton: "Start Learning",
+        
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "MMM", weekday: "E"),
         dayDateFormat: "d",
@@ -449,7 +467,12 @@ class LanguageManager: ObservableObject {
             appTourFeature4Description: "12言語で学習できるので\n世界中どこでもコミュニケーション可能",
             appTourGetStarted: "始める",
             appTourSkip: "スキップ",
-            
+        
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)さん！" },
+            languageLearningWelcomeSubtitle: "どの言語を学習したいですか？",
+            languageLearningPrompt: "学習言語を選択してください",
+            languageLearningContinueButton: "学習を始める",
         
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
@@ -565,6 +588,12 @@ class LanguageManager: ObservableObject {
             appTourGetStarted: "Empezar",
             appTourSkip: "Saltar",
         
+        // 언어 학습 설정 관련
+           languageLearningWelcomeTitle: { username in "¡\(username)!" },
+           languageLearningWelcomeSubtitle: "¿Qué idioma te gustaría aprender?",
+           languageLearningPrompt: "Elige tu idioma de aprendizaje",
+           languageLearningContinueButton: "Empezar a aprender",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -667,6 +696,12 @@ class LanguageManager: ObservableObject {
             appTourFeature4Description: "เรียนรู้ 12 ภาษาต่างๆ\nเพื่อสื่อสารได้ทุกที่ในโลก",
             appTourGetStarted: "เริ่มต้น",
             appTourSkip: "ข้าม",
+        
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)!" },
+            languageLearningWelcomeSubtitle: "คุณอยากเรียนภาษาอะไร?",
+            languageLearningPrompt: "เลือกภาษาที่จะเรียน",
+            languageLearningContinueButton: "เริ่มเรียน",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -771,6 +806,12 @@ class LanguageManager: ObservableObject {
             appTourGetStarted: "Loslegen",
             appTourSkip: "Überspringen",
         
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)!" },
+            languageLearningWelcomeSubtitle: "Welche Sprache möchten Sie lernen?",
+            languageLearningPrompt: "Wählen Sie Ihre Lernsprache",
+            languageLearningContinueButton: "Lernen beginnen",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -873,6 +914,12 @@ class LanguageManager: ObservableObject {
             appTourFeature4Description: "学习12种不同语言\n在世界任何地方都能交流",
             appTourGetStarted: "开始",
             appTourSkip: "跳过",
+        
+        // 언어 학습 설정 관련
+           languageLearningWelcomeTitle: { username in "\(username)！" },
+           languageLearningWelcomeSubtitle: "您想学习哪种语言？",
+           languageLearningPrompt: "选择您的学习语言",
+           languageLearningContinueButton: "开始学习",
         
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -977,6 +1024,12 @@ class LanguageManager: ObservableObject {
        appTourGetStarted: "ابدأ",
        appTourSkip: "تخطي",
         
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)!" },
+            languageLearningWelcomeSubtitle: "أي لغة تريد أن تتعلم؟",
+            languageLearningPrompt: "اختر لغة التعلم",
+            languageLearningContinueButton: "ابدأ التعلم",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -1079,6 +1132,12 @@ class LanguageManager: ObservableObject {
            appTourFeature4Description: "Apprenez 12 langues différentes\npour communiquer partout dans le monde",
            appTourGetStarted: "Commencer",
            appTourSkip: "Passer",
+        
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)!" },
+            languageLearningWelcomeSubtitle: "Quelle langue souhaitez-vous apprendre?",
+            languageLearningPrompt: "Choisissez votre langue d'apprentissage",
+            languageLearningContinueButton: "Commencer à apprendre",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -1183,6 +1242,12 @@ class LanguageManager: ObservableObject {
             appTourGetStarted: "Inizia",
             appTourSkip: "Salta",
         
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)!" },
+            languageLearningWelcomeSubtitle: "Quale lingua vorresti imparare?",
+            languageLearningPrompt: "Scegli la tua lingua di apprendimento",
+            languageLearningContinueButton: "Inizia ad imparare",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -1286,6 +1351,12 @@ class LanguageManager: ObservableObject {
             appTourGetStarted: "Começar",
             appTourSkip: "Pular",
         
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)!" },
+            languageLearningWelcomeSubtitle: "Qual idioma você gostaria de aprender?",
+            languageLearningPrompt: "Escolha seu idioma de aprendizado",
+            languageLearningContinueButton: "Começar a aprender",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "E"),
         dayDateFormat: "d",
         
@@ -1388,6 +1459,12 @@ class LanguageManager: ObservableObject {
             appTourFeature4Description: "12 विभिन्न भाषाएं सीखें\nदुनिया में कहीं भी संवाद करने के लिए",
             appTourGetStarted: "शुरू करें",
             appTourSkip: "छोड़ें",
+        
+        // 언어 학습 설정 관련
+            languageLearningWelcomeTitle: { username in "\(username)!" },
+            languageLearningWelcomeSubtitle: "आप कौन सी भाषा सीखना चाहते हैं?",
+            languageLearningPrompt: "अपनी सीखने की भाषा चुनें",
+            languageLearningContinueButton: "सीखना शुरू करें",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
