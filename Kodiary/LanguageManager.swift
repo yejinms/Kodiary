@@ -200,7 +200,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "첨삭 \(count)개" },
         characterCountText: { count in "\(count)자" },
         noDiaryMessage: "이 날은 일기를 쓰지 않았어요",
-        todayDiaryPrompt: "오늘 일기를 써보세요! ✍️",
+        todayDiaryPrompt: "일기 쓰기",
         
         // CorrectionResultView
         correctionResultTitle: "첨삭 결과",
@@ -297,7 +297,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) corrections" },
         characterCountText: { count in "\(count) chars" },
         noDiaryMessage: "No diary entry for this day",
-        todayDiaryPrompt: "Write today's diary! ✍️",
+        todayDiaryPrompt: "Write diary",
         
         // CorrectionResultView
         correctionResultTitle: "Correction Results",
@@ -394,7 +394,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "添削\(count)個" },
         characterCountText: { count in "\(count)文字" },
         noDiaryMessage: "この日は日記を書いていません",
-        todayDiaryPrompt: "今日の日記を書いてみましょう！ ✍️",
+        todayDiaryPrompt: "日記を書く",
         
         // CorrectionResultView
         correctionResultTitle: "添削結果",
@@ -485,7 +485,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) correcciones" },
         characterCountText: { count in "\(count) caracteres" },
         noDiaryMessage: "No hay entrada de diario para este día",
-        todayDiaryPrompt: "¡Escribe el diario de hoy! ✍️",
+        todayDiaryPrompt: "Escribir diario",
         
         correctionResultTitle: "Resultados de corrección",
         writtenDiaryTitle: "Tu diario",
@@ -569,7 +569,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) การแก้ไข" },
         characterCountText: { count in "\(count) ตัวอักษร" },
         noDiaryMessage: "ไม่มีไดอารี่สำหรับวันนี้",
-        todayDiaryPrompt: "เขียนไดอารี่วันนี้! ✍️",
+        todayDiaryPrompt: "เขียนไดอารี่",
         
         correctionResultTitle: "ผลการแก้ไข",
         writtenDiaryTitle: "ไดอารี่ของคุณ",
@@ -653,7 +653,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) Korrekturen" },
         characterCountText: { count in "\(count) Zeichen" },
         noDiaryMessage: "Kein Tagebucheintrag für diesen Tag",
-        todayDiaryPrompt: "Schreibe das heutige Tagebuch! ✍️",
+        todayDiaryPrompt: "Tagebuch schreiben",
         
         correctionResultTitle: "Korrekturergebnisse",
         writtenDiaryTitle: "Dein Tagebuch",
@@ -737,7 +737,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count)个批改" },
         characterCountText: { count in "\(count)个字符" },
         noDiaryMessage: "这天没有日记记录",
-        todayDiaryPrompt: "写今天的日记! ✍️",
+        todayDiaryPrompt: "写日记",
         
         correctionResultTitle: "批改结果",
         writtenDiaryTitle: "你的日记",
@@ -821,7 +821,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) تصحيحات" },
         characterCountText: { count in "\(count) حرف" },
         noDiaryMessage: "لا توجد مذكرة يومية لهذا اليوم",
-        todayDiaryPrompt: "اكتب يوميات اليوم! ✍️",
+        todayDiaryPrompt: "كتابة يوميات",
         
         correctionResultTitle: "نتائج التصحيح",
         writtenDiaryTitle: "يومياتك",
@@ -905,7 +905,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) corrections" },
         characterCountText: { count in "\(count) caractères" },
         noDiaryMessage: "Aucune entrée de journal pour ce jour",
-        todayDiaryPrompt: "Écrivez le journal d'aujourd'hui! ✍️",
+        todayDiaryPrompt: "Écrire journal",
         
         correctionResultTitle: "Résultats de correction",
         writtenDiaryTitle: "Votre journal",
@@ -989,7 +989,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) correzioni" },
         characterCountText: { count in "\(count) caratteri" },
         noDiaryMessage: "Nessuna voce del diario per questo giorno",
-        todayDiaryPrompt: "Scrivi il diario di oggi! ✍️",
+        todayDiaryPrompt: "Scrivi diario",
         
         correctionResultTitle: "Risultati delle correzioni",
         writtenDiaryTitle: "Il tuo diario",
@@ -1073,7 +1073,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) correções" },
         characterCountText: { count in "\(count) caracteres" },
         noDiaryMessage: "Nenhuma entrada de diário para este dia",
-        todayDiaryPrompt: "Escreva o diário de hoje! ✍️",
+        todayDiaryPrompt: "Escrever diário",
         
         correctionResultTitle: "Resultados da correção",
         writtenDiaryTitle: "Seu diário",
@@ -1157,7 +1157,7 @@ class LanguageManager: ObservableObject {
         correctionCountText: { count in "\(count) सुधार" },
         characterCountText: { count in "\(count) अक्षर" },
         noDiaryMessage: "इस दिन के लिए कोई डायरी प्रविष्टि नहीं",
-        todayDiaryPrompt: "आज की डायरी लिखें! ✍️",
+        todayDiaryPrompt: "डायरी लिखें",
         
         correctionResultTitle: "सुधार परिणाम",
         writtenDiaryTitle: "आपकी डायरी",

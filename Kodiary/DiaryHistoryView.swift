@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+// 일기 쓰기 화면으로 이동하기 위한 구조체
+struct DiaryWriteDestination: Hashable {
+    let id = UUID()
+}
+
 struct DiaryHistoryView: View {
     @State private var selectedDate = Date()
     @State private var currentMonth = Date()
@@ -31,7 +36,7 @@ struct DiaryHistoryView: View {
                 DiaryPreview(diary: diary)
                     .padding()
             } else {
-                EmptyDateView(date: selectedDate)
+                EmptyDateView(date: selectedDate, navigationPath: $navigationPath)
                     .padding()
             }
             
@@ -55,6 +60,11 @@ struct DiaryHistoryView: View {
         }
         .onAppear {
             dataManager.fetchDiaries()
+        }
+        .navigationDestination(for: DiaryWriteDestination.self) { _ in
+            DiaryWriteView(navigationPath: $navigationPath)
+                .environmentObject(dataManager)
+                .environmentObject(languageManager)
         }
     }
 }
@@ -136,7 +146,7 @@ struct CalendarHeader: View {
     }
 }
 
-// 캘린더 그리드 - 다국어 지원
+// 캘린더 그리드 - 다국어 지원 (줄노트 내부 이동, 크기 조정)
 struct CalendarGrid: View {
     let currentMonth: Date
     @Binding var selectedDate: Date
@@ -151,20 +161,22 @@ struct CalendarGrid: View {
     }()
     
     var body: some View {
-        ZStack(alignment: .top){
-            //줄노트
-            VStack(spacing: 60) {
-                ForEach(0..<7, id: \.self) { _ in
-                    Rectangle()
-                        .fill(Color.primaryDark.opacity(0.4))
-                        .frame(height: 1.8)
-                }
-            }
-            .padding(.horizontal, 40)
+        VStack(spacing: 0) {
+            // 요일 헤더
+            WeekdayHeader()
             
-            VStack(spacing: 0) {
-                // 요일 헤더
-                WeekdayHeader()
+            // 날짜 그리드와 줄노트를 함께 배치
+            ZStack(alignment: .top) {
+                // 줄노트 - 캘린더 그리드 내부로 이동
+                VStack(spacing: 60) {
+                    ForEach(0..<6, id: \.self) { _ in // 최대 6주까지 고려
+                        Rectangle()
+                            .fill(Color.primaryDark.opacity(0.4))
+                            .frame(height: 1.8)
+                    }
+                }
+                .padding(.horizontal, 40)
+                .padding(.top, -65) // 첫 번째 줄이 첫 번째 날짜 행과 맞도록 조정
                 
                 // 날짜 그리드
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 22) {
@@ -188,7 +200,7 @@ struct CalendarGrid: View {
                 .padding(.horizontal, 30)
             }
         }
-        .padding(.top, 10)
+        .frame(height: 420) // 캘린더 영역 높이 확대
     }
     
     var calendarDays: [Date?] {
@@ -247,6 +259,11 @@ struct DayCell: View {
     let hasDiary: Bool
     let onTap: () -> Void
     
+    // 오늘 날짜인지 확인하는 computed property 추가
+    private var isToday: Bool {
+        Calendar.current.isDateInToday(date)
+    }
+    
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 2) {
@@ -255,7 +272,7 @@ struct DayCell: View {
                     .foregroundColor(.primaryDark)
                 
                 Circle()
-                    .fill(hasDiary ? Color.secondaryTeal : Color.primaryDark.opacity(0.2))
+                    .fill(circleColor)
                     .frame(width: 12, height: 12)
                     .padding(.top, 4)
             }
@@ -264,6 +281,17 @@ struct DayCell: View {
             .cornerRadius(8)
         }
         .buttonStyle(PlainButtonStyle())
+    }
+    
+    // 원형 색상을 결정하는 computed property
+    private var circleColor: Color {
+        if isToday {
+            return .gray  // 오늘 날짜는 회색
+        } else if hasDiary {
+            return .secondaryTeal  // 일기가 있는 날은 teal
+        } else {
+            return .primaryDark.opacity(0.2)  // 일기가 없는 날은 연한 회색
+        }
     }
     
     var textColor: Color {
@@ -287,24 +315,24 @@ struct DayCell: View {
     }
 }
 
-// 일기 미리보기 - CorrectionResultView 스타일과 통일성 맞춤
+// 일기 미리보기 - 크기 축소
 struct DiaryPreview: View {
     let diary: DiaryEntry
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // 헤더 - CorrectionResultView의 완료 상태 표시와 유사한 스타일
+        VStack(alignment: .leading, spacing: 12) { // spacing 줄임
+            // 헤더
             HStack(alignment: .bottom) {
-                    Text(dateString(from: diary.date ?? Date()))
-                        .font(.buttonFontSmall)
-                        .foregroundColor(.primaryDark)
-                        .background(Color.primaryYellow.opacity(0.3))
+                Text(dateString(from: diary.date ?? Date()))
+                    .font(.buttonFontSmall)
+                    .foregroundColor(.primaryDark)
+                    .background(Color.primaryYellow.opacity(0.3))
                 
                 Spacer()
                 
-                // 일기 보기 버튼 - CorrectionRow 스타일과 유사
+                // 일기 보기 버튼
                 NavigationLink(destination: DiaryDetailView(diary: diary)) {
                     HStack(spacing: 4) {
                         Text(languageManager.currentLanguage.correctionCountText(Int(diary.correctionCount)))
@@ -325,22 +353,22 @@ struct DiaryPreview: View {
                 }
             }
             
-            // 일기 내용 영역 - CorrectionResultView의 텍스트 영역과 유사한 스타일
+            // 일기 내용 영역 - 높이 축소
             ZStack(alignment: .topLeading) {
                 // 배경
                 Rectangle()
                     .fill(Color.gray.opacity(0.1))
-                    .frame(minHeight: 120)
+                    .frame(minHeight: 80) // 높이 축소 (120 -> 80)
                 
-                // 줄 노트처럼 선들 추가 (CorrectionResultView와 동일)
+                // 줄 노트처럼 선들 추가 - 줄 수 줄임
                 VStack(spacing: 34) {
-                    ForEach(0..<3, id: \.self) { _ in
+                    ForEach(0..<2, id: \.self) { _ in // 3개 -> 2개로 줄임
                         Rectangle()
                             .fill(Color.primaryDark.opacity(0.4))
                             .frame(height: 1)
                     }
                 }
-                .padding(.top, 38)
+                .padding(.top, 28) // top 패딩 줄임
                 .padding(.horizontal, 10)
                 
                 // 일기 텍스트
@@ -348,13 +376,12 @@ struct DiaryPreview: View {
                     .font(.handWrite)
                     .foregroundColor(.primaryDark)
                     .lineSpacing(17)
-                    .lineLimit(3)
+                    .lineLimit(2) // 라인 수 줄임 (3 -> 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(15)
+                    .padding(12) // 패딩 줄임
             }
-            
         }
-        .padding()
+        .padding(12) // 전체 패딩 줄임
         .background(Color.clear)
         .overlay(
             Rectangle()
@@ -362,7 +389,6 @@ struct DiaryPreview: View {
         )
         .padding(.horizontal, 20)
     }
-        
     
     func dateString(from date: Date) -> String {
         let formatter = DateFormatter()
@@ -372,7 +398,7 @@ struct DiaryPreview: View {
         case "ko_KR":
             formatter.dateFormat = "M월 d일 E요일"
         case "ja_JP":
-            formatter.dateFormat = "M月d日 EEEE"
+            formatter.dateFormat = "M月d일 EEEE"
         default:
             formatter.dateFormat = "MMM d, EEEE"
         }
@@ -388,15 +414,16 @@ struct DiaryPreview: View {
     }
 }
 
-// 일기 없는 날 - 최신 DiaryPreview 스타일과 통일성 맞춤
+// 일기 없는 날 - 크기 축소
 struct EmptyDateView: View {
     let date: Date
+    @Binding var navigationPath: NavigationPath
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // 헤더 - DiaryPreview와 동일한 스타일
+        VStack(alignment: .leading, spacing: 12) { // spacing 줄임
+            // 헤더
             HStack(alignment: .bottom) {
                 Text(dateString(from: date))
                     .font(.buttonFontSmall)
@@ -407,21 +434,25 @@ struct EmptyDateView: View {
                 
                 // 오늘인 경우 일기 쓰기 유도 버튼
                 if Calendar.current.isDate(date, inSameDayAs: Date()) {
-                    HStack(spacing: 4) {
-                        Text(languageManager.currentLanguage.todayDiaryPrompt)
-                            .font(.buttonFontSmall)
-                            .foregroundColor(.primaryDark)
-                        Image(systemName: "plus")
-                            .font(.buttonFontSmall)
-                            .foregroundColor(.primaryDark)
+                    Button(action: {
+                        navigationPath.append(DiaryWriteDestination())
+                    }) {
+                        HStack(spacing: 4) {
+                            Text(languageManager.currentLanguage.todayDiaryPrompt)
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.primaryDark)
+                            Image(systemName: "plus")
+                                .font(.buttonFontSmall)
+                                .foregroundColor(.primaryDark)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.primaryBlue.opacity(0.3))
+                        .overlay(
+                            Rectangle()
+                                .stroke(Color.primaryDark.opacity(0.4), lineWidth: 1.8)
+                        )
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.primaryBlue.opacity(0.3))
-                    .overlay(
-                        Rectangle()
-                            .stroke(Color.primaryDark.opacity(0.4), lineWidth: 1.8)
-                    )
                 } else {
                     // 오늘이 아닌 경우 빈 상태 표시
                     HStack(spacing: 4) {
@@ -438,39 +469,40 @@ struct EmptyDateView: View {
                 }
             }
             
-            // 빈 일기 내용 영역 - DiaryPreview의 텍스트 영역과 유사한 스타일
+            // 빈 일기 내용 영역 - 높이 축소
             ZStack(alignment: .topLeading) {
                 // 배경
                 Rectangle()
                     .fill(Color.gray.opacity(0.1))
-                    .frame(minHeight: 120)
+                    .frame(minHeight: 80) // 높이 축소 (120 -> 80)
                 
-                // 줄 노트처럼 선들 추가 (DiaryPreview와 동일)
+                // 줄 노트처럼 선들 추가 - 줄 수 줄임
                 VStack(spacing: 34) {
-                    ForEach(0..<3, id: \.self) { _ in
+                    ForEach(0..<2, id: \.self) { _ in // 3개 -> 2개로 줄임
                         Rectangle()
-                            .fill(Color.primaryDark.opacity(0.4))
+                            .fill(Color.primaryDark.opacity(0.2))
                             .frame(height: 1)
                     }
                 }
-                .padding(.top, 38)
+                .padding(.top, 28) // top 패딩 줄임
                 .padding(.horizontal, 10)
                 
                 // 빈 상태 메시지
-                VStack(spacing: 8) {
+                VStack(spacing: 6) { // spacing 줄임
                     Text("📅")
-                        .font(.title2)
+                        .font(.title3) // 폰트 크기 줄임
                     
                     Text(languageManager.currentLanguage.noDiaryMessage)
                         .font(.handWrite)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
+                        .padding(.horizontal)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(15)
+                .padding(12) // 패딩 줄임
             }
         }
-        .padding()
+        .padding(12) // 전체 패딩 줄임
         .background(Color.clear)
         .overlay(
             Rectangle()
