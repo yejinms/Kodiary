@@ -60,8 +60,22 @@ struct ProfileSettingsView: View {
             Spacer()
         }
         .background(Color.background)
-        .navigationTitle(languageManager.currentLanguage.profileSettingsTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            // 커스텀 백버튼 (좌측)
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18, weight: .medium))
+                    }
+                    .foregroundColor(.primaryDark.opacity(0.5))
+                }
+            }
+        }
     }
 }
 
