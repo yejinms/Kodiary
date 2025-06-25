@@ -3,14 +3,33 @@ import SwiftUI
 
 // 언어별 텍스트 구조체 확장
 struct LanguageTexts {
-    // 기본 정보
-    let flag: String
-    let locale: Locale
-    let languageCode: String // "ko", "en", "ja" 등
-    let languageName: String // "한국어", "English", "日本語"
     
-    // 언어 번역 맵 (언어 코드 -> 해당 언어명)
-    let languageNameTranslations: [String: String]
+    // 기본 정보
+        let flag: String
+        let locale: Locale
+        let languageCode: String
+        let languageName: String
+        let languageNameTranslations: [String: String]
+        
+        // 로그인 관련 텍스트들
+        let appDescription: String
+        let privacyNotice: String
+        let signingInMessage: String
+        let signOutButton: String
+        
+        // 앱 둘러보기 관련 (새로 추가)
+        let appTourButton: String
+        let appTourTitle: String
+        let appTourFeature1Title: String
+        let appTourFeature1Description: String
+        let appTourFeature2Title: String
+        let appTourFeature2Description: String
+        let appTourFeature3Title: String
+        let appTourFeature3Description: String
+        let appTourFeature4Title: String
+        let appTourFeature4Description: String
+        let appTourGetStarted: String
+        let appTourSkip: String
     
     // 날짜 관련
     let dateComponents: (year: String, month: String, weekday: String)
@@ -177,6 +196,26 @@ class LanguageManager: ObservableObject {
             "fr": "프랑스어", "it": "이탈리아어", "pt": "포르투갈어", "hi": "힌디어"
         ],
         
+        // 로그인 관련
+        appDescription: "AI와 함께하는 언어 학습 일기장",
+        privacyNotice: "Apple 로그인을 통해 안전하게 시작하세요.\n개인정보는 안전하게 보호됩니다.",
+        signingInMessage: "로그인 중...",
+        signOutButton: "로그아웃",
+        
+        // 앱 둘러보기
+           appTourButton: "앱 둘러보기",
+           appTourTitle: "Kodiary와 함께\n언어 학습을 시작해보세요",
+           appTourFeature1Title: "AI 첨삭 일기",
+           appTourFeature1Description: "원하는 언어로 일기를 쓰면\nAI가 자연스러운 표현으로 첨삭해드려요",
+           appTourFeature2Title: "개인 맞춤 학습",
+           appTourFeature2Description: "당신의 수준에 맞는\n맞춤형 언어 학습 경험을 제공해요",
+           appTourFeature3Title: "학습 기록 관리",
+           appTourFeature3Description: "매일의 학습 기록을 확인하고\n꾸준한 성장을 실감해보세요",
+           appTourFeature4Title: "다양한 언어 지원",
+           appTourFeature4Description: "12개 언어로 학습할 수 있어\n세계 어디서든 소통할 수 있어요",
+           appTourGetStarted: "시작하기",
+           appTourSkip: "건너뛰기",
+        
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M월", weekday: "E요일"),
         dayDateFormat: "d",
@@ -274,8 +313,28 @@ class LanguageManager: ObservableObject {
             "fr": "French", "it": "Italian", "pt": "Portuguese", "hi": "Hindi"
         ],
         
+        //로그인 관련
+        appDescription: "AI-powered language learning diary",
+        privacyNotice: "Sign in safely with Apple.\nYour privacy is protected.",
+        signingInMessage: "Signing in...",
+        signOutButton: "Sign Out",
+        
+        // 앱 둘러보기
+            appTourButton: "App Tour",
+            appTourTitle: "Start your language learning\njourney with Kodiary",
+            appTourFeature1Title: "AI-Powered Corrections",
+            appTourFeature1Description: "Write your diary in any language\nand get natural corrections from AI",
+            appTourFeature2Title: "Personalized Learning",
+            appTourFeature2Description: "Experience customized language learning\ntailored to your level",
+            appTourFeature3Title: "Progress Tracking",
+            appTourFeature3Description: "Monitor your daily learning progress\nand feel your continuous growth",
+            appTourFeature4Title: "Multiple Languages",
+            appTourFeature4Description: "Learn from 12 different languages\nto communicate anywhere in the world",
+            appTourGetStarted: "Get Started",
+            appTourSkip: "Skip",
+        
         // 날짜 관련
-        dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
+        dateComponents: (year: "yyyy", month: "MMM", weekday: "E"),
         dayDateFormat: "d",
         
         // ContentView
@@ -370,6 +429,27 @@ class LanguageManager: ObservableObject {
             "th": "タイ語", "de": "ドイツ語", "zh": "中国語", "ar": "アラビア語",
             "fr": "フランス語", "it": "イタリア語", "pt": "ポルトガル語", "hi": "ヒンディー語"
         ],
+        
+        //로그인 관련
+        appDescription: "AIと一緒に学ぶ言語学習日記",
+        privacyNotice: "Appleサインインで安全に始めましょう。\nプライバシーは保護されます。",
+        signingInMessage: "サインイン中...",
+        signOutButton: "サインアウト",
+        
+        // 앱 둘러보기
+            appTourButton: "アプリツアー",
+            appTourTitle: "Kodiaryと一緒に\n言語学習を始めましょう",
+            appTourFeature1Title: "AI添削日記",
+            appTourFeature1Description: "好きな言語で日記を書くと\nAIが自然な表現に添削します",
+            appTourFeature2Title: "個人カスタム学習",
+            appTourFeature2Description: "あなたのレベルに合った\nカスタマイズ言語学習体験を提供",
+            appTourFeature3Title: "学習記録管理",
+            appTourFeature3Description: "毎日の学習記録を確認して\n着実な成長を実感してください",
+            appTourFeature4Title: "多様な言語サポート",
+            appTourFeature4Description: "12言語で学習できるので\n世界中どこでもコミュニケーション可能",
+            appTourGetStarted: "始める",
+            appTourSkip: "スキップ",
+            
         
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
@@ -466,6 +546,25 @@ class LanguageManager: ObservableObject {
             "fr": "Francés", "it": "Italiano", "pt": "Portugués", "hi": "Hindi"
         ],
         
+        appDescription: "Diario de aprendizaje de idiomas con IA",
+        privacyNotice: "Inicia sesión de forma segura con Apple.\nTu privacidad está protegida.",
+        signingInMessage: "Iniciando sesión...",
+        signOutButton: "Cerrar Sesión",
+        
+        // 앱 둘러보기
+            appTourButton: "Tour de la App",
+            appTourTitle: "Comienza tu viaje de aprendizaje\nde idiomas con Kodiary",
+            appTourFeature1Title: "Correcciones con IA",
+            appTourFeature1Description: "Escribe tu diario en cualquier idioma\ny recibe correcciones naturales de IA",
+            appTourFeature2Title: "Aprendizaje Personalizado",
+            appTourFeature2Description: "Experimenta aprendizaje de idiomas\npersonalizado para tu nivel",
+            appTourFeature3Title: "Seguimiento de Progreso",
+            appTourFeature3Description: "Monitorea tu progreso diario\ny siente tu crecimiento continuo",
+            appTourFeature4Title: "Múltiples Idiomas",
+            appTourFeature4Description: "Aprende 12 idiomas diferentes\npara comunicarte en cualquier lugar",
+            appTourGetStarted: "Empezar",
+            appTourSkip: "Saltar",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -549,6 +648,25 @@ class LanguageManager: ObservableObject {
             "th": "ไทย", "de": "เยอรมัน", "zh": "จีน", "ar": "อาหรับ",
             "fr": "ฝรั่งเศส", "it": "อิตาลี", "pt": "โปรตุเกส", "hi": "ฮินดี"
         ],
+        
+        appDescription: "ไดอารี่เรียนภาษาร่วมกับ AI",
+        privacyNotice: "เข้าสู่ระบบอย่างปลอดภัยด้วย Apple\nความเป็นส่วนตัวของคุณได้รับการปกป้อง",
+        signingInMessage: "กำลังเข้าสู่ระบบ...",
+        signOutButton: "ออกจากระบบ",
+        
+        // 앱 둘러보기
+            appTourButton: "ทัวร์แอป",
+            appTourTitle: "เริ่มต้นการเรียนรู้ภาษา\nกับ Kodiary",
+            appTourFeature1Title: "การแก้ไขด้วย AI",
+            appTourFeature1Description: "เขียนไดอารี่ภาษาใดก็ได้\nและรับการแก้ไขที่เป็นธรรมชาติจาก AI",
+            appTourFeature2Title: "การเรียนรู้ส่วนบุคคล",
+            appTourFeature2Description: "สัมผัสการเรียนรู้ภาษา\nที่ปรับให้เหมาะกับระดับของคุณ",
+            appTourFeature3Title: "ติดตามความก้าวหน้า",
+            appTourFeature3Description: "ติดตามความก้าวหน้าประจำวัน\nและรู้สึกถึงการเติบโตอย่างต่อเนื่อง",
+            appTourFeature4Title: "หลายภาษา",
+            appTourFeature4Description: "เรียนรู้ 12 ภาษาต่างๆ\nเพื่อสื่อสารได้ทุกที่ในโลก",
+            appTourGetStarted: "เริ่มต้น",
+            appTourSkip: "ข้าม",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -634,6 +752,25 @@ class LanguageManager: ObservableObject {
             "fr": "Französisch", "it": "Italienisch", "pt": "Portugiesisch", "hi": "Hindi"
         ],
         
+        appDescription: "KI-gestütztes Sprachlern-Tagebuch",
+        privacyNotice: "Melden Sie sich sicher mit Apple an.\nIhre Privatsphäre ist geschützt.",
+        signingInMessage: "Anmeldung läuft...",
+        signOutButton: "Abmelden",
+        
+        // 앱 둘러보기
+            appTourButton: "App-Tour",
+            appTourTitle: "Beginnen Sie Ihre Sprachlernreise\nmit Kodiary",
+            appTourFeature1Title: "KI-Korrekturen",
+            appTourFeature1Description: "Schreiben Sie Ihr Tagebuch in jeder Sprache\nund erhalten Sie natürliche KI-Korrekturen",
+            appTourFeature2Title: "Personalisiertes Lernen",
+            appTourFeature2Description: "Erleben Sie angepasstes Sprachlernen\nmaßgeschneidert für Ihr Niveau",
+            appTourFeature3Title: "Fortschrittsverfolgung",
+            appTourFeature3Description: "Überwachen Sie Ihren täglichen Lernfortschritt\nund spüren Sie Ihr kontinuierliches Wachstum",
+            appTourFeature4Title: "Mehrere Sprachen",
+            appTourFeature4Description: "Lernen Sie 12 verschiedene Sprachen\num überall auf der Welt zu kommunizieren",
+            appTourGetStarted: "Loslegen",
+            appTourSkip: "Überspringen",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -717,6 +854,25 @@ class LanguageManager: ObservableObject {
             "th": "泰语", "de": "德语", "zh": "中文", "ar": "阿拉伯语",
             "fr": "法语", "it": "意大利语", "pt": "葡萄牙语", "hi": "印地语"
         ],
+        
+        appDescription: "AI驱动的语言学习日记",
+        privacyNotice: "通过Apple安全登录。\n您的隐私受到保护。",
+        signingInMessage: "正在登录...",
+        signOutButton: "退出登录",
+        
+        // 앱 둘러보기
+            appTourButton: "应用导览",
+            appTourTitle: "与Kodiary一起\n开始您的语言学习之旅",
+            appTourFeature1Title: "AI智能批改",
+            appTourFeature1Description: "用任何语言写日记\nAI为您提供自然的批改建议",
+            appTourFeature2Title: "个性化学习",
+            appTourFeature2Description: "体验根据您的水平\n量身定制的语言学习",
+            appTourFeature3Title: "进度跟踪",
+            appTourFeature3Description: "监控您的每日学习进度\n感受持续的成长",
+            appTourFeature4Title: "多语言支持",
+            appTourFeature4Description: "学习12种不同语言\n在世界任何地方都能交流",
+            appTourGetStarted: "开始",
+            appTourSkip: "跳过",
         
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -802,6 +958,25 @@ class LanguageManager: ObservableObject {
             "fr": "الفرنسية", "it": "الإيطالية", "pt": "البرتغالية", "hi": "الهندية"
         ],
         
+        appDescription: "يوميات تعلم اللغة بالذكاء الاصطناعي",
+        privacyNotice: "سجل الدخول بأمان مع Apple.\nخصوصيتك محمية.",
+        signingInMessage: "جاري تسجيل الدخول...",
+        signOutButton: "تسجيل الخروج",
+        
+        // 앱 둘러보기
+       appTourButton: "جولة التطبيق",
+       appTourTitle: "ابدأ رحلة تعلم اللغة\nمع Kodiary",
+       appTourFeature1Title: "تصحيحات الذكاء الاصطناعي",
+       appTourFeature1Description: "اكتب يومياتك بأي لغة\nواحصل على تصحيحات طبيعية من الذكاء الاصطناعي",
+       appTourFeature2Title: "تعلم شخصي",
+       appTourFeature2Description: "اختبر تعلم اللغة المخصص\nحسب مستواك",
+       appTourFeature3Title: "تتبع التقدم",
+       appTourFeature3Description: "راقب تقدمك اليومي في التعلم\nواشعر بنموك المستمر",
+       appTourFeature4Title: "لغات متعددة",
+       appTourFeature4Description: "تعلم 12 لغة مختلفة\nللتواصل في أي مكان في العالم",
+       appTourGetStarted: "ابدأ",
+       appTourSkip: "تخطي",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -885,6 +1060,25 @@ class LanguageManager: ObservableObject {
             "th": "Thaï", "de": "Allemand", "zh": "Chinois", "ar": "Arabe",
             "fr": "Français", "it": "Italien", "pt": "Portugais", "hi": "Hindi"
         ],
+        
+        appDescription: "Journal d'apprentissage linguistique avec IA",
+        privacyNotice: "Connectez-vous en toute sécurité avec Apple.\nVotre confidentialité est protégée.",
+        signingInMessage: "Connexion en cours...",
+        signOutButton: "Se Déconnecter",
+        
+        // 앱 둘러보기
+           appTourButton: "Visite de l'App",
+           appTourTitle: "Commencez votre voyage d'apprentissage\nlinguistique avec Kodiary",
+           appTourFeature1Title: "Corrections IA",
+           appTourFeature1Description: "Écrivez votre journal dans n'importe quelle langue\net recevez des corrections naturelles de l'IA",
+           appTourFeature2Title: "Apprentissage Personnalisé",
+           appTourFeature2Description: "Découvrez l'apprentissage linguistique\nadapté à votre niveau",
+           appTourFeature3Title: "Suivi des Progrès",
+           appTourFeature3Description: "Surveillez vos progrès quotidiens\net ressentez votre croissance continue",
+           appTourFeature4Title: "Langues Multiples",
+           appTourFeature4Description: "Apprenez 12 langues différentes\npour communiquer partout dans le monde",
+           appTourGetStarted: "Commencer",
+           appTourSkip: "Passer",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -970,6 +1164,25 @@ class LanguageManager: ObservableObject {
             "fr": "Francese", "it": "Italiano", "pt": "Portoghese", "hi": "Hindi"
         ],
         
+        appDescription: "Diario di apprendimento linguistico con IA",
+        privacyNotice: "Accedi in sicurezza con Apple.\nLa tua privacy è protetta.",
+        signingInMessage: "Accesso in corso...",
+        signOutButton: "Esci",
+        
+        // 앱 둘러보기
+            appTourButton: "Tour dell'App",
+            appTourTitle: "Inizia il tuo viaggio di apprendimento\nlinguistico con Kodiary",
+            appTourFeature1Title: "Correzioni IA",
+            appTourFeature1Description: "Scrivi il tuo diario in qualsiasi lingua\ne ricevi correzioni naturali dall'IA",
+            appTourFeature2Title: "Apprendimento Personalizzato",
+            appTourFeature2Description: "Sperimenta l'apprendimento linguistico\npersonalizzato per il tuo livello",
+            appTourFeature3Title: "Monitoraggio Progressi",
+            appTourFeature3Description: "Monitora i tuoi progressi quotidiani\ne senti la tua crescita continua",
+            appTourFeature4Title: "Lingue Multiple",
+            appTourFeature4Description: "Impara 12 lingue diverse\nper comunicare ovunque nel mondo",
+            appTourGetStarted: "Inizia",
+            appTourSkip: "Salta",
+        
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
@@ -1054,7 +1267,26 @@ class LanguageManager: ObservableObject {
             "fr": "Francês", "it": "Italiano", "pt": "Português", "hi": "Hindi"
         ],
         
-        dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
+        appDescription: "Diário de aprendizado de idiomas com IA",
+        privacyNotice: "Entre com segurança usando Apple.\nSua privacidade está protegida.",
+        signingInMessage: "Entrando...",
+        signOutButton: "Sair",
+        
+        // 앱 둘러보기
+            appTourButton: "Tour do App",
+            appTourTitle: "Comece sua jornada de aprendizado\nde idiomas com Kodiary",
+            appTourFeature1Title: "Correções IA",
+            appTourFeature1Description: "Escreva seu diário em qualquer idioma\ne receba correções naturais da IA",
+            appTourFeature2Title: "Aprendizado Personalizado",
+            appTourFeature2Description: "Experimente aprendizado de idiomas\npersonalizado para seu nível",
+            appTourFeature3Title: "Acompanhamento de Progresso",
+            appTourFeature3Description: "Monitore seu progresso diário de aprendizado\ne sinta seu crescimento contínuo",
+            appTourFeature4Title: "Múltiplos Idiomas",
+            appTourFeature4Description: "Aprenda 12 idiomas diferentes\npara se comunicar em qualquer lugar do mundo",
+            appTourGetStarted: "Começar",
+            appTourSkip: "Pular",
+        
+        dateComponents: (year: "yyyy", month: "MMM", weekday: "E"),
         dayDateFormat: "d",
         
         writeButtonText: { correctionLanguageName in "Escrever diário \(correctionLanguageName)" },
@@ -1137,6 +1369,25 @@ class LanguageManager: ObservableObject {
             "th": "थाई", "de": "जर्मन", "zh": "चीनी", "ar": "अरबी",
             "fr": "फ्रेंच", "it": "इतालवी", "pt": "पुर्तगाली", "hi": "हिन्दी"
         ],
+        
+        appDescription: "AI के साथ भाषा सीखने की डायरी",
+        privacyNotice: "Apple के साथ सुरक्षित रूप से साइन इन करें।\nआपकी गोपनीयता सुरक्षित है।",
+        signingInMessage: "साइन इन हो रहे हैं...",
+        signOutButton: "साइन आउट",
+        
+        // 앱 둘러보기
+            appTourButton: "ऐप टूर",
+            appTourTitle: "Kodiary के साथ अपनी भाषा सीखने\nकी यात्रा शुरू करें",
+            appTourFeature1Title: "AI सुधार",
+            appTourFeature1Description: "किसी भी भाषा में अपनी डायरी लिखें\nऔर AI से प्राकृतिक सुधार प्राप्त करें",
+            appTourFeature2Title: "व्यक्तिगत शिक्षा",
+            appTourFeature2Description: "अपने स्तर के अनुकूल\nव्यक्तिगत भाषा शिक्षा का अनुभव करें",
+            appTourFeature3Title: "प्रगति ट्रैकिंग",
+            appTourFeature3Description: "अपनी दैनिक सीखने की प्रगति को\nट्रैक करें और निरंतर विकास महसूस करें",
+            appTourFeature4Title: "कई भाषाएं",
+            appTourFeature4Description: "12 विभिन्न भाषाएं सीखें\nदुनिया में कहीं भी संवाद करने के लिए",
+            appTourGetStarted: "शुरू करें",
+            appTourSkip: "छोड़ें",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",

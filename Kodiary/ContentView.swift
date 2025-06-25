@@ -66,6 +66,7 @@ struct ContentView: View {
     @State private var showingLanguageSelection = false
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
+    @EnvironmentObject var userManager: UserManager
     
     // 오늘 일기 작성 여부 확인
     var hasTodayDiary: Bool {
@@ -73,9 +74,9 @@ struct ContentView: View {
         return dataManager.getDiary(for: today) != nil
     }
     
-    // 사용자 이름 (실제로는 UserDefaults나 다른 곳에서 가져올 수 있음)
+    // 사용자 이름
     var username: String {
-        return "Niko" // 나중에 실제 사용자 이름으로 변경 가능
+        return userManager.userName.isEmpty ? "사용자" : userManager.userName
     }
     
     // 오늘 날짜의 각 구성 요소들 (다국어 지원)
@@ -250,6 +251,8 @@ struct ContentView: View {
                 case "profile-settings":
                     ProfileSettingsView()
                         .environmentObject(languageManager)
+                        .environmentObject(userManager)
+                    
                 default:
                     Text("Unknown destination")
                 }
@@ -320,5 +323,6 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
             .environmentObject(DataManager.shared)
             .environmentObject(LanguageManager.shared)
+            .environmentObject(UserManager.shared)
     }
 }

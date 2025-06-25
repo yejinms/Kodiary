@@ -326,6 +326,7 @@ struct DiaryDetailView_Previews: PreviewProvider {
             DiaryDetailView(diary: dummyDiary)
                 .environmentObject(DataManager.shared)
                 .environmentObject(LanguageManager.shared)
+                .environmentObject(UserManager.shared)
         }
     }
 }

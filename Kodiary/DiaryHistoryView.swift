@@ -558,6 +558,7 @@ struct DiaryHistoryView_Previews: PreviewProvider {
             DiaryHistoryView(navigationPath: .constant(NavigationPath()))
                 .environmentObject(DataManager.shared)
                 .environmentObject(LanguageManager.shared)
+                .environmentObject(UserManager.shared)
         }
     }
 }

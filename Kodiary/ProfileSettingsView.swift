@@ -3,7 +3,11 @@ import SwiftUI
 struct ProfileSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var languageManager: LanguageManager
+    @EnvironmentObject var userManager: UserManager
     @State private var showingHelpView = false
+    @State private var showingLogoutAlert = false
+    @State private var showingNameEditAlert = false
+    @State private var editingName = ""
     
     var body: some View {
         VStack(spacing: Spacing.lg) {
@@ -18,14 +22,35 @@ struct ProfileSettingsView: View {
                             .foregroundColor(.primaryDark)
                     )
                 
-                Text(languageManager.currentLanguage.profileUserName)
-                    .font(.titleLarge)
-                    .foregroundColor(.primaryDark)
+                // 동적 사용자 이름 표시 (탭 가능)
+                Button(action: {
+                    editingName = userManager.userName
+                    showingNameEditAlert = true
+                }) {
+                    VStack(spacing: 4) {
+                        Text(userManager.userName.isEmpty ? languageManager.currentLanguage.profileUserName : userManager.userName)
+                            .font(.titleLarge)
+                            .foregroundColor(.primaryDark)
+                        
+                        Text("이름 수정하기")
+                            .font(.buttonFontSmall)
+                            .foregroundColor(.gray)
+                    }
+                }
             }
             .padding(.top, Spacing.xl)
             
             // 설정 메뉴들
             VStack(spacing: Spacing.md) {
+                SettingsRow(
+                    icon: "pencil",
+                    title: "이름 변경",
+                    action: {
+                        editingName = userManager.userName
+                        showingNameEditAlert = true
+                    }
+                )
+                
                 SettingsRow(
                     icon: "person",
                     title: languageManager.currentLanguage.profileInfoTitle,
@@ -57,6 +82,15 @@ struct ProfileSettingsView: View {
                     title: languageManager.currentLanguage.appInfoTitle,
                     action: { /* 앱 정보 */ }
                 )
+                
+                // 로그아웃 버튼 (빨간색으로 구분)
+                SettingsRow(
+                    icon: "rectangle.portrait.and.arrow.right",
+                    title: languageManager.currentLanguage.signOutButton,
+                    action: {
+                        showingLogoutAlert = true
+                    }
+                )
             }
             .padding(.horizontal, Spacing.lg)
             
@@ -85,10 +119,36 @@ struct ProfileSettingsView: View {
                     .environmentObject(languageManager)
             }
         }
+        .alert("이름 변경", isPresented: $showingNameEditAlert) {
+            TextField("이름을 입력하세요", text: $editingName)
+                .textInputAutocapitalization(.words)
+            
+            Button("취소", role: .cancel) {
+                editingName = ""
+            }
+            
+            Button("저장") {
+                if !editingName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    userManager.updateUserName(editingName.trimmingCharacters(in: .whitespacesAndNewlines))
+                }
+                editingName = ""
+            }
+        } message: {
+            Text("새로운 이름을 입력해주세요")
+        }
+        .alert("로그아웃", isPresented: $showingLogoutAlert) {
+            Button("취소", role: .cancel) { }
+            Button("로그아웃", role: .destructive) {
+                print("🚪 로그아웃 버튼 클릭됨")
+                userManager.signOut()
+            }
+        } message: {
+            Text("정말 로그아웃 하시겠습니까?")
+        }
     }
 }
 
-// 설정 행 컴포넌트 (변경 없음)
+// 설정 행 컴포넌트
 struct SettingsRow: View {
     let icon: String
     let title: String
@@ -126,6 +186,7 @@ struct ProfileSettingsView_Previews: PreviewProvider {
         NavigationView {
             ProfileSettingsView()
                 .environmentObject(LanguageManager.shared)
+                .environmentObject(UserManager.shared)
         }
     }
 }

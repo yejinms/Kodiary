@@ -518,6 +518,7 @@ struct HelpView_Previews: PreviewProvider {
         NavigationView {
             HelpView()
                 .environmentObject(LanguageManager.shared)
+                .environmentObject(UserManager.shared)
         }
     }
 }
