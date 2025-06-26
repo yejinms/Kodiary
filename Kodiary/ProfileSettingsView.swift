@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileSettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) var openURL
     @EnvironmentObject var languageManager: LanguageManager
     @EnvironmentObject var userManager: UserManager
     @State private var showingHelpView = false
@@ -52,8 +53,13 @@ struct ProfileSettingsView: View {
                 SettingsRow(
                     icon: "lock",
                     title: languageManager.currentLanguage.privacySettingsTitle,
-                    action: { /* 개인정보 보호 설정 */ }
+                    action: {
+                        if let url = URL(string: "https://kodiaryprivacy.notion.site/21e3ad23e7438017b341cffc3a297337") {
+                            openURL(url)
+                        }
+                    }
                 )
+
                 
                 SettingsRow(
                     icon: "questionmark.circle",
@@ -66,7 +72,11 @@ struct ProfileSettingsView: View {
                 SettingsRow(
                     icon: "info.circle",
                     title: languageManager.currentLanguage.appInfoTitle,
-                    action: { /* 앱 정보 */ }
+                    action: {
+                        if let url = URL(string: "https://kodiaryterms.notion.site/21e3ad23e743808e90c7f516ded66315?pvs=73") {
+                            openURL(url)
+                        }
+                    }
                 )
                 
                 // 로그아웃 버튼 (빨간색으로 구분)

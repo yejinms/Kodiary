@@ -5,37 +5,37 @@ import SwiftUI
 struct LanguageTexts {
     
     // 기본 정보
-        let flag: String
-        let locale: Locale
-        let languageCode: String
-        let languageName: String
-        let languageNameTranslations: [String: String]
-        
-        // 로그인 관련 텍스트들
-        let appDescription: String
-        let privacyNotice: String
-        let signingInMessage: String
-        let signOutButton: String
-        
-        // 앱 둘러보기 관련 (새로 추가)
-        let appTourButton: String
-        let appTourTitle: String
-        let appTourFeature1Title: String
-        let appTourFeature1Description: String
-        let appTourFeature2Title: String
-        let appTourFeature2Description: String
-        let appTourFeature3Title: String
-        let appTourFeature3Description: String
-        let appTourFeature4Title: String
-        let appTourFeature4Description: String
-        let appTourGetStarted: String
-        let appTourSkip: String
+    let flag: String
+    let locale: Locale
+    let languageCode: String
+    let languageName: String
+    let languageNameTranslations: [String: String]
+    
+    // 로그인 관련 텍스트들
+    let appDescription: String
+    let privacyNotice: String
+    let signingInMessage: String
+    let signOutButton: String
+    
+    // 앱 둘러보기 관련 (새로 추가)
+    let appTourButton: String
+    let appTourTitle: String
+    let appTourFeature1Title: String
+    let appTourFeature1Description: String
+    let appTourFeature2Title: String
+    let appTourFeature2Description: String
+    let appTourFeature3Title: String
+    let appTourFeature3Description: String
+    let appTourFeature4Title: String
+    let appTourFeature4Description: String
+    let appTourGetStarted: String
+    let appTourSkip: String
     
     // 언어 학습 설정 관련 (새로 추가)
-        let languageLearningWelcomeTitle: (String) -> String  // 사용자 이름을 받는 클로저
-        let languageLearningWelcomeSubtitle: String
-        let languageLearningPrompt: String
-        let languageLearningContinueButton: String
+    let languageLearningWelcomeTitle: (String) -> String  // 사용자 이름을 받는 클로저
+    let languageLearningWelcomeSubtitle: String
+    let languageLearningPrompt: String
+    let languageLearningContinueButton: String
     
     // 날짜 관련
     let dateComponents: (year: String, month: String, weekday: String)
@@ -74,6 +74,7 @@ struct LanguageTexts {
     
     // DiaryDetailView
     let diaryDetailTitle: String
+    let editButton: String  // 🆕 수정 버튼
     
     // ProfileSettingsView
     let profileSettingsTitle: String
@@ -103,6 +104,18 @@ struct LanguageTexts {
     let retryButton: String
     let unknownErrorMessage: String
     
+    // 🆕 새로운 알림 메시지들
+    let dailyDiaryLimitTitle: String
+    let dailyDiaryLimitMessage: String
+    let premiumRequiredForEditTitle: String
+    let premiumRequiredForEditMessage: String
+    let todayOnlyEditTitle: String
+    let todayOnlyEditMessage: String
+    let confirmEdit: String
+    let cancelEdit: String
+    let startPremium: String
+    let laterButton: String
+    
     // 월/요일 이름들
     let monthNames: [String]
     let weekdayNames: [String]
@@ -112,6 +125,7 @@ struct LanguageTexts {
     let greetingWithDiary: (String) -> (title: String, subtitle: String)
     let greetingWithoutDiary: (String) -> (title: String, subtitle: String)
 }
+
 
 class LanguageManager: ObservableObject {
     static let shared = LanguageManager()
@@ -139,7 +153,7 @@ class LanguageManager: ObservableObject {
         
         print("🌍 언어 설정 로드됨 - 모국어: \(nativeLanguage.languageCode), 첨삭언어: \(correctionLanguage.languageCode)")
     }
-
+    
     // UserDefaults에서 저장된 언어 불러오기 (개선된 버전)
     private static func loadSavedLanguage(key: String) -> LanguageTexts? {
         let savedLanguageCode = UserDefaults.standard.string(forKey: key)
@@ -181,7 +195,7 @@ class LanguageManager: ObservableObject {
         // CloudKit에도 저장 (로그인된 경우)
         saveToCloudKitIfNeeded()
     }
-
+    
     func setNativeLanguage(_ language: LanguageTexts) {
         nativeLanguage = language
         saveLanguageToUserDefaults(languageCode: language.languageCode, key: nativeLanguageKey)
@@ -191,7 +205,7 @@ class LanguageManager: ObservableObject {
         // CloudKit에도 저장 (로그인된 경우)
         saveToCloudKitIfNeeded()
     }
-
+    
     private func saveToCloudKitIfNeeded() {
         // 온보딩 중이거나 로그인하지 않은 경우 저장하지 않음
         guard let currentUserID = UserDefaults.standard.string(forKey: "user_id"),
@@ -251,24 +265,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "로그아웃",
         
         // 앱 둘러보기
-           appTourButton: "앱 둘러보기",
-           appTourTitle: "Kodiary와 함께\n언어 학습을 시작해보세요",
-           appTourFeature1Title: "AI 첨삭 일기",
-           appTourFeature1Description: "원하는 언어로 일기를 쓰면\nAI가 자연스러운 표현으로 첨삭해드려요",
-           appTourFeature2Title: "개인 맞춤 학습",
-           appTourFeature2Description: "당신의 수준에 맞는\n맞춤형 언어 학습 경험을 제공해요",
-           appTourFeature3Title: "학습 기록 관리",
-           appTourFeature3Description: "매일의 학습 기록을 확인하고\n꾸준한 성장을 실감해보세요",
-           appTourFeature4Title: "다양한 언어 지원",
-           appTourFeature4Description: "12개 언어로 학습할 수 있어\n세계 어디서든 소통할 수 있어요",
-           appTourGetStarted: "시작하기",
-           appTourSkip: "건너뛰기",
+        appTourButton: "앱 둘러보기",
+        appTourTitle: "Kodiary와 함께\n언어 학습을 시작해보세요",
+        appTourFeature1Title: "AI 첨삭 일기",
+        appTourFeature1Description: "원하는 언어로 일기를 쓰면\nAI가 자연스러운 표현으로 첨삭해드려요",
+        appTourFeature2Title: "개인 맞춤 학습",
+        appTourFeature2Description: "당신의 수준에 맞는\n맞춤형 언어 학습 경험을 제공해요",
+        appTourFeature3Title: "학습 기록 관리",
+        appTourFeature3Description: "매일의 학습 기록을 확인하고\n꾸준한 성장을 실감해보세요",
+        appTourFeature4Title: "다양한 언어 지원",
+        appTourFeature4Description: "12개 언어로 학습할 수 있어\n세계 어디서든 소통할 수 있어요",
+        appTourGetStarted: "시작하기",
+        appTourSkip: "건너뛰기",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)님!" },
-            languageLearningWelcomeSubtitle: "어떤 언어를 학습하고 싶으세요?",
-            languageLearningPrompt: "학습할 언어를 선택해주세요",
-            languageLearningContinueButton: "학습 시작하기",
+        languageLearningWelcomeTitle: { username in "\(username)님!" },
+        languageLearningWelcomeSubtitle: "어떤 언어를 학습하고 싶으세요?",
+        languageLearningPrompt: "학습할 언어를 선택해주세요",
+        languageLearningContinueButton: "학습 시작하기",
         
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M월", weekday: "E요일"),
@@ -307,6 +321,7 @@ class LanguageManager: ObservableObject {
         
         // DiaryDetailView
         diaryDetailTitle: "첨삭 결과",
+        editButton: "수정",
         
         // ProfileSettingsView
         profileSettingsTitle: "설정",
@@ -335,6 +350,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "확인",
         retryButton: "다시 시도",
         unknownErrorMessage: "알 수 없는 오류가 발생했습니다.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "일일 한도 도달",
+        dailyDiaryLimitMessage: "오늘은 일기를 작성하셨어요.\n내일 다시 만나요! 😊",
+        premiumRequiredForEditTitle: "🌟 프리미엄 기능",
+        premiumRequiredForEditMessage: "일기 수정은 프리미엄 회원만 이용할 수 있어요.\n지금 시작해보세요!",
+        todayOnlyEditTitle: "수정 불가",
+        todayOnlyEditMessage: "오늘 작성한 일기만 수정할 수 있어요.",
+        confirmEdit: "수정하기",
+        cancelEdit: "취소",
+        startPremium: "프리미엄 시작하기",
+        laterButton: "나중에",
         
         // 월/요일
         monthNames: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
@@ -374,24 +401,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "Sign Out",
         
         // 앱 둘러보기
-            appTourButton: "App Tour",
-            appTourTitle: "Start your language learning\njourney with Kodiary",
-            appTourFeature1Title: "AI-Powered Corrections",
-            appTourFeature1Description: "Write your diary in any language\nand get natural corrections from AI",
-            appTourFeature2Title: "Personalized Learning",
-            appTourFeature2Description: "Experience customized language learning\ntailored to your level",
-            appTourFeature3Title: "Progress Tracking",
-            appTourFeature3Description: "Monitor your daily learning progress\nand feel your continuous growth",
-            appTourFeature4Title: "Multiple Languages",
-            appTourFeature4Description: "Learn from 12 different languages\nto communicate anywhere in the world",
-            appTourGetStarted: "Get Started",
-            appTourSkip: "Skip",
+        appTourButton: "App Tour",
+        appTourTitle: "Start your language learning\njourney with Kodiary",
+        appTourFeature1Title: "AI-Powered Corrections",
+        appTourFeature1Description: "Write your diary in any language\nand get natural corrections from AI",
+        appTourFeature2Title: "Personalized Learning",
+        appTourFeature2Description: "Experience customized language learning\ntailored to your level",
+        appTourFeature3Title: "Progress Tracking",
+        appTourFeature3Description: "Monitor your daily learning progress\nand feel your continuous growth",
+        appTourFeature4Title: "Multiple Languages",
+        appTourFeature4Description: "Learn from 12 different languages\nto communicate anywhere in the world",
+        appTourGetStarted: "Get Started",
+        appTourSkip: "Skip",
         
         // 언어 학습 설정 관련
-           languageLearningWelcomeTitle: { username in "\(username)!" },
-           languageLearningWelcomeSubtitle: "Which language would you like to learn?",
-           languageLearningPrompt: "Choose your learning language",
-           languageLearningContinueButton: "Start Learning",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "Which language would you like to learn?",
+        languageLearningPrompt: "Choose your learning language",
+        languageLearningContinueButton: "Start Learning",
         
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "MMM", weekday: "E"),
@@ -430,6 +457,7 @@ class LanguageManager: ObservableObject {
         
         // DiaryDetailView
         diaryDetailTitle: "Correction Results",
+        editButton: "Edit",
         
         // ProfileSettingsView
         profileSettingsTitle: "Settings",
@@ -458,6 +486,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "OK",
         retryButton: "Retry",
         unknownErrorMessage: "An unknown error occurred.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "Daily Limit Reached",
+        dailyDiaryLimitMessage: "You've written your diary today.\nSee you tomorrow! 😊",
+        premiumRequiredForEditTitle: "🌟 Premium Feature",
+        premiumRequiredForEditMessage: "Diary editing is available for premium members only.\nStart today!",
+        todayOnlyEditTitle: "Edit Not Available",
+        todayOnlyEditMessage: "You can only edit today's diary entries.",
+        confirmEdit: "Edit",
+        cancelEdit: "Cancel",
+        startPremium: "Start Premium",
+        laterButton: "Later",
         
         // 월/요일
         monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -497,24 +537,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "サインアウト",
         
         // 앱 둘러보기
-            appTourButton: "アプリツアー",
-            appTourTitle: "Kodiaryと一緒に\n言語学習を始めましょう",
-            appTourFeature1Title: "AI添削日記",
-            appTourFeature1Description: "好きな言語で日記を書くと\nAIが自然な表現に添削します",
-            appTourFeature2Title: "個人カスタム学習",
-            appTourFeature2Description: "あなたのレベルに合った\nカスタマイズ言語学習体験を提供",
-            appTourFeature3Title: "学習記録管理",
-            appTourFeature3Description: "毎日の学習記録を確認して\n着実な成長を実感してください",
-            appTourFeature4Title: "多様な言語サポート",
-            appTourFeature4Description: "12言語で学習できるので\n世界中どこでもコミュニケーション可能",
-            appTourGetStarted: "始める",
-            appTourSkip: "スキップ",
+        appTourButton: "アプリツアー",
+        appTourTitle: "Kodiaryと一緒に\n言語学習を始めましょう",
+        appTourFeature1Title: "AI添削日記",
+        appTourFeature1Description: "好きな言語で日記を書くと\nAIが自然な表現に添削します",
+        appTourFeature2Title: "個人カスタム学習",
+        appTourFeature2Description: "あなたのレベルに合った\nカスタマイズ言語学習体験を提供",
+        appTourFeature3Title: "学習記録管理",
+        appTourFeature3Description: "毎日の学習記録を確認して\n着実な成長を実感してください",
+        appTourFeature4Title: "多様な言語サポート",
+        appTourFeature4Description: "12言語で学習できるので\n世界中どこでもコミュニケーション可能",
+        appTourGetStarted: "始める",
+        appTourSkip: "スキップ",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)さん！" },
-            languageLearningWelcomeSubtitle: "どの言語を学習したいですか？",
-            languageLearningPrompt: "学習言語を選択してください",
-            languageLearningContinueButton: "学習を始める",
+        languageLearningWelcomeTitle: { username in "\(username)さん！" },
+        languageLearningWelcomeSubtitle: "どの言語を学習したいですか？",
+        languageLearningPrompt: "学習言語を選択してください",
+        languageLearningContinueButton: "学習を始める",
         
         // 날짜 관련
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
@@ -553,6 +593,7 @@ class LanguageManager: ObservableObject {
         
         // DiaryDetailView
         diaryDetailTitle: "添削結果",
+        editButton: "編集",
         
         // ProfileSettingsView
         profileSettingsTitle: "設定",
@@ -581,6 +622,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "確認",
         retryButton: "再試行",
         unknownErrorMessage: "不明なエラーが発生しました。",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "本日の上限に達しました",
+        dailyDiaryLimitMessage: "今日は日記を書きました。\nまた明日お会いしましょう！😊",
+        premiumRequiredForEditTitle: "🌟 プレミアム機能",
+        premiumRequiredForEditMessage: "日記の編集はプレミアム会員のみご利用いただけます。\n今すぐ始めませんか！",
+        todayOnlyEditTitle: "編集できません",
+        todayOnlyEditMessage: "今日書いた日記のみ編集できます。",
+        confirmEdit: "編集する",
+        cancelEdit: "キャンセル",
+        startPremium: "プレミアムを始める",
+        laterButton: "後で",
         
         // 월/요일
         monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11월", "12月"],
@@ -617,30 +670,30 @@ class LanguageManager: ObservableObject {
         signOutButton: "Cerrar Sesión",
         
         // 앱 둘러보기
-            appTourButton: "Tour de la App",
-            appTourTitle: "Comienza tu viaje de aprendizaje\nde idiomas con Kodiary",
-            appTourFeature1Title: "Correcciones con IA",
-            appTourFeature1Description: "Escribe tu diario en cualquier idioma\ny recibe correcciones naturales de IA",
-            appTourFeature2Title: "Aprendizaje Personalizado",
-            appTourFeature2Description: "Experimenta aprendizaje de idiomas\npersonalizado para tu nivel",
-            appTourFeature3Title: "Seguimiento de Progreso",
-            appTourFeature3Description: "Monitorea tu progreso diario\ny siente tu crecimiento continuo",
-            appTourFeature4Title: "Múltiples Idiomas",
-            appTourFeature4Description: "Aprende 12 idiomas diferentes\npara comunicarte en cualquier lugar",
-            appTourGetStarted: "Empezar",
-            appTourSkip: "Saltar",
+        appTourButton: "Tour de la App",
+        appTourTitle: "Comienza tu viaje de aprendizaje\nde idiomas con Kodiary",
+        appTourFeature1Title: "Correcciones con IA",
+        appTourFeature1Description: "Escribe tu diario en cualquier idioma\ny recibe correcciones naturales de IA",
+        appTourFeature2Title: "Aprendizaje Personalizado",
+        appTourFeature2Description: "Experimenta aprendizaje de idiomas\npersonalizado para tu nivel",
+        appTourFeature3Title: "Seguimiento de Progreso",
+        appTourFeature3Description: "Monitorea tu progreso diario\ny siente tu crecimiento continuo",
+        appTourFeature4Title: "Múltiples Idiomas",
+        appTourFeature4Description: "Aprende 12 idiomas diferentes\npara comunicarte en cualquier lugar",
+        appTourGetStarted: "Empezar",
+        appTourSkip: "Saltar",
         
         // 언어 학습 설정 관련
-           languageLearningWelcomeTitle: { username in "¡\(username)!" },
-           languageLearningWelcomeSubtitle: "¿Qué idioma te gustaría aprender?",
-           languageLearningPrompt: "Elige tu idioma de aprendizaje",
-           languageLearningContinueButton: "Empezar a aprender",
+        languageLearningWelcomeTitle: { username in "¡\(username)!" },
+        languageLearningWelcomeSubtitle: "¿Qué idioma te gustaría aprender?",
+        languageLearningPrompt: "Elige tu idioma de aprendizaje",
+        languageLearningContinueButton: "Empezar a aprender",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "Escribir diario de \(correctionLanguageName) de hoy" },
-        writeButtonCompletedText: { correctionLanguageName in "Diario de \(correctionLanguageName) de hoy [¡Completado!]" },
+        writeButtonText: { correctionLanguageName in "Escribir diario en \(correctionLanguageName)" },
+        writeButtonCompletedText: { correctionLanguageName in "Diario en \(correctionLanguageName) [listo]" },
         historyButtonText: "Historial del diario",
         
         diaryWriteTitle: "Diario de hoy",
@@ -667,6 +720,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "Explicación",
         
         diaryDetailTitle: "Resultados de corrección",
+        editButton: "Editar",
         
         profileSettingsTitle: "Configuración",
         profileUserName: "Usuario",
@@ -692,6 +746,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "OK",
         retryButton: "Reintentar",
         unknownErrorMessage: "Ocurrió un error desconocido.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "Se alcanzó el límite de hoy",
+        dailyDiaryLimitMessage: "Ya escribiste tu diario hoy.\n¡Nos vemos mañana! 😊",
+        premiumRequiredForEditTitle: "🌟 Función Premium",
+        premiumRequiredForEditMessage: "Solo los usuarios Premium pueden editar sus diarios.\n¡Comienza ahora!",
+        todayOnlyEditTitle: "No se puede editar",
+        todayOnlyEditMessage: "Solo puedes editar el diario de hoy.",
+        confirmEdit: "Editar",
+        cancelEdit: "Cancelar",
+        startPremium: "Comenzar Premium",
+        laterButton: "Más tarde",
         
         monthNames: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
         weekdayNames: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
@@ -726,24 +792,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "ออกจากระบบ",
         
         // 앱 둘러보기
-            appTourButton: "ทัวร์แอป",
-            appTourTitle: "เริ่มต้นการเรียนรู้ภาษา\nกับ Kodiary",
-            appTourFeature1Title: "การแก้ไขด้วย AI",
-            appTourFeature1Description: "เขียนไดอารี่ภาษาใดก็ได้\nและรับการแก้ไขที่เป็นธรรมชาติจาก AI",
-            appTourFeature2Title: "การเรียนรู้ส่วนบุคคล",
-            appTourFeature2Description: "สัมผัสการเรียนรู้ภาษา\nที่ปรับให้เหมาะกับระดับของคุณ",
-            appTourFeature3Title: "ติดตามความก้าวหน้า",
-            appTourFeature3Description: "ติดตามความก้าวหน้าประจำวัน\nและรู้สึกถึงการเติบโตอย่างต่อเนื่อง",
-            appTourFeature4Title: "หลายภาษา",
-            appTourFeature4Description: "เรียนรู้ 12 ภาษาต่างๆ\nเพื่อสื่อสารได้ทุกที่ในโลก",
-            appTourGetStarted: "เริ่มต้น",
-            appTourSkip: "ข้าม",
+        appTourButton: "ทัวร์แอป",
+        appTourTitle: "เริ่มต้นการเรียนรู้ภาษา\nกับ Kodiary",
+        appTourFeature1Title: "การแก้ไขด้วย AI",
+        appTourFeature1Description: "เขียนไดอารี่ภาษาใดก็ได้\nและรับการแก้ไขที่เป็นธรรมชาติจาก AI",
+        appTourFeature2Title: "การเรียนรู้ส่วนบุคคล",
+        appTourFeature2Description: "สัมผัสการเรียนรู้ภาษา\nที่ปรับให้เหมาะกับระดับของคุณ",
+        appTourFeature3Title: "ติดตามความก้าวหน้า",
+        appTourFeature3Description: "ติดตามความก้าวหน้าประจำวัน\nและรู้สึกถึงการเติบโตอย่างต่อเนื่อง",
+        appTourFeature4Title: "หลายภาษา",
+        appTourFeature4Description: "เรียนรู้ 12 ภาษาต่างๆ\nเพื่อสื่อสารได้ทุกที่ในโลก",
+        appTourGetStarted: "เริ่มต้น",
+        appTourSkip: "ข้าม",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)!" },
-            languageLearningWelcomeSubtitle: "คุณอยากเรียนภาษาอะไร?",
-            languageLearningPrompt: "เลือกภาษาที่จะเรียน",
-            languageLearningContinueButton: "เริ่มเรียน",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "คุณอยากเรียนภาษาอะไร?",
+        languageLearningPrompt: "เลือกภาษาที่จะเรียน",
+        languageLearningContinueButton: "เริ่มเรียน",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -776,6 +842,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "คำอธิบาย",
         
         diaryDetailTitle: "ผลการแก้ไข",
+        editButton: "แก้ไข",
         
         profileSettingsTitle: "การตั้งค่า",
         profileUserName: "ผู้ใช้",
@@ -801,6 +868,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "ตกลง",
         retryButton: "ลองใหม่",
         unknownErrorMessage: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "ถึงขีดจำกัดของวันนี้แล้ว",
+        dailyDiaryLimitMessage: "คุณได้เขียนไดอารี่วันนี้แล้ว\nพบกันใหม่พรุ่งนี้นะ! 😊",
+        premiumRequiredForEditTitle: "🌟 ฟีเจอร์พรีเมียม",
+        premiumRequiredForEditMessage: "การแก้ไขไดอารี่สามารถใช้ได้เฉพาะสมาชิกพรีเมียมเท่านั้น\nเริ่มตอนนี้เลย!",
+        todayOnlyEditTitle: "ไม่สามารถแก้ไขได้",
+        todayOnlyEditMessage: "สามารถแก้ไขไดอารี่ที่เขียนวันนี้เท่านั้น",
+        confirmEdit: "แก้ไข",
+        cancelEdit: "ยกเลิก",
+        startPremium: "เริ่มต้นพรีเมียม",
+        laterButton: "ภายหลัง",
         
         monthNames: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."],
         weekdayNames: ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"],
@@ -835,24 +914,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "Abmelden",
         
         // 앱 둘러보기
-            appTourButton: "App-Tour",
-            appTourTitle: "Beginnen Sie Ihre Sprachlernreise\nmit Kodiary",
-            appTourFeature1Title: "KI-Korrekturen",
-            appTourFeature1Description: "Schreiben Sie Ihr Tagebuch in jeder Sprache\nund erhalten Sie natürliche KI-Korrekturen",
-            appTourFeature2Title: "Personalisiertes Lernen",
-            appTourFeature2Description: "Erleben Sie angepasstes Sprachlernen\nmaßgeschneidert für Ihr Niveau",
-            appTourFeature3Title: "Fortschrittsverfolgung",
-            appTourFeature3Description: "Überwachen Sie Ihren täglichen Lernfortschritt\nund spüren Sie Ihr kontinuierliches Wachstum",
-            appTourFeature4Title: "Mehrere Sprachen",
-            appTourFeature4Description: "Lernen Sie 12 verschiedene Sprachen\num überall auf der Welt zu kommunizieren",
-            appTourGetStarted: "Loslegen",
-            appTourSkip: "Überspringen",
+        appTourButton: "App-Tour",
+        appTourTitle: "Beginnen Sie Ihre Sprachlernreise\nmit Kodiary",
+        appTourFeature1Title: "KI-Korrekturen",
+        appTourFeature1Description: "Schreiben Sie Ihr Tagebuch in jeder Sprache\nund erhalten Sie natürliche KI-Korrekturen",
+        appTourFeature2Title: "Personalisiertes Lernen",
+        appTourFeature2Description: "Erleben Sie angepasstes Sprachlernen\nmaßgeschneidert für Ihr Niveau",
+        appTourFeature3Title: "Fortschrittsverfolgung",
+        appTourFeature3Description: "Überwachen Sie Ihren täglichen Lernfortschritt\nund spüren Sie Ihr kontinuierliches Wachstum",
+        appTourFeature4Title: "Mehrere Sprachen",
+        appTourFeature4Description: "Lernen Sie 12 verschiedene Sprachen\num überall auf der Welt zu kommunizieren",
+        appTourGetStarted: "Loslegen",
+        appTourSkip: "Überspringen",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)!" },
-            languageLearningWelcomeSubtitle: "Welche Sprache möchten Sie lernen?",
-            languageLearningPrompt: "Wählen Sie Ihre Lernsprache",
-            languageLearningContinueButton: "Lernen beginnen",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "Welche Sprache möchten Sie lernen?",
+        languageLearningPrompt: "Wählen Sie Ihre Lernsprache",
+        languageLearningContinueButton: "Lernen beginnen",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -885,6 +964,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "Erklärung",
         
         diaryDetailTitle: "Korrekturergebnisse",
+        editButton: "Bearbeiten",
         
         profileSettingsTitle: "Einstellungen",
         profileUserName: "Benutzer",
@@ -910,6 +990,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "OK",
         retryButton: "Erneut versuchen",
         unknownErrorMessage: "Ein unbekannter Fehler ist aufgetreten.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "Tageslimit erreicht",
+        dailyDiaryLimitMessage: "Du hast heute bereits dein Tagebuch geschrieben.\nBis morgen! 😊",
+        premiumRequiredForEditTitle: "🌟 Premium-Funktion",
+        premiumRequiredForEditMessage: "Das Bearbeiten des Tagebuchs ist nur für Premium-Mitglieder verfügbar.\nJetzt starten!",
+        todayOnlyEditTitle: "Bearbeitung nicht möglich",
+        todayOnlyEditMessage: "Nur das heutige Tagebuch kann bearbeitet werden.",
+        confirmEdit: "Bearbeiten",
+        cancelEdit: "Abbrechen",
+        startPremium: "Premium starten",
+        laterButton: "Später",
         
         monthNames: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
         weekdayNames: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
@@ -944,24 +1036,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "退出登录",
         
         // 앱 둘러보기
-            appTourButton: "应用导览",
-            appTourTitle: "与Kodiary一起\n开始您的语言学习之旅",
-            appTourFeature1Title: "AI智能批改",
-            appTourFeature1Description: "用任何语言写日记\nAI为您提供自然的批改建议",
-            appTourFeature2Title: "个性化学习",
-            appTourFeature2Description: "体验根据您的水平\n量身定制的语言学习",
-            appTourFeature3Title: "进度跟踪",
-            appTourFeature3Description: "监控您的每日学习进度\n感受持续的成长",
-            appTourFeature4Title: "多语言支持",
-            appTourFeature4Description: "学习12种不同语言\n在世界任何地方都能交流",
-            appTourGetStarted: "开始",
-            appTourSkip: "跳过",
+        appTourButton: "应用导览",
+        appTourTitle: "与Kodiary一起\n开始您的语言学习之旅",
+        appTourFeature1Title: "AI智能批改",
+        appTourFeature1Description: "用任何语言写日记\nAI为您提供自然的批改建议",
+        appTourFeature2Title: "个性化学习",
+        appTourFeature2Description: "体验根据您的水平\n量身定制的语言学习",
+        appTourFeature3Title: "进度跟踪",
+        appTourFeature3Description: "监控您的每日学习进度\n感受持续的成长",
+        appTourFeature4Title: "多语言支持",
+        appTourFeature4Description: "学习12种不同语言\n在世界任何地方都能交流",
+        appTourGetStarted: "开始",
+        appTourSkip: "跳过",
         
         // 언어 학습 설정 관련
-           languageLearningWelcomeTitle: { username in "\(username)！" },
-           languageLearningWelcomeSubtitle: "您想学习哪种语言？",
-           languageLearningPrompt: "选择您的学习语言",
-           languageLearningContinueButton: "开始学习",
+        languageLearningWelcomeTitle: { username in "\(username)！" },
+        languageLearningWelcomeSubtitle: "您想学习哪种语言？",
+        languageLearningPrompt: "选择您的学习语言",
+        languageLearningContinueButton: "开始学习",
         
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -994,6 +1086,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "解释",
         
         diaryDetailTitle: "批改结果",
+        editButton: "编辑",
         
         profileSettingsTitle: "设置",
         profileUserName: "用户",
@@ -1019,6 +1112,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "确定",
         retryButton: "重试",
         unknownErrorMessage: "发生未知错误。",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "已达到今日上限",
+        dailyDiaryLimitMessage: "你今天已经写过日记了。\n我们明天再见吧！😊",
+        premiumRequiredForEditTitle: "🌟 高级功能",
+        premiumRequiredForEditMessage: "只有高级会员才能编辑日记。\n现在就开始吧！",
+        todayOnlyEditTitle: "无法编辑",
+        todayOnlyEditMessage: "只能编辑今天写的日记。",
+        confirmEdit: "编辑",
+        cancelEdit: "取消",
+        startPremium: "开启高级版",
+        laterButton: "稍后",
         
         monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
         weekdayNames: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
@@ -1053,24 +1158,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "تسجيل الخروج",
         
         // 앱 둘러보기
-       appTourButton: "جولة التطبيق",
-       appTourTitle: "ابدأ رحلة تعلم اللغة\nمع Kodiary",
-       appTourFeature1Title: "تصحيحات الذكاء الاصطناعي",
-       appTourFeature1Description: "اكتب يومياتك بأي لغة\nواحصل على تصحيحات طبيعية من الذكاء الاصطناعي",
-       appTourFeature2Title: "تعلم شخصي",
-       appTourFeature2Description: "اختبر تعلم اللغة المخصص\nحسب مستواك",
-       appTourFeature3Title: "تتبع التقدم",
-       appTourFeature3Description: "راقب تقدمك اليومي في التعلم\nواشعر بنموك المستمر",
-       appTourFeature4Title: "لغات متعددة",
-       appTourFeature4Description: "تعلم 12 لغة مختلفة\nللتواصل في أي مكان في العالم",
-       appTourGetStarted: "ابدأ",
-       appTourSkip: "تخطي",
+        appTourButton: "جولة التطبيق",
+        appTourTitle: "ابدأ رحلة تعلم اللغة\nمع Kodiary",
+        appTourFeature1Title: "تصحيحات الذكاء الاصطناعي",
+        appTourFeature1Description: "اكتب يومياتك بأي لغة\nواحصل على تصحيحات طبيعية من الذكاء الاصطناعي",
+        appTourFeature2Title: "تعلم شخصي",
+        appTourFeature2Description: "اختبر تعلم اللغة المخصص\nحسب مستواك",
+        appTourFeature3Title: "تتبع التقدم",
+        appTourFeature3Description: "راقب تقدمك اليومي في التعلم\nواشعر بنموك المستمر",
+        appTourFeature4Title: "لغات متعددة",
+        appTourFeature4Description: "تعلم 12 لغة مختلفة\nللتواصل في أي مكان في العالم",
+        appTourGetStarted: "ابدأ",
+        appTourSkip: "تخطي",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)!" },
-            languageLearningWelcomeSubtitle: "أي لغة تريد أن تتعلم؟",
-            languageLearningPrompt: "اختر لغة التعلم",
-            languageLearningContinueButton: "ابدأ التعلم",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "أي لغة تريد أن تتعلم؟",
+        languageLearningPrompt: "اختر لغة التعلم",
+        languageLearningContinueButton: "ابدأ التعلم",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -1103,6 +1208,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "شرح",
         
         diaryDetailTitle: "نتائج التصحيح",
+        editButton: "تحرير",
         
         profileSettingsTitle: "الإعدادات",
         profileUserName: "المستخدم",
@@ -1128,6 +1234,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "موافق",
         retryButton: "إعادة المحاولة",
         unknownErrorMessage: "حدث خطأ غير معروف.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "تم الوصول إلى الحد اليومي",
+        dailyDiaryLimitMessage: "لقد كتبت مذكرتك لليوم.\nنراك غدًا! 😊",
+        premiumRequiredForEditTitle: "🌟 ميزة بريميوم",
+        premiumRequiredForEditMessage: "تحرير المذكرة متاح فقط للأعضاء المميزين.\nابدأ الآن!",
+        todayOnlyEditTitle: "لا يمكن التحرير",
+        todayOnlyEditMessage: "يمكنك فقط تحرير مذكرات اليوم.",
+        confirmEdit: "تحرير",
+        cancelEdit: "إلغاء",
+        startPremium: "ابدأ بريميوم",
+        laterButton: "لاحقًا",
         
         monthNames: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
         weekdayNames: ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
@@ -1162,24 +1280,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "Se Déconnecter",
         
         // 앱 둘러보기
-           appTourButton: "Visite de l'App",
-           appTourTitle: "Commencez votre voyage d'apprentissage\nlinguistique avec Kodiary",
-           appTourFeature1Title: "Corrections IA",
-           appTourFeature1Description: "Écrivez votre journal dans n'importe quelle langue\net recevez des corrections naturelles de l'IA",
-           appTourFeature2Title: "Apprentissage Personnalisé",
-           appTourFeature2Description: "Découvrez l'apprentissage linguistique\nadapté à votre niveau",
-           appTourFeature3Title: "Suivi des Progrès",
-           appTourFeature3Description: "Surveillez vos progrès quotidiens\net ressentez votre croissance continue",
-           appTourFeature4Title: "Langues Multiples",
-           appTourFeature4Description: "Apprenez 12 langues différentes\npour communiquer partout dans le monde",
-           appTourGetStarted: "Commencer",
-           appTourSkip: "Passer",
+        appTourButton: "Visite de l'App",
+        appTourTitle: "Commencez votre voyage d'apprentissage\nlinguistique avec Kodiary",
+        appTourFeature1Title: "Corrections IA",
+        appTourFeature1Description: "Écrivez votre journal dans n'importe quelle langue\net recevez des corrections naturelles de l'IA",
+        appTourFeature2Title: "Apprentissage Personnalisé",
+        appTourFeature2Description: "Découvrez l'apprentissage linguistique\nadapté à votre niveau",
+        appTourFeature3Title: "Suivi des Progrès",
+        appTourFeature3Description: "Surveillez vos progrès quotidiens\net ressentez votre croissance continue",
+        appTourFeature4Title: "Langues Multiples",
+        appTourFeature4Description: "Apprenez 12 langues différentes\npour communiquer partout dans le monde",
+        appTourGetStarted: "Commencer",
+        appTourSkip: "Passer",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)!" },
-            languageLearningWelcomeSubtitle: "Quelle langue souhaitez-vous apprendre?",
-            languageLearningPrompt: "Choisissez votre langue d'apprentissage",
-            languageLearningContinueButton: "Commencer à apprendre",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "Quelle langue souhaitez-vous apprendre?",
+        languageLearningPrompt: "Choisissez votre langue d'apprentissage",
+        languageLearningContinueButton: "Commencer à apprendre",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -1212,6 +1330,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "Explication",
         
         diaryDetailTitle: "Résultats de correction",
+        editButton: "Modifier",
         
         profileSettingsTitle: "Paramètres",
         profileUserName: "Utilisateur",
@@ -1237,6 +1356,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "OK",
         retryButton: "Réessayer",
         unknownErrorMessage: "Une erreur inconnue s'est produite.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "Limite quotidienne atteinte",
+        dailyDiaryLimitMessage: "Tu as déjà écrit ton journal aujourd’hui.\nÀ demain ! 😊",
+        premiumRequiredForEditTitle: "🌟 Fonction Premium",
+        premiumRequiredForEditMessage: "Seuls les membres Premium peuvent modifier leur journal.\nCommence maintenant !",
+        todayOnlyEditTitle: "Modification impossible",
+        todayOnlyEditMessage: "Seul le journal d'aujourd'hui peut être modifié.",
+        confirmEdit: "Modifier",
+        cancelEdit: "Annuler",
+        startPremium: "Commencer Premium",
+        laterButton: "Plus tard",
         
         monthNames: ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"],
         weekdayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
@@ -1271,24 +1402,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "Esci",
         
         // 앱 둘러보기
-            appTourButton: "Tour dell'App",
-            appTourTitle: "Inizia il tuo viaggio di apprendimento\nlinguistico con Kodiary",
-            appTourFeature1Title: "Correzioni IA",
-            appTourFeature1Description: "Scrivi il tuo diario in qualsiasi lingua\ne ricevi correzioni naturali dall'IA",
-            appTourFeature2Title: "Apprendimento Personalizzato",
-            appTourFeature2Description: "Sperimenta l'apprendimento linguistico\npersonalizzato per il tuo livello",
-            appTourFeature3Title: "Monitoraggio Progressi",
-            appTourFeature3Description: "Monitora i tuoi progressi quotidiani\ne senti la tua crescita continua",
-            appTourFeature4Title: "Lingue Multiple",
-            appTourFeature4Description: "Impara 12 lingue diverse\nper comunicare ovunque nel mondo",
-            appTourGetStarted: "Inizia",
-            appTourSkip: "Salta",
+        appTourButton: "Tour dell'App",
+        appTourTitle: "Inizia il tuo viaggio di apprendimento\nlinguistico con Kodiary",
+        appTourFeature1Title: "Correzioni IA",
+        appTourFeature1Description: "Scrivi il tuo diario in qualsiasi lingua\ne ricevi correzioni naturali dall'IA",
+        appTourFeature2Title: "Apprendimento Personalizzato",
+        appTourFeature2Description: "Sperimenta l'apprendimento linguistico\npersonalizzato per il tuo livello",
+        appTourFeature3Title: "Monitoraggio Progressi",
+        appTourFeature3Description: "Monitora i tuoi progressi quotidiani\ne senti la tua crescita continua",
+        appTourFeature4Title: "Lingue Multiple",
+        appTourFeature4Description: "Impara 12 lingue diverse\nper comunicare ovunque nel mondo",
+        appTourGetStarted: "Inizia",
+        appTourSkip: "Salta",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)!" },
-            languageLearningWelcomeSubtitle: "Quale lingua vorresti imparare?",
-            languageLearningPrompt: "Scegli la tua lingua di apprendimento",
-            languageLearningContinueButton: "Inizia ad imparare",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "Quale lingua vorresti imparare?",
+        languageLearningPrompt: "Scegli la tua lingua di apprendimento",
+        languageLearningContinueButton: "Inizia ad imparare",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -1321,6 +1452,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "Spiegazione",
         
         diaryDetailTitle: "Risultati delle correzioni",
+        editButton: "Modifica",
         
         profileSettingsTitle: "Impostazioni",
         profileUserName: "Utente",
@@ -1346,6 +1478,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "OK",
         retryButton: "Riprova",
         unknownErrorMessage: "Si è verificato un errore sconosciuto.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "Limite giornaliero raggiunto",
+        dailyDiaryLimitMessage: "Hai già scritto il diario oggi.\nCi vediamo domani! 😊",
+        premiumRequiredForEditTitle: "🌟 Funzione Premium",
+        premiumRequiredForEditMessage: "Solo gli utenti Premium possono modificare il diario.\nInizia ora!",
+        todayOnlyEditTitle: "Modifica non disponibile",
+        todayOnlyEditMessage: "Puoi modificare solo il diario di oggi.",
+        confirmEdit: "Modifica",
+        cancelEdit: "Annulla",
+        startPremium: "Inizia Premium",
+        laterButton: "Più tardi",
         
         monthNames: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
         weekdayNames: ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
@@ -1380,24 +1524,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "Sair",
         
         // 앱 둘러보기
-            appTourButton: "Tour do App",
-            appTourTitle: "Comece sua jornada de aprendizado\nde idiomas com Kodiary",
-            appTourFeature1Title: "Correções IA",
-            appTourFeature1Description: "Escreva seu diário em qualquer idioma\ne receba correções naturais da IA",
-            appTourFeature2Title: "Aprendizado Personalizado",
-            appTourFeature2Description: "Experimente aprendizado de idiomas\npersonalizado para seu nível",
-            appTourFeature3Title: "Acompanhamento de Progresso",
-            appTourFeature3Description: "Monitore seu progresso diário de aprendizado\ne sinta seu crescimento contínuo",
-            appTourFeature4Title: "Múltiplos Idiomas",
-            appTourFeature4Description: "Aprenda 12 idiomas diferentes\npara se comunicar em qualquer lugar do mundo",
-            appTourGetStarted: "Começar",
-            appTourSkip: "Pular",
+        appTourButton: "Tour do App",
+        appTourTitle: "Comece sua jornada de aprendizado\nde idiomas com Kodiary",
+        appTourFeature1Title: "Correções IA",
+        appTourFeature1Description: "Escreva seu diário em qualquer idioma\ne receba correções naturais da IA",
+        appTourFeature2Title: "Aprendizado Personalizado",
+        appTourFeature2Description: "Experimente aprendizado de idiomas\npersonalizado para seu nível",
+        appTourFeature3Title: "Acompanhamento de Progresso",
+        appTourFeature3Description: "Monitore seu progresso diário de aprendizado\ne sinta seu crescimento contínuo",
+        appTourFeature4Title: "Múltiplos Idiomas",
+        appTourFeature4Description: "Aprenda 12 idiomas diferentes\npara se comunicar em qualquer lugar do mundo",
+        appTourGetStarted: "Começar",
+        appTourSkip: "Pular",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)!" },
-            languageLearningWelcomeSubtitle: "Qual idioma você gostaria de aprender?",
-            languageLearningPrompt: "Escolha seu idioma de aprendizado",
-            languageLearningContinueButton: "Começar a aprender",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "Qual idioma você gostaria de aprender?",
+        languageLearningPrompt: "Escolha seu idioma de aprendizado",
+        languageLearningContinueButton: "Começar a aprender",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "E"),
         dayDateFormat: "d",
@@ -1430,6 +1574,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "Explicação",
         
         diaryDetailTitle: "Resultados da correção",
+        editButton: "Editar",
         
         profileSettingsTitle: "Configurações",
         profileUserName: "Usuário",
@@ -1455,6 +1600,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "OK",
         retryButton: "Tentar novamente",
         unknownErrorMessage: "Ocorreu um erro desconhecido.",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "Limite diário atingido",
+        dailyDiaryLimitMessage: "Você já escreveu seu diário hoje.\nAté amanhã! 😊",
+        premiumRequiredForEditTitle: "🌟 Recurso Premium",
+        premiumRequiredForEditMessage: "Apenas usuários Premium podem editar o diário.\nComece agora!",
+        todayOnlyEditTitle: "Não é possível editar",
+        todayOnlyEditMessage: "Só é possível editar o diário de hoje.",
+        confirmEdit: "Editar",
+        cancelEdit: "Cancelar",
+        startPremium: "Começar Premium",
+        laterButton: "Depois",
         
         monthNames: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
         weekdayNames: ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"],
@@ -1489,24 +1646,24 @@ class LanguageManager: ObservableObject {
         signOutButton: "साइन आउट",
         
         // 앱 둘러보기
-            appTourButton: "ऐप टूर",
-            appTourTitle: "Kodiary के साथ अपनी भाषा सीखने\nकी यात्रा शुरू करें",
-            appTourFeature1Title: "AI सुधार",
-            appTourFeature1Description: "किसी भी भाषा में अपनी डायरी लिखें\nऔर AI से प्राकृतिक सुधार प्राप्त करें",
-            appTourFeature2Title: "व्यक्तिगत शिक्षा",
-            appTourFeature2Description: "अपने स्तर के अनुकूल\nव्यक्तिगत भाषा शिक्षा का अनुभव करें",
-            appTourFeature3Title: "प्रगति ट्रैकिंग",
-            appTourFeature3Description: "अपनी दैनिक सीखने की प्रगति को\nट्रैक करें और निरंतर विकास महसूस करें",
-            appTourFeature4Title: "कई भाषाएं",
-            appTourFeature4Description: "12 विभिन्न भाषाएं सीखें\nदुनिया में कहीं भी संवाद करने के लिए",
-            appTourGetStarted: "शुरू करें",
-            appTourSkip: "छोड़ें",
+        appTourButton: "ऐप टूर",
+        appTourTitle: "Kodiary के साथ अपनी भाषा सीखने\nकी यात्रा शुरू करें",
+        appTourFeature1Title: "AI सुधार",
+        appTourFeature1Description: "किसी भी भाषा में अपनी डायरी लिखें\nऔर AI से प्राकृतिक सुधार प्राप्त करें",
+        appTourFeature2Title: "व्यक्तिगत शिक्षा",
+        appTourFeature2Description: "अपने स्तर के अनुकूल\nव्यक्तिगत भाषा शिक्षा का अनुभव करें",
+        appTourFeature3Title: "प्रगति ट्रैकिंग",
+        appTourFeature3Description: "अपनी दैनिक सीखने की प्रगति को\nट्रैक करें और निरंतर विकास महसूस करें",
+        appTourFeature4Title: "कई भाषाएं",
+        appTourFeature4Description: "12 विभिन्न भाषाएं सीखें\nदुनिया में कहीं भी संवाद करने के लिए",
+        appTourGetStarted: "शुरू करें",
+        appTourSkip: "छोड़ें",
         
         // 언어 학습 설정 관련
-            languageLearningWelcomeTitle: { username in "\(username)!" },
-            languageLearningWelcomeSubtitle: "आप कौन सी भाषा सीखना चाहते हैं?",
-            languageLearningPrompt: "अपनी सीखने की भाषा चुनें",
-            languageLearningContinueButton: "सीखना शुरू करें",
+        languageLearningWelcomeTitle: { username in "\(username)!" },
+        languageLearningWelcomeSubtitle: "आप कौन सी भाषा सीखना चाहते हैं?",
+        languageLearningPrompt: "अपनी सीखने की भाषा चुनें",
+        languageLearningContinueButton: "सीखना शुरू करें",
         
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
@@ -1539,6 +1696,7 @@ class LanguageManager: ObservableObject {
         explanationTitle: "व्याख्या",
         
         diaryDetailTitle: "सुधार परिणाम",
+        editButton: "संपादित करें",
         
         profileSettingsTitle: "सेटिंग्स",
         profileUserName: "उपयोगकर्ता",
@@ -1564,6 +1722,18 @@ class LanguageManager: ObservableObject {
         confirmButton: "ठीक है",
         retryButton: "पुनः प्रयास",
         unknownErrorMessage: "एक अज्ञात त्रुटि हुई।",
+        
+        // 🆕 새로운 알림 메시지들
+        dailyDiaryLimitTitle: "आज की सीमा पूरी हो गई है",
+        dailyDiaryLimitMessage: "आपने आज का डायरी पहले ही लिखा है।\nकल फिर मिलते हैं! 😊",
+        premiumRequiredForEditTitle: "🌟 प्रीमियम सुविधा",
+        premiumRequiredForEditMessage: "डायरी संपादन केवल प्रीमियम सदस्यों के लिए उपलब्ध है।\nअभी शुरू करें!",
+        todayOnlyEditTitle: "संपादन संभव नहीं है",
+        todayOnlyEditMessage: "केवल आज की डायरी को ही संपादित किया जा सकता है।",
+        confirmEdit: "संपादित करें",
+        cancelEdit: "रद्द करें",
+        startPremium: "प्रीमियम शुरू करें",
+        laterButton: "बाद में",
         
         monthNames: ["जन", "फर", "मार", "अप्र", "मई", "जून", "जुल", "अग", "सित", "अक्त", "नव", "दिस"],
         weekdayNames: ["रविवार", "सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
