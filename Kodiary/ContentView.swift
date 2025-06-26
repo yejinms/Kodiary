@@ -62,6 +62,7 @@ struct ResponsiveDateHeader: View {
 }
 
 struct ContentView: View {
+    @State private var currentDate = Date()
     @State private var navigationPath = NavigationPath()
     @State private var showingLanguageSelection = false
     @EnvironmentObject var dataManager: DataManager
@@ -71,7 +72,7 @@ struct ContentView: View {
     // 오늘 일기 작성 여부 확인
     var hasTodayDiary: Bool {
         let today = Date()
-        return dataManager.getDiary(for: today) != nil
+        return dataManager.getDiary(for: currentDate) != nil
     }
     
     // 사용자 이름
@@ -276,6 +277,22 @@ struct ContentView: View {
                 dataManager.checkCloudKitAccount()
             }
         }
+        .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
+                    let newDate = Date()
+                    if !Calendar.current.isDate(currentDate, inSameDayAs: newDate) {
+                        print("📅 날짜 변경 감지: \(currentDate) → \(newDate)")
+                        currentDate = newDate
+                        dataManager.fetchDiaries() // 데이터 새로고침으로 UI 업데이트
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                    let newDate = Date()
+                    if !Calendar.current.isDate(currentDate, inSameDayAs: newDate) {
+                        print("📱 포그라운드 복귀 시 날짜 업데이트: \(currentDate) → \(newDate)")
+                        currentDate = newDate
+                        dataManager.fetchDiaries()
+                    }
+                }
     }
 }
 
