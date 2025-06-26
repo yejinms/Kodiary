@@ -127,7 +127,7 @@ class DataManager: ObservableObject {
             let newDiaries = try context.fetch(request)
             
             if newDiaries.count != savedDiaries.count ||
-               !areArraysEqual(newDiaries, savedDiaries) {
+                !areArraysEqual(newDiaries, savedDiaries) {
                 
                 // 메인 스레드에서 UI 업데이트 보장
                 DispatchQueue.main.async {
@@ -161,7 +161,7 @@ class DataManager: ObservableObject {
             }
         }
     }
-
+    
     // MARK: - 앱 시작 시 즉시 새로고침 메서드 추가
     func refreshDataOnAppStart() {
         print("🔄 앱 시작 시 데이터 새로고침")
@@ -262,7 +262,7 @@ class DataManager: ObservableObject {
                 
                 DispatchQueue.main.async {
                     if newDiaries.count != self.savedDiaries.count ||
-                       !self.areArraysEqual(newDiaries, self.savedDiaries) {
+                        !self.areArraysEqual(newDiaries, self.savedDiaries) {
                         self.savedDiaries = newDiaries
                         print("📚 일기 \(self.savedDiaries.count)개 로드됨 (CloudKit 동기화됨)")
                     }
@@ -299,8 +299,8 @@ class DataManager: ObservableObject {
         
         for (diary1, diary2) in zip(array1, array2) {
             if diary1.id != diary2.id ||
-               diary1.originalText != diary2.originalText ||
-               diary1.date != diary2.date {
+                diary1.originalText != diary2.originalText ||
+                diary1.date != diary2.date {
                 return false
             }
         }
@@ -329,11 +329,14 @@ class DataManager: ObservableObject {
         let request: NSFetchRequest<DiaryEntry> = DiaryEntry.fetchRequest()
         request.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
         
+        // 가장 먼저 쓴 일기를 위해 오름차순 정렬 추가
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \DiaryEntry.date, ascending: true)]
+        
         var result: DiaryEntry?
         context.performAndWait {
             do {
                 let diaries = try context.fetch(request)
-                result = diaries.first
+                result = diaries.first  // 이제 가장 먼저 쓴 일기가 반환됨
             } catch {
                 print("특정 날짜 일기 로드 에러: \(error)")
             }

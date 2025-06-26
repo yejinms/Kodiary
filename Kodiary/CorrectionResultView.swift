@@ -11,6 +11,22 @@ struct CorrectionResultView: View {
     @State private var showSaveLoading = false
     @State private var scrollToTop = false
     
+    // 원문에서의 위치 순서대로 정렬된 첨삭 결과
+    var sortedCorrections: [CorrectionItem] {
+        return corrections.sorted { correction1, correction2 in
+            let range1 = originalText.range(of: correction1.original, options: [.caseInsensitive])
+            let range2 = originalText.range(of: correction2.original, options: [.caseInsensitive])
+            
+            guard let r1 = range1, let r2 = range2 else {
+                // 만약 찾을 수 없다면 원래 순서 유지
+                return false
+            }
+            
+            // 원문에서 먼저 나타나는 순서대로 정렬
+            return r1.lowerBound < r2.lowerBound
+        }
+    }
+    
     // DiaryWriteView와 동일한 날짜 관련 computed properties
     var todayDateComponents: (year: String, month: String, weekday: String) {
         let today = Date()
@@ -87,7 +103,7 @@ struct CorrectionResultView: View {
                                 Spacer()
                                 // 첨삭 개수 표시
                                 HStack {
-                                    Text(languageManager.currentLanguage.correctionCompleteSubtitle(corrections.count))
+                                    Text(languageManager.currentLanguage.correctionCompleteSubtitle(sortedCorrections.count))
                                         .font(.buttonFontSmall)
                                         .foregroundColor(.gray)
                                 }
@@ -114,11 +130,11 @@ struct CorrectionResultView: View {
                                 .padding(.top, 38)
                                 .padding(.horizontal, 10)
                                 
-                                // 하이라이트된 텍스트
+                                // 하이라이트된 텍스트 (정렬된 첨삭 사용)
                                 ScrollView {
                                     HighlightedText(
                                         originalText: originalText,
-                                        corrections: corrections
+                                        corrections: sortedCorrections
                                     )
                                     .font(.handWrite)
                                     .lineSpacing(17)
@@ -131,13 +147,13 @@ struct CorrectionResultView: View {
                             }
                             .padding(.horizontal, 25)
                             
-                            // 첨삭 결과 섹션
+                            // 첨삭 결과 섹션 (정렬된 순서로 표시)
                             VStack(spacing: 16) {
-                                // 첨삭 목록
+                                // 첨삭 목록 - sortedCorrections 사용
                                 VStack(spacing: 10) {
-                                    ForEach(corrections.indices, id: \.self) { index in
+                                    ForEach(sortedCorrections.indices, id: \.self) { index in
                                         CorrectionRow(
-                                            correction: corrections[index],
+                                            correction: sortedCorrections[index],
                                             index: index,
                                             isExpanded: expandedItems.contains(index)
                                         ) {
@@ -215,8 +231,8 @@ struct CorrectionResultView: View {
                 showSaveLoading = true
             }
             
-            // DataManager를 통해 실제 저장
-            dataManager.saveDiary(text: originalText, corrections: corrections)
+            // DataManager를 통해 실제 저장 (정렬된 첨삭 사용)
+            dataManager.saveDiary(text: originalText, corrections: sortedCorrections)
             
             // 2초 후 홈 화면으로 이동
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -245,13 +261,13 @@ struct CorrectionRow: View {
             // 헤더 (항상 보임) - 테두리 추가
             Button(action: onTap) {
                 HStack {
-                
+                    
                     // 수정 내용 요약
                     Text("\"\(correction.original)\"")
                         .font(.handWrite)
                         .foregroundColor(Color.secondaryRed)
                         .multilineTextAlignment(.leading)
-                
+                    
                     
                     Spacer()
                     
@@ -275,14 +291,14 @@ struct CorrectionRow: View {
                     
                     // 수정안
                     Text("→ \"\(correction.corrected)\"")
-                            .padding(.horizontal, 5)
-                            .font(.bodyFont)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 5)
+                        .font(.bodyFont)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Rectangle()
                         .fill(Color.primaryDark.opacity(0.2))
                         .frame(height: 1.8)
-                        
+                    
                     // 설명
                     Text(correction.explanation)
                         .padding(.horizontal, 5)

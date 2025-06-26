@@ -18,17 +18,17 @@ struct ResponsiveDateHeader: View {
                     .frame(width: geometry.size.width, height: 70)
                     .foregroundColor(.clear)
                     .overlay(
-                       VStack(spacing: 0) {
-                           Rectangle()
-                               .fill(Color.primaryDark.opacity(0.2))
-                               .frame(height: 1.8)
-                           
-                           Spacer()
-                           
-                           Rectangle()
-                               .fill(Color.primaryDark.opacity(0.2))
-                               .frame(height: 1.8)
-                       }
+                        VStack(spacing: 0) {
+                            Rectangle()
+                                .fill(Color.primaryDark.opacity(0.2))
+                                .frame(height: 1.8)
+                            
+                            Spacer()
+                            
+                            Rectangle()
+                                .fill(Color.primaryDark.opacity(0.2))
+                                .frame(height: 1.8)
+                        }
                     )
                 
                 HStack(spacing: 0) {
@@ -161,7 +161,7 @@ struct ContentView: View {
                     
                     // 반응형 날짜 헤더 사용
                     ResponsiveDateHeader(dateComponents: todayDateComponents)
-            
+                    
                     ZStack {
                         Rectangle()
                             .foregroundColor(.clear)
@@ -247,8 +247,8 @@ struct ContentView: View {
                     )
                 case "diary-history":
                     DiaryHistoryView(
-                                navigationPath: $navigationPath
-                            )
+                        navigationPath: $navigationPath
+                    )
                 case "profile-settings":
                     ProfileSettingsView()
                         .environmentObject(languageManager)
@@ -278,21 +278,21 @@ struct ContentView: View {
             }
         }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
-                    let newDate = Date()
-                    if !Calendar.current.isDate(currentDate, inSameDayAs: newDate) {
-                        print("📅 날짜 변경 감지: \(currentDate) → \(newDate)")
-                        currentDate = newDate
-                        dataManager.fetchDiaries() // 데이터 새로고침으로 UI 업데이트
-                    }
-                }
-                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-                    let newDate = Date()
-                    if !Calendar.current.isDate(currentDate, inSameDayAs: newDate) {
-                        print("📱 포그라운드 복귀 시 날짜 업데이트: \(currentDate) → \(newDate)")
-                        currentDate = newDate
-                        dataManager.fetchDiaries()
-                    }
-                }
+            let newDate = Date()
+            if !Calendar.current.isDate(currentDate, inSameDayAs: newDate) {
+                print("📅 날짜 변경 감지: \(currentDate) → \(newDate)")
+                currentDate = newDate
+                dataManager.fetchDiaries() // 데이터 새로고침으로 UI 업데이트
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            let newDate = Date()
+            if !Calendar.current.isDate(currentDate, inSameDayAs: newDate) {
+                print("📱 포그라운드 복귀 시 날짜 업데이트: \(currentDate) → \(newDate)")
+                currentDate = newDate
+                dataManager.fetchDiaries()
+            }
+        }
     }
 }
 

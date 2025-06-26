@@ -26,7 +26,7 @@ struct LoginView: View {
                 // 앱 로고 및 제목
                 VStack(spacing: 20) {
                     // 앱 아이콘 (원형)
-                        Image("KoDiary_icon")
+                        Image("KoDiary_logo")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 150, height: 150)

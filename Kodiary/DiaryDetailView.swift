@@ -79,18 +79,18 @@ struct DiaryDetailView: View {
                             .frame(height: 70)
                             .foregroundColor(.clear)
                             .overlay(
-                               VStack(spacing: 0) {
-                                   Rectangle()
-                                       .fill(Color.primaryDark.opacity(0.2))
-                                       .frame(height: 1.8)
-                                   
-                                   Spacer()
-                                   
-                                   Rectangle()
-                                       .fill(Color.primaryDark.opacity(0.2))
-                                       .frame(height: 1.8)
-                               }
-                               .padding(.horizontal, 0.9)
+                                VStack(spacing: 0) {
+                                    Rectangle()
+                                        .fill(Color.primaryDark.opacity(0.2))
+                                        .frame(height: 1.8)
+                                    
+                                    Spacer()
+                                    
+                                    Rectangle()
+                                        .fill(Color.primaryDark.opacity(0.2))
+                                        .frame(height: 1.8)
+                                }
+                                    .padding(.horizontal, 0.9)
                             )
                         
                         HStack(spacing: 0) {
