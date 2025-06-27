@@ -40,7 +40,16 @@ struct CorrectionItem: Identifiable, Hashable, Codable {
 }
 
 // 네비게이션용 데이터 - Codable 추가
-struct CorrectionData: Hashable, Codable {
+struct CorrectionData: Hashable {
     let originalText: String
     let corrections: [CorrectionItem]
+    let isEditMode: Bool
+    let originalDiary: DiaryEntry?
+    
+    init(originalText: String, corrections: [CorrectionItem], isEditMode: Bool = false, originalDiary: DiaryEntry? = nil) {
+        self.originalText = originalText
+        self.corrections = corrections
+        self.isEditMode = isEditMode
+        self.originalDiary = originalDiary
+    }
 }

@@ -3,6 +3,17 @@ import SwiftUI
 struct CorrectionResultView: View {
     let originalText: String
     let corrections: [CorrectionItem]
+    let isEditMode: Bool
+    let originalDiary: DiaryEntry?
+
+    init(originalText: String, corrections: [CorrectionItem], navigationPath: Binding<NavigationPath>, isEditMode: Bool = false, originalDiary: DiaryEntry? = nil) {
+        self.originalText = originalText
+        self.corrections = corrections
+        self._navigationPath = navigationPath
+        self.isEditMode = isEditMode
+        self.originalDiary = originalDiary
+    }
+    
     @Binding var navigationPath: NavigationPath
     @EnvironmentObject var languageManager: LanguageManager
     @EnvironmentObject var dataManager: DataManager
@@ -236,7 +247,7 @@ struct CorrectionResultView: View {
     }
     
     func saveDiary() {
-        print("일기 저장 시작...")
+        print("일기 저장 시작... (수정 모드: \(isEditMode))")
         
         // 먼저 스크롤을 맨 위로 이동
         scrollToTop = true
@@ -247,13 +258,22 @@ struct CorrectionResultView: View {
                 showSaveLoading = true
             }
             
-            // DataManager를 통해 실제 저장 (정렬된 첨삭 사용)
-            dataManager.saveDiary(text: originalText, corrections: sortedCorrections)
+            if isEditMode, let originalDiary = originalDiary {
+                // 🆕 수정 모드 - 기존 일기 업데이트
+                dataManager.updateDiary(
+                    diary: originalDiary,
+                    newText: originalText,
+                    newCorrections: sortedCorrections
+                )
+                print("✅ 일기 수정 완료!")
+            } else {
+                // 새 일기 저장
+                dataManager.saveDiary(text: originalText, corrections: sortedCorrections)
+                print("✅ 새 일기 저장 완료!")
+            }
             
             // 2초 후 홈 화면으로 이동
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                print("일기 저장 완료!")
-                
                 // 홈 화면으로 돌아가기
                 navigationPath = NavigationPath()
                 

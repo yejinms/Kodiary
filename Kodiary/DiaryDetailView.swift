@@ -21,6 +21,7 @@ struct DiaryEditData: Hashable {
 struct DiaryDetailView: View {
     @State var diary: DiaryEntry
     @Environment(\.dismiss) private var dismiss
+    @Binding var navigationPath: NavigationPath
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     
@@ -375,13 +376,13 @@ struct DiaryDetailView: View {
             // 유료 사용자지만 일일 한도 초과
             showingEditLimitAlert = true
         } else {
-            // 수정 가능 - 수정 모드로 DiaryWriteView 이동
+            // 🆕 수정 가능 - 수정 모드로 DiaryWriteView 이동
             let editData = DiaryEditData(
                 originalDiary: diary,
                 originalText: diary.originalText ?? "",
                 isEditMode: true
             )
-            // NavigationPath에 추가하는 방식은 상위 뷰에서 처리
+            navigationPath.append(editData) // NavigationPath에 직접 추가
         }
     }
 }

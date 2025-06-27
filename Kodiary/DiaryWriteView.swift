@@ -3,13 +3,30 @@ import SwiftUI
 struct DiaryWriteView: View {
     @State private var diaryText = ""
     @Binding var navigationPath: NavigationPath
+    let editData: DiaryEditData? // 🆕 수정 모드 지원
+    init(navigationPath: Binding<NavigationPath>, editData: DiaryEditData? = nil) {
+            self._navigationPath = navigationPath
+            self.editData = editData
+        }
+    
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
+    @EnvironmentObject var userManager: UserManager // 🆕 추가
     @StateObject private var apiManager = APIManager.shared
     
     @State private var showingLoading = false
     @State private var showingError = false
     @FocusState private var isTextEditorFocused: Bool
+    
+    // 수정 모드인지 확인
+    private var isEditMode: Bool {
+        return editData != nil
+    }
+
+    // 수정 모드에서 원본 일기
+    private var originalDiary: DiaryEntry? {
+        return editData?.originalDiary
+    }
     
     // 글자 수 제한 상수
     private let maxCharacterCount = 160
@@ -68,7 +85,7 @@ struct DiaryWriteView: View {
                     .onTapGesture {
                         isTextEditorFocused = false
                     }
-            
+                
                 VStack(spacing: 10) {
                     // ContentView와 동일한 원형 날짜 표시
                     ZStack {
@@ -216,7 +233,9 @@ struct DiaryWriteView: View {
             CorrectionResultView(
                 originalText: correctionData.originalText,
                 corrections: correctionData.corrections,
-                navigationPath: $navigationPath
+                navigationPath: $navigationPath,
+                isEditMode: correctionData.isEditMode,
+                originalDiary: correctionData.originalDiary
             )
             .environmentObject(dataManager)
             .environmentObject(languageManager)
@@ -228,6 +247,13 @@ struct DiaryWriteView: View {
             }
         } message: {
             Text(apiManager.errorMessage ?? languageManager.currentLanguage.unknownErrorMessage)
+        }
+        .onAppear {
+            // 수정 모드일 때 기존 텍스트 로드
+            if let editData = editData {
+                diaryText = editData.originalText
+                print("🔄 수정 모드로 진입: \(editData.originalText.prefix(50))...")
+            }
         }
     }
     
@@ -249,9 +275,16 @@ struct DiaryWriteView: View {
         let startTime = Date()
         
         do {
+            // 🆕 수정 모드일 때 첨삭 횟수 증가
+            if isEditMode {
+                userManager.incrementEditCount()
+                print("🔄 수정 모드 - 첨삭 횟수 증가: \(userManager.dailyEditCount)/3")
+            }
+            
             print("🤖 AI 첨삭 요청 시작: \(diaryText.prefix(50))...")
             print("📝 첨삭 언어: \(languageManager.correctionLanguage.languageName)")
             print("🌍 설명 언어: \(languageManager.nativeLanguage.languageName)")
+            print("🔄 수정 모드: \(isEditMode)")
             
             // 새로운 다국어 지원 API 호출
             let corrections = try await apiManager.analyzeDiary(
@@ -270,7 +303,9 @@ struct DiaryWriteView: View {
             
             let correctionData = CorrectionData(
                 originalText: diaryText,
-                corrections: corrections
+                corrections: corrections,
+                isEditMode: isEditMode,
+                originalDiary: originalDiary
             )
             
             await MainActor.run {

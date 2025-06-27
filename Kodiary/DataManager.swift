@@ -355,6 +355,34 @@ class DataManager: ObservableObject {
         }
     }
     
+    // 🆕 일기 수정 메서드
+    func updateDiary(diary: DiaryEntry, newText: String, newCorrections: [CorrectionItem]) {
+        // 기존 일기 엔트리 업데이트
+        diary.originalText = newText
+        diary.characterCount = Int16(newText.count)
+        diary.correctionCount = Int16(newCorrections.count)
+        diary.modifiedAt = Date()
+        
+        // 첨삭 결과 JSON으로 저장
+        do {
+            let correctionsData = try JSONEncoder().encode(newCorrections)
+            if let correctionsString = String(data: correctionsData, encoding: .utf8) {
+                diary.corrections = correctionsString
+            }
+        } catch {
+            print("❌ 첨삭 데이터 인코딩 에러: \(error)")
+            diary.corrections = "[]"
+        }
+        
+        saveContext()
+        
+        DispatchQueue.main.async {
+            self.fetchDiaries()
+        }
+        
+        print("✅ 일기 수정 완료 + CloudKit 동기화!")
+    }
+    
     func getDiaryDates() -> Set<String> {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"

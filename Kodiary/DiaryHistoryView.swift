@@ -16,6 +16,7 @@ struct DiaryHistoryView: View {
     @State private var selectedDate = Date()
     @State private var currentMonth = Date()
     @Binding var navigationPath: NavigationPath
+    @EnvironmentObject var userManager: UserManager
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     @State private var diaryDates: Set<String> = []
@@ -51,7 +52,7 @@ struct DiaryHistoryView: View {
             
             // 선택된 날짜의 일기 정보 - 실제 데이터 사용
             if let diary = dataManager.getDiary(for: selectedDate) {
-                DiaryPreview(diary: diary)
+                DiaryPreview(diary: diary, navigationPath: $navigationPath)
                     .padding()
             } else {
                 EmptyDateView(date: selectedDate, navigationPath: $navigationPath)
@@ -83,10 +84,14 @@ struct DiaryHistoryView: View {
         .onChange(of: dataManager.savedDiaries) { _, _ in
                     diaryDates = dataManager.getDiaryDates()  // ← 추가: 데이터 변경 시 업데이트
                 }
-        .navigationDestination(for: DiaryWriteDestination.self) { _ in
-            DiaryWriteView(navigationPath: $navigationPath)
-                .environmentObject(dataManager)
-                .environmentObject(languageManager)
+        .navigationDestination(for: DiaryEditData.self) { editData in
+            DiaryWriteView(
+                navigationPath: $navigationPath,
+                editData: editData
+            )
+            .environmentObject(dataManager)
+            .environmentObject(languageManager)
+            .environmentObject(userManager)
         }
     }
 }
@@ -348,6 +353,7 @@ struct DayCell: View {
 // 일기 미리보기 - 크기 축소
 struct DiaryPreview: View {
     let diary: DiaryEntry
+    @Binding var navigationPath: NavigationPath
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     
@@ -363,7 +369,7 @@ struct DiaryPreview: View {
                 Spacer()
                 
                 // 일기 보기 버튼
-                NavigationLink(destination: DiaryDetailView(diary: diary)) {
+                NavigationLink(destination: DiaryDetailView(diary: diary, navigationPath: $navigationPath)) {
                     HStack(spacing: 4) {
                         Text(languageManager.currentLanguage.correctionCountText(Int(diary.correctionCount)))
                             .font(.buttonFontSmall)

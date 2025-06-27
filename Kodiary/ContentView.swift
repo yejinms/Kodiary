@@ -194,12 +194,25 @@ struct ContentView: View {
                             .multilineTextAlignment(.center)
                             .lineSpacing(10)
                             .padding(.horizontal)
-                        // ContentView의 VStack 마지막에 임시 추가
+                        
                         #if DEBUG
-                        Button("🔧 테스트용 일기쓰기") {
-                            navigationPath.append("diary-write")
+                        VStack {
+                            Button("🔧 테스트용 일기쓰기") {
+                                navigationPath.append("diary-write")
+                            }
+                            .opacity(0.5) // 거의 안보이게
+                            
+                            // 🆕 프리미엄 상태 토글 버튼
+                            Button("💎 프리미엄: \(userManager.isPremiumUser ? "ON" : "OFF")") {
+                                userManager.setPremiumUser(!userManager.isPremiumUser)
+                            }
+                            .opacity(0.5)
+                            
+                            // 🆕 첨삭 횟수 확인
+                            Text("📝 오늘 첨삭: \(userManager.dailyEditCount)/3")
+                                .font(.caption)
+                                .opacity(0.5)
                         }
-                        .opacity(0.5) // 거의 안보이게
                         #endif
                     }
                     .padding(Spacing.xl)
@@ -257,6 +270,7 @@ struct ContentView: View {
                     DiaryWriteView(
                         navigationPath: $navigationPath
                     )
+                    .environmentObject(userManager)
                 case "diary-history":
                     DiaryHistoryView(
                         navigationPath: $navigationPath
