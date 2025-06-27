@@ -225,7 +225,7 @@ struct CorrectionResultView: View {
         }
         .alert(languageManager.currentLanguage.premiumRequiredForEditTitle, isPresented: $showingPremiumAlert) {
             Button(languageManager.currentLanguage.startPremium) {
-                // TODO: 프리미엄 구매 화면으로 이동
+                navigationPath.append("premium-purchase")
             }
             Button(languageManager.currentLanguage.laterButton) { }
         } message: {

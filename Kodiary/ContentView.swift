@@ -294,6 +294,9 @@ struct ContentView: View {
                         .environmentObject(languageManager)
                         .environmentObject(userManager)
                     
+                case "premium-purchase":
+                    PremiumView()
+                    
                 default:
                     Text("Unknown destination")
                 }
