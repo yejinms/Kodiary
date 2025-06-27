@@ -258,8 +258,21 @@ struct CorrectionResultView: View {
                 showSaveLoading = true
             }
             
+            
+            // 🆕 강제 로그 추가
+            print("📝 저장 처리 시작")
+            print("📝 저장 전 첨삭 횟수: \(userManager.dailyEditCount)")
+            
+            // 🆕 모든 일기 저장 시 첨삭 횟수 증가 (프리미엄 사용자만)
+            if userManager.isPremiumUser {
+                print("📝 저장 전 첨삭 횟수: \(userManager.dailyEditCount)")
+                userManager.incrementEditCount()
+                print("📝 저장 후 첨삭 횟수: \(userManager.dailyEditCount)/3")
+                print("💎 사용자 상태: \(userManager.isPremiumUser ? "프리미엄" : "무료")")
+            }
+            
             if isEditMode, let originalDiary = originalDiary {
-                // 🆕 수정 모드 - 기존 일기 업데이트
+                // 수정 모드 - 기존 일기 업데이트
                 dataManager.updateDiary(
                     diary: originalDiary,
                     newText: originalText,

@@ -195,12 +195,12 @@ struct ContentView: View {
                             .lineSpacing(10)
                             .padding(.horizontal)
                         
-                        #if DEBUG
+#if DEBUG
                         VStack {
                             Button("🔧 테스트용 일기쓰기") {
                                 navigationPath.append("diary-write")
                             }
-                            .opacity(0.5) // 거의 안보이게
+                            .opacity(0.5)
                             
                             // 🆕 프리미엄 상태 토글 버튼
                             Button("💎 프리미엄: \(userManager.isPremiumUser ? "ON" : "OFF")") {
@@ -208,12 +208,26 @@ struct ContentView: View {
                             }
                             .opacity(0.5)
                             
-                            // 🆕 첨삭 횟수 확인
-                            Text("📝 오늘 첨삭: \(userManager.dailyEditCount)/3")
-                                .font(.caption)
+                            // 🆕 첨삭 횟수 확인 및 수동 설정
+                            HStack {
+                                Text("📝 오늘 첨삭: \(userManager.dailyEditCount)/3")
+                                    .font(.caption)
+                                    .opacity(0.5)
+                                
+                                Button("+1") {
+                                    userManager.incrementEditCount()
+                                }
                                 .opacity(0.5)
+                                
+                                Button("리셋") {
+                                    userManager.dailyEditCount = 0
+                                    userManager.lastEditDate = nil
+                                    print("🔄 첨삭 횟수 수동 리셋")
+                                }
+                                .opacity(0.5)
+                            }
                         }
-                        #endif
+#endif
                     }
                     .padding(Spacing.xl)
                     .cornerRadius(CornerRadius.md)

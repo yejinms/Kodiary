@@ -44,8 +44,18 @@ class UserManager: ObservableObject {
             lastEditDate = lastEditDateData
         }
         
-        // 일일 첨삭 카운트 리셋 확인
+        // 🆕 CloudKit 복원 후 상세 로그 추가
+        print("📊 CloudKit 복원 완료:")
+        print("  - 첨삭횟수: \(dailyEditCount)")
+        print("  - 마지막날짜: \(lastEditDate?.description ?? "없음")")
+        print("  - 오늘날짜: \(Date())")
+
+        // 날짜 변경 시 카운트 리셋 체크 (단, 복원된 데이터 보호)
         checkAndResetDailyEditCount()
+
+        print("📊 날짜 체크 후:")
+        print("  - 첨삭횟수: \(dailyEditCount)")
+        print("  - 마지막날짜: \(lastEditDate?.description ?? "없음")")
         
         // 이미 로그인된 상태면 설정도 로드된 것으로 처리
         if isLoggedIn {
@@ -62,12 +72,24 @@ class UserManager: ObservableObject {
         
         if let lastEdit = lastEditDate {
             let lastEditDay = Calendar.current.startOfDay(for: lastEdit)
+            
             if lastEditDay < today {
-                // 날짜가 바뀌었으므로 카운트 리셋
+                // 실제로 날짜가 바뀌었을 때만 리셋
+                print("🔄 날짜 변경 감지: \(lastEditDay) → \(today)")
                 dailyEditCount = 0
                 lastEditDate = nil
                 saveDailyEditData()
-                print("🔄 일일 첨삭 카운트 리셋됨")
+                print("🔄 일일 첨삭 카운트 리셋됨 (날짜 변경)")
+            } else if lastEditDay == today {
+                // 오늘 날짜면 유지
+                print("✅ 오늘 첨삭 횟수 유지: \(dailyEditCount)/3")
+            }
+        } else {
+            // lastEditDate가 없지만 dailyEditCount가 0이 아닌 경우
+            if dailyEditCount > 0 {
+                // 오늘 첨삭한 것으로 간주하고 날짜 설정
+                lastEditDate = today
+                print("📅 마지막 첨삭 날짜 복원: 오늘로 설정 (\(dailyEditCount)/3)")
             }
         }
     }
@@ -85,13 +107,12 @@ class UserManager: ObservableObject {
     
     // 🆕 첨삭 횟수 증가
     func incrementEditCount() {
-        guard isPremiumUser else { return }
-        
+        // 🆕 무료/유료 구분 없이 모든 사용자에게 적용
         dailyEditCount += 1
         lastEditDate = Date()
         saveDailyEditData()
         
-        print("📝 첨삭 횟수 증가: \(dailyEditCount)/3")
+        print("📝 첨삭 횟수 증가: \(dailyEditCount)/3 (사용자: \(isPremiumUser ? "프리미엄" : "무료"))")
     }
     
     // 🆕 일일 첨삭 데이터 저장
@@ -99,9 +120,16 @@ class UserManager: ObservableObject {
         UserDefaults.standard.set(dailyEditCount, forKey: dailyEditCountKey)
         UserDefaults.standard.set(lastEditDate, forKey: lastEditDateKey)
         
-        // CloudKit에도 저장
+        print("💾 로컬 저장 완료: \(dailyEditCount)/3")
+        
+        // CloudKit에도 즉시 저장
         if isLoggedIn {
-            syncDailyEditDataToCloudKit()
+            print("☁️ CloudKit 동기화 시작...")
+            
+            // 🆕 즉시 동기화 (비동기가 아닌 Task로 즉시 실행)
+            Task {
+                await syncDailyEditDataToCloudKit()
+            }
         }
     }
     
@@ -124,50 +152,111 @@ class UserManager: ObservableObject {
         dailyEditCount: Int,
         lastEditDate: Date?
     ) async {
+        print("☁️ CloudKit 첨삭 데이터 저장 시작:")
+        print("  - 사용자ID: \(appleUserID)")
+        print("  - 저장할 첨삭횟수: \(dailyEditCount)")
+        print("  - 저장할 마지막날짜: \(lastEditDate?.description ?? "없음")")
+        
         let container = CKContainer(identifier: "iCloud.Kodiary")
         let database = container.privateCloudDatabase
         
         do {
-            // 기존 사용자 설정 레코드 찾기
-            let possibleRecordTypes = ["CD_UserSettings", "UserSettings", "CDUserSettings"]
-            var existingRecord: CKRecord? = nil
+            // 🆕 최대 3번 재시도
+            var retryCount = 0
+            let maxRetries = 3
             
-            for recordType in possibleRecordTypes {
-                let predicate = NSPredicate(format: "CD_appleUserID == %@ OR appleUserID == %@", appleUserID, appleUserID)
-                let query = CKQuery(recordType: recordType, predicate: predicate)
-                
+            while retryCount < maxRetries {
                 do {
-                    let (matchResults, _) = try await database.records(matching: query)
+                    // 매번 최신 레코드 다시 가져오기
+                    var existingRecord: CKRecord? = nil
+                    let possibleRecordTypes = ["CD_UserSettings", "UserSettings", "CDUserSettings"]
                     
-                    for (_, result) in matchResults {
-                        switch result {
-                        case .success(let record):
-                            existingRecord = record
-                            break
-                        case .failure:
+                    for recordType in possibleRecordTypes {
+                        let predicates = [
+                            NSPredicate(format: "CD_appleUserID == %@", appleUserID),
+                            NSPredicate(format: "appleUserID == %@", appleUserID)
+                        ]
+                        
+                        for predicate in predicates {
+                            let query = CKQuery(recordType: recordType, predicate: predicate)
+                            
+                            do {
+                                let (matchResults, _) = try await database.records(matching: query)
+                                
+                                for (_, result) in matchResults {
+                                    switch result {
+                                    case .success(let record):
+                                        existingRecord = record
+                                        print("✅ 최신 CloudKit 레코드 발견: \(recordType) (시도: \(retryCount + 1))")
+                                        break
+                                    case .failure:
+                                        break
+                                    }
+                                }
+                                
+                                if existingRecord != nil {
+                                    break
+                                }
+                            } catch {
+                                continue
+                            }
+                        }
+                        
+                        if existingRecord != nil {
                             break
                         }
                     }
                     
-                    if existingRecord != nil {
-                        break
+                    if let record = existingRecord {
+                        // 저장 전 현재 값 확인
+                        print("☁️ 저장 전 CloudKit 값 (시도: \(retryCount + 1)):")
+                        print("  - 기존 첨삭횟수: \(record["CD_dailyEditCount"] ?? "없음")")
+                        print("  - 기존 마지막날짜: \(record["CD_lastEditDate"] ?? "없음")")
+                        
+                        // 일일 첨삭 데이터 업데이트
+                        record["CD_dailyEditCount"] = dailyEditCount
+                        record["dailyEditCount"] = dailyEditCount
+                        record["CD_lastEditDate"] = lastEditDate
+                        record["lastEditDate"] = lastEditDate
+                        record["CD_modifiedAt"] = Date()
+                        record["modifiedAt"] = Date()
+                        
+                        print("☁️ 새 값으로 설정 완료:")
+                        print("  - 새 첨삭횟수: \(dailyEditCount)")
+                        print("  - 새 마지막날짜: \(lastEditDate?.description ?? "없음")")
+                        
+                        // CloudKit에 저장
+                        let savedRecord = try await database.save(record)
+                        
+                        print("☁️ CloudKit 저장 성공! (시도: \(retryCount + 1))")
+                        print("  - 저장된 첨삭횟수: \(savedRecord["CD_dailyEditCount"] ?? "없음")")
+                        print("  - 저장된 마지막날짜: \(savedRecord["CD_lastEditDate"] ?? "없음")")
+                        
+                        return // 성공하면 종료
+                        
+                    } else {
+                        print("❌ CloudKit 사용자 설정 레코드를 찾을 수 없음 (시도: \(retryCount + 1))")
+                        return
                     }
-                } catch {
-                    continue
+                    
+                } catch let error as CKError {
+                    if error.code == .serverRecordChanged {
+                        // 🆕 충돌 발생 시 재시도
+                        retryCount += 1
+                        print("⚠️ CloudKit 충돌 발생, 재시도 중... (\(retryCount)/\(maxRetries))")
+                        
+                        if retryCount < maxRetries {
+                            // 짧은 지연 후 재시도
+                            try await Task.sleep(nanoseconds: 500_000_000) // 0.5초
+                            continue
+                        } else {
+                            print("❌ CloudKit 최대 재시도 횟수 초과")
+                            throw error
+                        }
+                    } else {
+                        throw error
+                    }
                 }
-            }
-            
-            if let record = existingRecord {
-                // 일일 첨삭 데이터 업데이트
-                record["CD_dailyEditCount"] = dailyEditCount
-                record["dailyEditCount"] = dailyEditCount
-                record["CD_lastEditDate"] = lastEditDate
-                record["lastEditDate"] = lastEditDate
-                record["CD_modifiedAt"] = Date()
-                record["modifiedAt"] = Date()
-                
-                let _ = try await database.save(record)
-                print("💾 CloudKit에 일일 첨삭 데이터 동기화 완료")
             }
             
         } catch {
@@ -201,48 +290,77 @@ class UserManager: ObservableObject {
         appleUserID: String,
         isPremium: Bool
     ) async {
+        print("☁️ CloudKit 프리미엄 상태 저장 시작:")
+        print("  - 사용자ID: \(appleUserID)")
+        print("  - 저장할 프리미엄 상태: \(isPremium)")
+        
         let container = CKContainer(identifier: "iCloud.Kodiary")
         let database = container.privateCloudDatabase
         
         do {
-            // 기존 사용자 설정 레코드 찾기 (위의 로직과 동일)
+            // 기존 사용자 설정 레코드 찾기
             let possibleRecordTypes = ["CD_UserSettings", "UserSettings", "CDUserSettings"]
             var existingRecord: CKRecord? = nil
             
             for recordType in possibleRecordTypes {
-                let predicate = NSPredicate(format: "CD_appleUserID == %@ OR appleUserID == %@", appleUserID, appleUserID)
-                let query = CKQuery(recordType: recordType, predicate: predicate)
+                // 🆕 OR 대신 각 필드별로 따로 검색
+                let predicates = [
+                    NSPredicate(format: "CD_appleUserID == %@", appleUserID),
+                    NSPredicate(format: "appleUserID == %@", appleUserID)
+                ]
                 
-                do {
-                    let (matchResults, _) = try await database.records(matching: query)
+                for predicate in predicates {
+                    let query = CKQuery(recordType: recordType, predicate: predicate)
                     
-                    for (_, result) in matchResults {
-                        switch result {
-                        case .success(let record):
-                            existingRecord = record
-                            break
-                        case .failure:
+                    do {
+                        let (matchResults, _) = try await database.records(matching: query)
+                        
+                        for (_, result) in matchResults {
+                            switch result {
+                            case .success(let record):
+                                existingRecord = record
+                                print("✅ 기존 CloudKit 레코드 발견: \(recordType)")
+                                break
+                            case .failure:
+                                break
+                            }
+                        }
+                        
+                        if existingRecord != nil {
                             break
                         }
+                    } catch {
+                        print("❌ CloudKit 레코드 검색 실패 (\(recordType), \(predicate)): \(error)")
+                        continue
                     }
-                    
-                    if existingRecord != nil {
-                        break
-                    }
-                } catch {
-                    continue
+                }
+                
+                if existingRecord != nil {
+                    break
                 }
             }
             
             if let record = existingRecord {
+                // 저장 전 현재 값 확인
+                print("☁️ 저장 전 CloudKit 프리미엄 상태:")
+                print("  - 기존 프리미엄: \(record["CD_isPremiumUser"] ?? "없음")")
+                
                 // 프리미엄 상태 업데이트
                 record["CD_isPremiumUser"] = isPremium
                 record["isPremiumUser"] = isPremium
                 record["CD_modifiedAt"] = Date()
                 record["modifiedAt"] = Date()
                 
-                let _ = try await database.save(record)
-                print("💾 CloudKit에 프리미엄 상태 동기화 완료")
+                print("☁️ 새 프리미엄 상태로 설정 완료: \(isPremium)")
+                
+                // CloudKit에 저장
+                let savedRecord = try await database.save(record)
+                
+                print("☁️ CloudKit 프리미엄 상태 저장 성공!")
+                print("  - 저장된 프리미엄 상태: \(savedRecord["CD_isPremiumUser"] ?? "없음")")
+                
+            } else {
+                print("❌ CloudKit 사용자 설정 레코드를 찾을 수 없음")
             }
             
         } catch {
@@ -264,6 +382,34 @@ class UserManager: ObservableObject {
         let premiumFields = ["CD_isPremiumUser", "isPremiumUser", "CDisPremiumUser"]
         let dailyEditCountFields = ["CD_dailyEditCount", "dailyEditCount", "CDdailyEditCount"]
         let lastEditDateFields = ["CD_lastEditDate", "lastEditDate", "CDlastEditDate"]
+        
+        // 🆕 일일 첨삭 횟수 복원
+        for field in dailyEditCountFields {
+            if let editCount = record[field] as? Int {
+                print("📊 CloudKit에서 첨삭 횟수 발견:")
+                print("  - 필드명: \(field)")
+                print("  - 값: \(editCount)")
+                
+                self.dailyEditCount = editCount
+                UserDefaults.standard.set(editCount, forKey: dailyEditCountKey)
+                print("📝 일일 첨삭 횟수 복원: \(editCount) (필드: \(field))")
+                break
+            }
+        }
+
+        // 🆕 마지막 첨삭 날짜 복원
+        for field in lastEditDateFields {
+            if let editDate = record[field] as? Date {
+                print("📊 CloudKit에서 마지막 날짜 발견:")
+                print("  - 필드명: \(field)")
+                print("  - 값: \(editDate)")
+                
+                self.lastEditDate = editDate
+                UserDefaults.standard.set(editDate, forKey: lastEditDateKey)
+                print("📅 마지막 첨삭 날짜 복원: \(editDate) (필드: \(field))")
+                break
+            }
+        }
         
         // 사용자 이름 복원
         for field in userNameFields {
@@ -456,6 +602,9 @@ class UserManager: ObservableObject {
     
     // 🆕 로그아웃 시 멤버십 데이터도 초기화
     func signOut() {
+        // 🆕 로그아웃 전에 현재 상태 로그
+        print("🚪 로그아웃 시작 - 현재 첨삭횟수: \(dailyEditCount)")
+        
         UserDefaults.standard.removeObject(forKey: isLoggedInKey)
         UserDefaults.standard.removeObject(forKey: userNameKey)
         UserDefaults.standard.removeObject(forKey: userEmailKey)
@@ -471,10 +620,14 @@ class UserManager: ObservableObject {
             self.needsNameSetup = false
             self.needsLanguageSetup = false
             self.isSettingsLoaded = false
+            
+            // 🆕 로그아웃 시에는 CloudKit에 0으로 저장하지 않음
+            // (다음 로그인 시 CloudKit에서 복원될 예정)
             self.isPremiumUser = false
             self.dailyEditCount = 0
             self.lastEditDate = nil
-            print("🚪 로그아웃 완료")
+            
+            print("🚪 로그아웃 완료 - 로컬 데이터만 초기화")
         }
     }
     

@@ -239,6 +239,7 @@ struct DiaryWriteView: View {
             )
             .environmentObject(dataManager)
             .environmentObject(languageManager)
+            .environmentObject(userManager)
         }
         .alert(languageManager.currentLanguage.errorTitle, isPresented: $showingError) {
             Button(languageManager.currentLanguage.confirmButton) { }
@@ -275,12 +276,6 @@ struct DiaryWriteView: View {
         let startTime = Date()
         
         do {
-            // 🆕 수정 모드일 때 첨삭 횟수 증가
-            if isEditMode {
-                userManager.incrementEditCount()
-                print("🔄 수정 모드 - 첨삭 횟수 증가: \(userManager.dailyEditCount)/3")
-            }
-            
             print("🤖 AI 첨삭 요청 시작: \(diaryText.prefix(50))...")
             print("📝 첨삭 언어: \(languageManager.correctionLanguage.languageName)")
             print("🌍 설명 언어: \(languageManager.nativeLanguage.languageName)")
