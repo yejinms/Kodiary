@@ -7,13 +7,29 @@
 
 import SwiftUI
 
+struct DiaryEditData: Hashable {
+    let originalDiary: DiaryEntry
+    let originalText: String
+    let isEditMode: Bool
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(originalText)
+        hasher.combine(isEditMode)
+    }
+}
+
 struct DiaryDetailView: View {
     @State var diary: DiaryEntry
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var languageManager: LanguageManager
     
+    
     @State private var expandedItems: Set<Int> = []
+    @State private var showingEditAlert = false // 수정 불가 알림
+    @State private var showingPremiumAlert = false // 프리미엄 유도 알림
+    @State private var showingEditLimitAlert = false // 편집 제한 알림
+    @EnvironmentObject var userManager: UserManager // 추가
     
     var corrections: [CorrectionItem] {
         dataManager.getCorrections(for: diary)
@@ -63,6 +79,17 @@ struct DiaryDetailView: View {
         guard let currentIndex = sortedDiaries.firstIndex(where: { $0.id == diary.id }),
               currentIndex < sortedDiaries.count - 1 else { return nil }
         return sortedDiaries[currentIndex + 1]
+    }
+    
+    // 🆕 오늘 작성한 일기인지 확인
+    var isTodayDiary: Bool {
+        guard let diaryDate = diary.date else { return false }
+        return Calendar.current.isDate(diaryDate, inSameDayAs: Date())
+    }
+
+    // 🆕 수정 가능한지 확인
+    var canEditDiary: Bool {
+        return userManager.isPremiumUser && isTodayDiary && userManager.canEdit()
     }
     
     var body: some View {
@@ -271,9 +298,36 @@ struct DiaryDetailView: View {
                     .foregroundColor(.primaryDark.opacity(0.5))
                 }
             }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    handleEditButtonTap()
+                }) {
+                    Text(languageManager.currentLanguage.editButton)
+                        .font(.buttonFont)
+                        .foregroundColor(.primaryDark)
+                }
+            }
         }
         .onAppear {
             dataManager.fetchDiaries()
+        }
+        .alert(languageManager.currentLanguage.todayOnlyEditTitle, isPresented: $showingEditAlert) {
+            Button(languageManager.currentLanguage.confirmButton) { }
+        } message: {
+            Text(languageManager.currentLanguage.todayOnlyEditMessage)
+        }
+        .alert(languageManager.currentLanguage.premiumRequiredForEditTitle, isPresented: $showingPremiumAlert) {
+            Button(languageManager.currentLanguage.startPremium) {
+                // TODO: 프리미엄 구매 화면으로 이동
+            }
+            Button(languageManager.currentLanguage.laterButton) { }
+        } message: {
+            Text(languageManager.currentLanguage.premiumRequiredForEditMessage)
+        }
+        .alert(languageManager.currentLanguage.dailyDiaryLimitTitle, isPresented: $showingEditLimitAlert) {
+            Button(languageManager.currentLanguage.confirmButton) { }
+        } message: {
+            Text(languageManager.currentLanguage.dailyDiaryLimitMessage)
         }
     }
     
@@ -309,24 +363,25 @@ struct DiaryDetailView: View {
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: date)
     }
-}
-
-struct DiaryDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        let dummyDiary = DiaryEntry()
-        dummyDiary.id = UUID()
-        dummyDiary.date = Date()
-        dummyDiary.originalText = "오늘은 날씨가 정말 좋았다. 친구들과 공원에서 산책을 했는데 너무 즐거웠다."
-        dummyDiary.characterCount = 45
-        dummyDiary.correctionCount = 2
-        dummyDiary.createdAt = Date()
-        dummyDiary.corrections = "[]"
-        
-        return NavigationView {
-            DiaryDetailView(diary: dummyDiary)
-                .environmentObject(DataManager.shared)
-                .environmentObject(LanguageManager.shared)
-                .environmentObject(UserManager.shared)
+    
+    func handleEditButtonTap() {
+        if !userManager.isPremiumUser {
+            // 무료 사용자 - 프리미엄 유도
+            showingPremiumAlert = true
+        } else if !isTodayDiary {
+            // 유료 사용자지만 오늘 일기가 아님
+            showingEditAlert = true
+        } else if !userManager.canEdit() {
+            // 유료 사용자지만 일일 한도 초과
+            showingEditLimitAlert = true
+        } else {
+            // 수정 가능 - 수정 모드로 DiaryWriteView 이동
+            let editData = DiaryEditData(
+                originalDiary: diary,
+                originalText: diary.originalText ?? "",
+                isEditMode: true
+            )
+            // NavigationPath에 추가하는 방식은 상위 뷰에서 처리
         }
     }
 }
