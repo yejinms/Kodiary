@@ -62,6 +62,7 @@ struct ResponsiveDateHeader: View {
 }
 
 struct ContentView: View {
+    @State private var showingDailyLimitAlert = false //일일 한도 알림
     @State private var currentDate = Date()
     @State private var navigationPath = NavigationPath()
     @State private var showingLanguageSelection = false
@@ -197,9 +198,13 @@ struct ContentView: View {
                     .padding(Spacing.xl)
                     .cornerRadius(CornerRadius.md)
                     
-                    // 일기 쓰기 버튼 (다국어 지원)
+                    // 🆕 일기 쓰기 버튼 (제한 로직 추가)
                     Button(action: {
-                        navigationPath.append("diary-write")
+                        if hasTodayDiary {
+                            showingDailyLimitAlert = true
+                        } else {
+                            navigationPath.append("diary-write")
+                        }
                     }) {
                         HStack(spacing: Spacing.sm) {
                             Text(hasTodayDiary ? languageManager.currentLanguage.writeButtonCompletedText(languageManager.correctionLanguageDisplayName) : languageManager.currentLanguage.writeButtonText(languageManager.correctionLanguageDisplayName))
@@ -257,6 +262,11 @@ struct ContentView: View {
                 default:
                     Text("Unknown destination")
                 }
+            }
+            .alert(languageManager.currentLanguage.dailyDiaryLimitTitle, isPresented: $showingDailyLimitAlert) {
+                Button(languageManager.currentLanguage.confirmButton) { }
+            } message: {
+                Text(languageManager.currentLanguage.dailyDiaryLimitMessage)
             }
             .sheet(isPresented: $showingLanguageSelection) {
                 LanguageSelectionView()

@@ -289,8 +289,8 @@ class LanguageManager: ObservableObject {
         dayDateFormat: "d",
         
         // ContentView
-        writeButtonText: { correctionLanguageName in "\(correctionLanguageName) 일기 쓰기" },
-        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) 일기 [완료]" },
+        writeButtonText: { correctionLanguageName in "\(correctionLanguageName) 일기 쓰기 [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) 일기 [1/1]" },
         historyButtonText: "일기 히스토리",
         
         // DiaryWriteView
@@ -425,8 +425,8 @@ class LanguageManager: ObservableObject {
         dayDateFormat: "d",
         
         // ContentView
-        writeButtonText: { correctionLanguageName in "Write \(correctionLanguageName) diary" },
-        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) diary [done]" },
+        writeButtonText: { correctionLanguageName in "Write \(correctionLanguageName) diary [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) diary [1/1]" },
         historyButtonText: "Diary History",
         
         // DiaryWriteView
@@ -561,8 +561,8 @@ class LanguageManager: ObservableObject {
         dayDateFormat: "d",
         
         // ContentView
-        writeButtonText: { correctionLanguageName in "\(correctionLanguageName)日記を書く" },
-        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName)日記 [完了]" },
+        writeButtonText: { correctionLanguageName in "\(correctionLanguageName)日記を書く [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName)日記 [1/1]" },
         historyButtonText: "日記履歴",
         
         // DiaryWriteView
@@ -692,8 +692,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "Escribir diario en \(correctionLanguageName)" },
-        writeButtonCompletedText: { correctionLanguageName in "Diario en \(correctionLanguageName) [listo]" },
+        writeButtonText: { correctionLanguageName in "Escribir diario en \(correctionLanguageName) [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "Diario en \(correctionLanguageName) [1/1]" },
         historyButtonText: "Historial del diario",
         
         diaryWriteTitle: "Diario de hoy",
@@ -814,8 +814,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "เขียนไดอารี่\(correctionLanguageName)" },
-        writeButtonCompletedText: { correctionLanguageName in "ไดอารี่\(correctionLanguageName) [เสร็จแล้ว]" },
+        writeButtonText: { correctionLanguageName in "เขียนไดอารี่\(correctionLanguageName) [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "ไดอารี่\(correctionLanguageName) [1/1]" },
         historyButtonText: "ประวัติไดอารี่",
         
         diaryWriteTitle: "ไดอารี่วันนี้",
@@ -936,8 +936,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "\(correctionLanguageName) Tagebuch schreiben" },
-        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) Tagebuch [fertig]" },
+        writeButtonText: { correctionLanguageName in "\(correctionLanguageName) Tagebuch schreiben [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) Tagebuch [1/1]" },
         historyButtonText: "Tagebuch-Historie",
         
         diaryWriteTitle: "Heutiges Tagebuch",
@@ -1058,8 +1058,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "M月", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "写\(correctionLanguageName)日记" },
-        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName)日记 [完成]" },
+        writeButtonText: { correctionLanguageName in "写\(correctionLanguageName)日记 [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName)日记 [1/1]" },
         historyButtonText: "日记历史",
         
         diaryWriteTitle: "今天的日记",
@@ -1180,8 +1180,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "كتابة يوميات \(correctionLanguageName)" },
-        writeButtonCompletedText: { correctionLanguageName in "يوميات \(correctionLanguageName) [مكتمل]" },
+        writeButtonText: { correctionLanguageName in "كتابة يوميات \(correctionLanguageName) [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "يوميات \(correctionLanguageName) [1/1]" },
         historyButtonText: "تاريخ اليوميات",
         
         diaryWriteTitle: "يوميات اليوم",
@@ -1302,8 +1302,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "Écrire journal \(correctionLanguageName)" },
-        writeButtonCompletedText: { correctionLanguageName in "Journal \(correctionLanguageName) [terminé]" },
+        writeButtonText: { correctionLanguageName in "Écrire journal \(correctionLanguageName) [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "Journal \(correctionLanguageName) [1/1]" },
         historyButtonText: "Historique du journal",
         
         diaryWriteTitle: "Journal d'aujourd'hui",
@@ -1424,8 +1424,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "Scrivi diario \(correctionLanguageName)" },
-        writeButtonCompletedText: { correctionLanguageName in "Diario \(correctionLanguageName) [completo]" },
+        writeButtonText: { correctionLanguageName in "Scrivi diario \(correctionLanguageName) [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "Diario \(correctionLanguageName) [1/1]" },
         historyButtonText: "Cronologia del diario",
         
         diaryWriteTitle: "Diario di oggi",
@@ -1546,8 +1546,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "E"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "Escrever diário \(correctionLanguageName)" },
-        writeButtonCompletedText: { correctionLanguageName in "Diário \(correctionLanguageName) [concluído]" },
+        writeButtonText: { correctionLanguageName in "Escrever diário \(correctionLanguageName) [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "Diário \(correctionLanguageName) [1/1]" },
         historyButtonText: "Histórico do diário",
         
         diaryWriteTitle: "Diário de hoje",
@@ -1668,8 +1668,8 @@ class LanguageManager: ObservableObject {
         dateComponents: (year: "yyyy", month: "MMM", weekday: "EEEE"),
         dayDateFormat: "d",
         
-        writeButtonText: { correctionLanguageName in "\(correctionLanguageName) डायरी लिखें" },
-        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) डायरी [पूर्ण]" },
+        writeButtonText: { correctionLanguageName in "\(correctionLanguageName) डायरी लिखें [0/1]" },
+        writeButtonCompletedText: { correctionLanguageName in "\(correctionLanguageName) डायरी [1/1]" },
         historyButtonText: "डायरी इतिहास",
         
         diaryWriteTitle: "आज की डायरी",
