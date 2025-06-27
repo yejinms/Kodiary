@@ -44,11 +44,11 @@ struct ProfileSettingsView: View {
             // 설정 메뉴들
             VStack(spacing: Spacing.md) {
                 
-                SettingsRow(
-                    icon: "bell",
-                    title: languageManager.currentLanguage.notificationSettingsTitle,
-                    action: { /* 알림 설정 */ }
-                )
+//                SettingsRow(
+//                    icon: "bell",
+//                    title: languageManager.currentLanguage.notificationSettingsTitle,
+//                    action: { /* 알림 설정 */ }
+//                )
                 
                 SettingsRow(
                     icon: "lock",
@@ -89,6 +89,7 @@ struct ProfileSettingsView: View {
                 )
             }
             .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.lg)
             
             Spacer()
         }
