@@ -194,6 +194,13 @@ struct ContentView: View {
                             .multilineTextAlignment(.center)
                             .lineSpacing(10)
                             .padding(.horizontal)
+                        // ContentView의 VStack 마지막에 임시 추가
+                        #if DEBUG
+                        Button("🔧 테스트용 일기쓰기") {
+                            navigationPath.append("diary-write")
+                        }
+                        .opacity(0.5) // 거의 안보이게
+                        #endif
                     }
                     .padding(Spacing.xl)
                     .cornerRadius(CornerRadius.md)

@@ -6,10 +6,13 @@ struct CorrectionResultView: View {
     @Binding var navigationPath: NavigationPath
     @EnvironmentObject var languageManager: LanguageManager
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var userManager: UserManager // 추가
     
     @State private var expandedItems: Set<Int> = []
     @State private var showSaveLoading = false
     @State private var scrollToTop = false
+    @State private var showingPremiumAlert = false // 프리미엄 유도 알림
+    @State private var showingEditLimitAlert = false // 편집 제한 알림
     
     // 원문에서의 위치 순서대로 정렬된 첨삭 결과
     var sortedCorrections: [CorrectionItem] {
@@ -188,7 +191,7 @@ struct CorrectionResultView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
-                    navigationPath.removeLast()
+                    handleBackButtonTap()
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
@@ -208,6 +211,19 @@ struct CorrectionResultView: View {
                 }
                 .disabled(showSaveLoading)
             }
+        }
+        .alert(languageManager.currentLanguage.premiumRequiredForEditTitle, isPresented: $showingPremiumAlert) {
+            Button(languageManager.currentLanguage.startPremium) {
+                // TODO: 프리미엄 구매 화면으로 이동
+            }
+            Button(languageManager.currentLanguage.laterButton) { }
+        } message: {
+            Text(languageManager.currentLanguage.premiumRequiredForEditMessage)
+        }
+        .alert(languageManager.currentLanguage.dailyDiaryLimitTitle, isPresented: $showingEditLimitAlert) {
+            Button(languageManager.currentLanguage.confirmButton) { }
+        } message: {
+            Text(languageManager.currentLanguage.dailyDiaryLimitMessage)
         }
     }
     
@@ -244,6 +260,22 @@ struct CorrectionResultView: View {
                 // 저장 로딩 화면 숨기기
                 showSaveLoading = false
             }
+        }
+    }
+    
+    // 🆕 백버튼 탭 처리
+    func handleBackButtonTap() {
+        if userManager.isPremiumUser {
+            // 프리미엄 사용자 - 편집 횟수 확인
+            if userManager.canEdit() {
+                userManager.incrementEditCount()
+                navigationPath.removeLast()
+            } else {
+                showingEditLimitAlert = true
+            }
+        } else {
+            // 무료 사용자 - 프리미엄 유도
+            showingPremiumAlert = true
         }
     }
 }
